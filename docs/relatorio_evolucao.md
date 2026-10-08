@@ -140,3 +140,4 @@ de gestão, o relatório nem entra no ranking.
 | Pedro Ribeiro Lopes | 570083 |
 | Kevin Rodrigues de Melo | 571777 |
 | Pedro Vianna | 570747 |
+| Lana Ozeki | 569795 |

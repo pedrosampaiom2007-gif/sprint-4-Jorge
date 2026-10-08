@@ -11,6 +11,7 @@ com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-tex
 - Relatório de evolução (PDF): [`docs/relatorio_evolucao.pdf`](docs/relatorio_evolucao.pdf)
 - RAG: [`docs/relatorio_rag.md`](docs/relatorio_rag.md) · Modelos e parâmetros: [`docs/relatorio_modelos.md`](docs/relatorio_modelos.md)
 - Scores por iteração: [`evals/historico_scores.md`](evals/historico_scores.md) · Versões do prompt: [`prompts/rag/CHANGELOG.md`](prompts/rag/CHANGELOG.md)
+- Rodar tudo no Colab: [`notebooks/avaliacao_colab.ipynb`](https://colab.research.google.com/github/pedrosampaiom2007-gif/sprint-4-Jorge/blob/main/notebooks/avaliacao_colab.ipynb)
 
 ---
 
@@ -24,10 +25,29 @@ com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-tex
 | Pedro Ribeiro Lopes | 570083 |
 | Kevin Rodrigues de Melo | 571777 |
 | Pedro Vianna | 570747 |
+| Lana Ozeki | 569795 |
 
 ---
 
-## Rodando o projeto
+## Rodando no Google Colab (sem instalar nada)
+
+[![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pedrosampaiom2007-gif/sprint-4-Jorge/blob/main/notebooks/avaliacao_colab.ipynb)
+
+O notebook [`notebooks/avaliacao_colab.ipynb`](notebooks/avaliacao_colab.ipynb) clona este
+repositório, instala as dependências, indexa a base, roda todas as avaliações (RAGAS por
+iteração, versão das Sprints 1/2, comparação de modelos e segurança), preenche as tabelas
+dos relatórios, gera o `docs/relatorio_evolucao.pdf` e, se quiser, sobe a interface web com
+link público. **Professor, se preferir, é o jeito mais fácil de reproduzir os números.**
+
+1. Abra o link acima.
+2. No menu à esquerda do Colab, clique na chave (**Secrets**) e cadastre `GROQ_API_KEY` e
+   `OLLAMA_API_KEY`, liberando o acesso do notebook.
+3. **Ambiente de execução → Executar tudo.** Leva de 30 a 60 minutos por causa do limite da
+   conta gratuita do Groq. No fim o notebook baixa o PDF e um `.zip` com os resultados.
+
+---
+
+## Rodando o projeto no computador
 
 Precisa de Python 3.11 a 3.13.
 
@@ -133,6 +153,7 @@ src/
   schemas/                 ConsultaRecarga — resposta estruturada
   integracao/              dados de tempo real (estações, faturamento)
 app/                       interface web (Gradio) e terminal
+notebooks/                 avaliação completa no Google Colab
 prompts/rag/               prompt RAG versionado (rag_v1..v3) + CHANGELOG
 evals/                     eval sets, RAGAS, fallback manual, resultados por iteração
 docs/                      relatório de evolução (PDF), relatorio_rag.md, relatorio_modelos.md
