@@ -4,7 +4,7 @@ tipo: relatorio_operacional
 acesso: gestao
 versao: "1.0"
 data: 2026-10
-autoria: Pedro Sampaio Mochnacs Arruda (RM 573522) — gerado a partir de Trabalho_Analise_Comercial_SP2.xlsx
+autoria: Projeto ChargeGrid Intelligence — gerado a partir de Trabalho_Analise_Comercial_SP2.xlsx
 ---
 
 # Relatório histórico de operação — base SP2

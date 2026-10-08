@@ -5,8 +5,13 @@ Professor: Jorge Luiz Gomes
 REPOSITORIO:
 https://github.com/pedrosampaiom2007-gif/sprint-4-Jorge
 
-TRABALHO INDIVIDUAL
+INTEGRANTES:
 
 Nome                             RM         Turma
 -------------------------------------------------
+Luan de Araujo Carneiro          573691     1CCPG
 Pedro Sampaio Mochnacs Arruda    573522     1CCPG
+Raul Sampaio Mochnacs Arruda     573523     1CCPG
+Pedro Ribeiro Lopes              570083     1CCPG
+Kevin Rodrigues de Melo          571777     1CCPG
+Pedro Vianna                     570747     1CCPG
