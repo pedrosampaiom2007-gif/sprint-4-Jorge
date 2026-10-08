@@ -1,7 +1,8 @@
 # Relatório de evolução — Sprint 4
 
 **Chatbot ChargeGrid Intelligence — RAG medido, confiável e utilizável**
-EV Challenge — GoodWe / FIAP · Prompt and Artificial Intelligence · 2026.2 · Turma 1CCPG
+EV Challenge — GoodWe / FIAP · Prompt and Artificial Intelligence · 2026.2
+Pedro Sampaio Mochnacs Arruda · RM 573522 · Turma 1CCPG
 
 ---
 
@@ -30,7 +31,7 @@ pergunta -> (reescrita se encadeada) -> busca com filtro de acesso e limiar -> b
 ```
 
 **Base de conhecimento.** 5 PDFs públicos (GoodWe, Secovi-SP x2, Arval, PROMOB-e) e 5
-documentos da equipe (manual de operação e tabela tarifária do ChargeGrid, FAQ de
+documentos escritos para o projeto (manual de operação e tabela tarifária do ChargeGrid, FAQ de
 recarga, modelo de regimento de condomínio e o relatório histórico SP2, gerado da
 planilha real). Cada documento tem metadados de tipo, nível de acesso e link de origem;
 o relatório SP2 é `acesso: gestao` e só entra na busca para o perfil de gestão.
@@ -130,13 +131,10 @@ relatório SP2 poderia aparecer para qualquer pergunta parecida. A solução foi
 metadado `acesso` em cada documento e o filtro `where` na busca do Chroma: sem perfil
 de gestão, o relatório nem entra no ranking.
 
-## 5. Equipe e divisão de trabalho — Turma 1CCPG
+## 5. Autoria e divisão de trabalho
 
-| Nome | RM | Tarefa principal |
-|---|---|---|
-| Luan de Araujo Carneiro | 573691 | |
-| Pedro Sampaio Mochnacs Arruda | 573522 | |
-| Raul Sampaio Mochnacs Arruda | 573523 | |
-| Pedro Ribeiro Lopes | 570083 | |
-| Kevin Rodrigues de Melo | 571777 | |
-| Pedro Vianna | 570747 | |
+Trabalho individual, com autorização do professor.
+
+| Nome | RM | Turma | Tarefas |
+|---|---|---|---|
+| Pedro Sampaio Mochnacs Arruda | 573522 | 1CCPG | Todas: base de conhecimento, pipeline RAG, segurança, avaliação RAGAS, interface web e relatórios |

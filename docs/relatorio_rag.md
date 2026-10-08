@@ -9,13 +9,13 @@
 | Secovi-SP — Recarga em condomínios: riscos, segurança e responsabilidades (2026) | [secovi.com.br](https://secovi.com.br/wp-content/uploads/2026/04/20260423-PAULO-REWALD.pdf) | apresentação | público |
 | Arval Brasil — Guia do condutor de veículos elétricos (2024) | [arvalbrasil.com.br](https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf) | guia do motorista | público |
 | PROMOB-e — Eletropostos: instalação para grandes demandas | [pnme.org.br](https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf) | guia técnico | público |
-| Manual de operação do ChargeGrid Intelligence | equipe | manual de produto | público |
-| Tabela tarifária do ChargeGrid | equipe | tabela tarifária | público |
-| FAQ de recarga para motoristas | equipe | FAQ | público |
-| Modelo de regimento para recarga compartilhada em condomínio | equipe | regimento | público |
-| Relatório histórico de operação — base SP2 | equipe, gerado de `Trabalho_Analise_Comercial_SP2.xlsx` | relatório | **gestão** |
+| Manual de operação do ChargeGrid Intelligence | autor do projeto | manual de produto | público |
+| Tabela tarifária do ChargeGrid | autor do projeto | tabela tarifária | público |
+| FAQ de recarga para motoristas | autor do projeto | FAQ | público |
+| Modelo de regimento para recarga compartilhada em condomínio | autor do projeto | regimento | público |
+| Relatório histórico de operação — base SP2 | autor do projeto, gerado de `Trabalho_Analise_Comercial_SP2.xlsx` | relatório | **gestão** |
 
-Os documentos da equipe só contêm o que já existia no projeto (regras de tarifa,
+Os documentos escritos para o projeto só contêm o que já existia no projeto (regras de tarifa,
 cashback e DLB do sistema, números da planilha SP2). O regimento é um **modelo** para o
 piloto em condomínios e diz isso no próprio texto.
 

@@ -4,15 +4,15 @@ tipo: manual_produto
 acesso: publico
 versao: "1.0"
 data: 2026-10
-autoria: Equipe ChargeGrid Intelligence (Turma 1CCPG) — EV Challenge GoodWe/FIAP
+autoria: Pedro Sampaio Mochnacs Arruda (RM 573522, Turma 1CCPG) — ChargeGrid Intelligence, EV Challenge GoodWe/FIAP
 ---
 
 # Manual de operação do ChargeGrid Intelligence
 
 ## O que é o ChargeGrid Intelligence
 
-O ChargeGrid Intelligence (CGI) é o sistema de gestão de eletropostos desenvolvido pela equipe
-no EV Challenge GoodWe/FIAP. Ele atende postos comerciais e frotas: registra as sessões de
+O ChargeGrid Intelligence (CGI) é o sistema de gestão de eletropostos desenvolvido no EV
+Challenge GoodWe/FIAP. Ele atende postos comerciais e frotas: registra as sessões de
 recarga, mostra a disponibilidade dos carregadores, calcula a cobrança de cada sessão e reúne
 os indicadores de operação (receita, energia entregue, ticket médio e pico de demanda).
 
@@ -42,7 +42,7 @@ O CGI separa dois perfis de acesso:
 
 - Motorista (aplicativo e totem): vê a disponibilidade das estações e as informações da
   própria recarga e dos próprios pagamentos.
-- Gestão (ferramenta interna da equipe): vê também faturamento do dia, sessões ativas,
+- Gestão (ferramenta interna): vê também faturamento do dia, sessões ativas,
   sessões iniciadas no dia e o histórico comercial dos pontos de carga.
 
 Dados de outros motoristas, como identificação do veículo e valores de sessões, nunca são
@@ -72,7 +72,7 @@ manter o DLB ativo, que garante a estabilidade da rede.
 
 ## Planejamento de novos pontos de carga
 
-Referências usadas pela equipe no planejamento de expansão:
+Referências usadas no planejamento de expansão:
 
 - O custo de instalação médio por ponto de carga é de R$ 15.000.
 - Para atender 50 veículos por dia, recomenda-se ao menos 3 carregadores de 22 kW.

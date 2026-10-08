@@ -4,7 +4,7 @@ tipo: regimento_condominial
 acesso: publico
 versao: "1.0"
 data: 2026-10
-autoria: Equipe ChargeGrid Intelligence (Turma 1CCPG) — modelo para o piloto em condomínios; não substitui a convenção nem a assessoria jurídica do condomínio
+autoria: Pedro Sampaio Mochnacs Arruda (RM 573522, Turma 1CCPG) — ChargeGrid Intelligence, EV Challenge GoodWe/FIAP — modelo para o piloto em condomínios; não substitui a convenção nem a assessoria jurídica do condomínio
 ---
 
 # Modelo de regimento para recarga compartilhada em condomínio

@@ -4,7 +4,7 @@ Carrega a base de conhecimento (data/knowledge_base/) como Documents.
 - PDF: PyMuPDFLoader, um Document por pagina. Titulo, tipo, nivel de acesso e
   link de origem vem de data/knowledge_base/fontes.json. A secao citada e a
   pagina ("p. 12").
-- Markdown: os documentos escritos pela equipe. O cabecalho YAML (--- ... ---)
+- Markdown: os documentos escritos para o projeto. O cabecalho YAML (--- ... ---)
   traz os metadados, e cada titulo "## " vira uma secao, que e o que aparece
   na citacao ("Tabela tarifaria do ChargeGrid › Horario de ponta").
 
