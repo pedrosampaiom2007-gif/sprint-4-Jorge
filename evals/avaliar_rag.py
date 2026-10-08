@@ -89,21 +89,38 @@ def checar(caso: dict, turno: Turno) -> dict:
     }
 
 
+class CotaEsgotada(RuntimeError):
+    """A cota diaria (tokens per day) da conta acabou: nao adianta esperar minutos."""
+
+
+def verificar_cota(erro: Exception) -> None:
+    texto = str(erro)
+    if "tokens per day" in texto or "TPD" in texto or "requests per day" in texto:
+        raise CotaEsgotada(
+            "A cota DIARIA da Groq acabou (tokens per day). Nada desta etapa foi gravado. "
+            "Rode de novo amanha (a cota libera ~24h depois do uso) ou use outro juiz/modelo."
+        ) from erro
+
+
 def rodar_caso(assistente: Assistente, caso: dict, prefixo: str) -> tuple[Turno, float]:
+    """Um caso do eval set. Erro de API nao vira 'resposta': interrompe a avaliacao,
+    para nao gravar resultado falso (e o rodar_tudo refazer a etapa depois)."""
     sid = f"{prefixo}-{caso['id']}"
     limpar_sessao(sid)
     acesso = bool(caso.get("acesso_gestao", False))
-    for anterior in caso.get("turnos_anteriores", []):
-        assistente.responder(anterior, session_id=sid, acesso_gestao=acesso)
     inicio = time.perf_counter()
     for tentativa in range(4):
         try:
+            limpar_sessao(sid)
+            for anterior in caso.get("turnos_anteriores", []):
+                assistente.responder(anterior, session_id=sid, acesso_gestao=acesso)
+            inicio = time.perf_counter()
             turno = assistente.responder(caso["pergunta"], session_id=sid, acesso_gestao=acesso)
             break
-        except Exception as erro:  # noqa: BLE001  (rate limit da conta gratuita)
+        except Exception as erro:  # noqa: BLE001  (limite por minuto da conta gratuita)
+            verificar_cota(erro)
             if tentativa == 3:
-                turno = Turno(f"[ERRO apos retries: {erro}]", "erro")
-                break
+                raise RuntimeError(f"caso {caso['id']} falhou apos 4 tentativas: {erro}") from erro
             time.sleep(15 * (tentativa + 1))
     return turno, time.perf_counter() - inicio
 

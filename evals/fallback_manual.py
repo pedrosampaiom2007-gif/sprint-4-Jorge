@@ -177,6 +177,9 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
                              justificativa_rubrica=notas.justificativa)
                 break
             except Exception as erro:  # noqa: BLE001  (limite de requisicoes da conta gratuita)
+                from evals.avaliar_rag import verificar_cota
+
+                verificar_cota(erro)
                 if tentativa == 4:
                     print(f"  [{linha['id']}] juiz falhou: {erro}")
                 time.sleep(15 * (tentativa + 1))

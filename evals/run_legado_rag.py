@@ -18,7 +18,7 @@ import time
 
 from comparativo.run_comparativo import legado  # aplica os patches do legado ao importar
 from evals.avaliar_rag import (
-    EVAL_SET, JUIZ_PADRAO, PASTA_RESULTADOS, _media, _norm, _taxa, medir_ragas, parece_recusa,
+    EVAL_SET, JUIZ_PADRAO, PASTA_RESULTADOS, _media, _norm, _taxa, medir_ragas, parece_recusa, verificar_cota,
 )
 from src.contexto import contar_tokens
 
@@ -29,16 +29,21 @@ def main(pausa: float = 16.0, com_ragas: bool = True) -> dict:
     print(f"\n== LEGADO (Sprints 1/2) no eval set do RAG · {len(casos)} casos ==\n")
     for caso in casos:
         acesso = bool(caso.get("acesso_gestao", False))
-        historico = []
-        for anterior in caso.get("turnos_anteriores", []):
-            r = legado.responder(anterior, acesso_gestao=acesso, historico_anterior=historico)
-            historico += [{"role": "user", "content": anterior}, {"role": "assistant", "content": r}]
         contexto = legado.buscar_contexto(caso["pergunta"], acesso_gestao=acesso)
-        inicio = time.perf_counter()
-        try:
-            resposta = legado.responder(caso["pergunta"], acesso_gestao=acesso, historico_anterior=historico)
-        except Exception as erro:  # noqa: BLE001
-            resposta = f"[ERRO no legado: {erro}]"
+        for tentativa in range(4):
+            try:
+                historico = []
+                for anterior in caso.get("turnos_anteriores", []):
+                    r = legado.responder(anterior, acesso_gestao=acesso, historico_anterior=historico)
+                    historico += [{"role": "user", "content": anterior}, {"role": "assistant", "content": r}]
+                inicio = time.perf_counter()
+                resposta = legado.responder(caso["pergunta"], acesso_gestao=acesso, historico_anterior=historico)
+                break
+            except Exception as erro:  # noqa: BLE001  (erro de API nao vira resposta)
+                verificar_cota(erro)
+                if tentativa == 3:
+                    raise RuntimeError(f"legado: caso {caso['id']} falhou apos 4 tentativas: {erro}") from erro
+                time.sleep(15 * (tentativa + 1))
         latencia = time.perf_counter() - inicio
 
         chk = caso["checagens"]

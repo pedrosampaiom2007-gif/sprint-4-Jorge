@@ -45,7 +45,7 @@ def construir_llm(
             temperature=temperature,
             max_tokens=max_tokens,
             model_kwargs={"top_p": top_p},
-            max_retries=6,
+            max_retries=2,  # limite por minuto e tratado em evals/; cota diaria nao adianta esperar
             **extra,
         )
     if provedor == "ollama":

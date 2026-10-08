@@ -44,10 +44,16 @@ def _existe(nome: str) -> bool:
 
 
 def etapa(titulo: str, funcao, *args, **kwargs) -> bool:
+    from evals.avaliar_rag import CotaEsgotada
+
     print(f"\n{'=' * 70}\n{titulo}\n{'=' * 70}", flush=True)
     try:
         funcao(*args, **kwargs)
         return True
+    except CotaEsgotada as erro:
+        # as proximas etapas usam a mesma conta: tentar seria so esperar e falhar
+        print(f"\n[PAROU] {erro}")
+        raise SystemExit(1)
     except SystemExit as saida:
         print(f"[parou] {saida}")
     except Exception:  # noqa: BLE001
