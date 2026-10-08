@@ -12,7 +12,6 @@ from src.guardrails.moderation import (
     resposta_parece_vazamento,
 )
 from src.guardrails.scope_validator import avaliar_escopo
-from src.rag import buscar_documentos
 from src.schemas.consulta_recarga import ConsultaRecarga
 from src.util_formato import sanitizar_resposta
 
@@ -118,16 +117,6 @@ class TestScopeValidator(unittest.TestCase):
 
     def test_comparar_dado_do_sistema_nao_e_comparacao_produto(self):
         self.assertEqual(avaliar_escopo("qual carregador teve mais receita?").categoria, "ok")
-
-
-class TestRag(unittest.TestCase):
-    def test_acha_cp09_para_receita(self):
-        docs = buscar_documentos("qual ponto de carga teve mais receita")
-        self.assertTrue(any("CP-09" in d for d in docs))
-
-    def test_pergunta_de_bateria_nao_traz_receita(self):
-        # regressao do legado: "quanto dura a bateria" trazia docs de receita
-        self.assertEqual(buscar_documentos("quanto dura a bateria do carro eletrico"), [])
 
 
 class TestSanitizarResposta(unittest.TestCase):

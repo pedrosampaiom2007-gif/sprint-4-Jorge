@@ -1,0 +1,47 @@
+{
+  "goodwe_hca_manual_usuario.pdf": {
+    "titulo": "GoodWe — User Manual AC Charger HCA Series (7-22 kW), V1.3",
+    "tipo": "manual_produto",
+    "acesso": "publico",
+    "idioma": "en",
+    "ano": 2024,
+    "autoria": "GoodWe",
+    "url": "https://en.goodwe.com/Ftp/EN/Downloads/User%20Manual/GW_HCA%20Series_User%20Manual-EN.pdf"
+  },
+  "secovi_faq_carregadores_condominios.pdf": {
+    "titulo": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes",
+    "tipo": "faq_condominio",
+    "acesso": "publico",
+    "idioma": "pt",
+    "ano": 2025,
+    "autoria": "Secovi-SP",
+    "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf"
+  },
+  "secovi_recarga_condominios_riscos.pdf": {
+    "titulo": "Secovi-SP — O futuro da mobilidade: recarga de veículos elétricos em condomínios (riscos, segurança e responsabilidades)",
+    "tipo": "apresentacao_condominio",
+    "acesso": "publico",
+    "idioma": "pt",
+    "ano": 2026,
+    "autoria": "Secovi-SP (Paulo Rewald)",
+    "url": "https://secovi.com.br/wp-content/uploads/2026/04/20260423-PAULO-REWALD.pdf"
+  },
+  "arval_guia_condutor_ve.pdf": {
+    "titulo": "Arval Brasil — Guia do condutor de veículos elétricos",
+    "tipo": "guia_motorista",
+    "acesso": "publico",
+    "idioma": "pt",
+    "ano": 2024,
+    "autoria": "Arval Brasil",
+    "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf"
+  },
+  "promobe_guia_eletropostos.pdf": {
+    "titulo": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas",
+    "tipo": "guia_tecnico",
+    "acesso": "publico",
+    "idioma": "pt",
+    "ano": 2020,
+    "autoria": "PROMOB-e (Projeto Sistemas de Propulsão Eficiente)",
+    "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf"
+  }
+}

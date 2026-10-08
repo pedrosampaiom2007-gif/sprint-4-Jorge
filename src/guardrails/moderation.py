@@ -147,7 +147,7 @@ def detectar_injection(texto: str) -> str | None:
 # ------------------------------------------------------------- guarda de saida
 # fingerprints do system prompt e de "saiu do personagem".
 _VAZAMENTO_SAIDA = _p(
-    r"<\s*/?\s*(identidade|dominio|regras_invioaveis|recusas_de_dominio|fora_de_escopo|tom_de_voz|exemplos)\s*>"
+    r"<\s*/?\s*(identidade|dominio|regras_invioaveis|recusas_de_dominio|fora_de_escopo|tom_de_voz|exemplos|grounding|base_de_conhecimento)\s*>"
     r"|regras_invioaveis|recusas_de_dominio|\bfora_de_escopo\b|\btom_de_voz\b"
     r"|\[\s*[12345]\s*\]\s*(identidade|contexto|regras|tom de voz)"
     r"|reasoning_format|palavras_tempo_real|acesso_gestao"

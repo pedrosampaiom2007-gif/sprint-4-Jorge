@@ -1,11 +1,13 @@
 """
 builder.py — monta a chain do chatbot.
 
-    montar_contexto | prompt | llm | parser
+    prompt | llm | parser | sanitizar
 
-Cada `|` liga um Runnable no proximo: a saida da esquerda e a entrada da direita.
-Isso substitui a montagem manual da lista de mensagens e a chamada direta a API,
-que era como a versao anterior funcionava.
+Na Sprint 3 o primeiro elo da chain fazia a busca por palavra-chave. Na Sprint 4
+a busca saiu da chain e foi para o Assistente (src/assistente.py), porque ele
+precisa dos trechos recuperados depois da resposta: para citar a fonte, para a
+interface mostrar de onde veio cada informacao e para o RAGAS medir. A chain
+recebe o <contexto> ja montado.
 """
 
 from __future__ import annotations
@@ -18,28 +20,22 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import Runnable, RunnableLambda
 
-from src.integracao.dados_sistema import buscar_contexto
+from src.llm.provedores import MAX_TOKENS_PADRAO, TEMPERATURA_PADRAO, TOP_P_PADRAO
+from src.llm.provedores import construir_llm as _construir_llm_provedor
+from src.rag.prompt_rag import TEMPLATE_HUMANO, VERSOES, carregar_prompt_rag
 from src.schemas.consulta_recarga import ConsultaRecarga
 from src.util_formato import sanitizar_resposta
 
 _RAIZ = Path(__file__).resolve().parent.parent.parent
 
-# defaults do LLM — documentados no relatorio_modelos.md
 GROQ_MODEL_PADRAO = os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b")
-TEMPERATURA_PADRAO = 0.4          # baixa: respostas mais previsiveis (mesma escolha do legado)
-MAX_TOKENS_PADRAO = 450          # teto de seguranca contra textao (mesma escolha do legado)
-TOP_P_PADRAO = 1.0
-
-# Os modelos gpt-oss da Groq respondem em dois canais (raciocinio + resposta final).
-# Sem isto, o langchain-groq devolve TUDO em additional_kwargs['reasoning_content'] e
-# .content vem VAZIO. "hidden" joga so a resposta final no .content, que e o que a
-# chain de conversa consome. Modelo sem raciocinio ignora o parametro.
-REASONING_FORMAT_PADRAO = "hidden"
 
 
 # ----------------------------------------------------------------- prompt loader
-def carregar_prompt(versao: str = "v2") -> str:
-    """Le prompts/system_prompt_<versao>.md e tira o comentario-cabecalho <!-- ... -->."""
+def carregar_prompt(versao: str = "rag_v3") -> str:
+    """Prompts da Sprint 4 (rag_v1..v3, em prompts/rag/) ou da Sprint 3 (v1, v2)."""
+    if versao in VERSOES:
+        return carregar_prompt_rag(versao)
     caminho = _RAIZ / "prompts" / f"system_prompt_{versao}.md"
     texto = caminho.read_text(encoding="utf-8")
     return re.sub(r"<!--.*?-->\s*", "", texto, count=1, flags=re.DOTALL).strip()
@@ -48,26 +44,14 @@ def carregar_prompt(versao: str = "v2") -> str:
 # --------------------------------------------------------------------------- LLM
 def construir_llm(
     *,
+    provedor: str = "groq",
     model: str = GROQ_MODEL_PADRAO,
     temperature: float = TEMPERATURA_PADRAO,
     max_tokens: int = MAX_TOKENS_PADRAO,
     top_p: float = TOP_P_PADRAO,
-    reasoning_format: str | None = REASONING_FORMAT_PADRAO,
 ):
-    """ChatGroq — o Runnable do modelo. Trocar de provider = trocar so esta funcao."""
-    from langchain_groq import ChatGroq  # import tardio: so quem roda o chain precisa da lib
-
-    extra = {}
-    if reasoning_format and "gpt-oss" in model:
-        extra["reasoning_format"] = reasoning_format
-    return ChatGroq(
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        model_kwargs={"top_p": top_p},
-        max_retries=6,  # conta free tier tem TPM baixo (8000) -> 429 frequente; backoff automatico
-        **extra,
-    )
+    """Modelo de chat (ver src/llm/provedores.py)."""
+    return _construir_llm_provedor(provedor, model, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
 
 
 # ------------------------------------------------------------------------ prompt
@@ -75,73 +59,34 @@ def _montar_chat_prompt(versao_prompt: str) -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages([
         ("system", carregar_prompt(versao_prompt)),
         MessagesPlaceholder("historico", optional=True),  # a memoria injeta aqui
-        ("human",
-         "<contexto>\n{contexto}\n</contexto>\n\n"
-         "<pergunta>\n{pergunta}\n</pergunta>"),
+        ("human", TEMPLATE_HUMANO),
     ])
 
 
-# ---------------------------------------------------- passo que preenche contexto
-def _passo_contexto(acesso_gestao_padrao: bool) -> Runnable:
-    """RunnableLambda: recebe {'pergunta': ...} e devolve o mesmo dict com
-    'contexto' preenchido (roda o RAG / roteador de tempo real). E o primeiro
-    elo do pipe — transforma a entrada crua no que o prompt espera.
-
-    `acesso_gestao` e resolvido POR CHAMADA: se vier no dict de entrada, vale
-    ele; senao, o padrao da chain. Assim a mesma chain atende o totem (restrito)
-    e a ferramenta interna (gestao) sem remontar nada — e o eval consegue testar
-    o caminho restrito de verdade.
-
-    Detalhe de context engineering: uma pergunta de continuacao ("e o segundo?")
-    nao tem palavra-chave, entao o RAG devolve vazio. Se ja existe historico, em
-    vez de dizer "(sem dados)" — o que faz o modelo responder "nao tenho essa
-    informacao" mesmo tendo acabado de falar sobre o assunto — a gente instrui a
-    usar a conversa anterior."""
-    def preencher(entrada: dict) -> dict:
-        pergunta = entrada["pergunta"]
-        acesso = bool(entrada.get("acesso_gestao", acesso_gestao_padrao))
-        contexto = buscar_contexto(pergunta, acesso_gestao=acesso)
-        if not contexto:
-            tem_historico = bool(entrada.get("historico"))
-            contexto = (
-                "(sem dados novos nesta pergunta — use o que ja foi dito na conversa acima)"
-                if tem_historico else "(sem dados no contexto)"
-            )
-        return {**entrada, "contexto": contexto}
-    return RunnableLambda(preencher)
+def _garantir_contexto(entrada: dict) -> dict:
+    """Quem chama a chain sem contexto (script solto, REPL) recebe o aviso
+    explicito em vez de um KeyError."""
+    if entrada.get("contexto"):
+        return entrada
+    return {**entrada, "contexto": "(nenhum trecho relevante encontrado na base)"}
 
 
 # ------------------------------------------------------------------------ chains
-def construir_chain_conversa(
-    *, versao_prompt: str = "v2", acesso_gestao: bool = False, **llm_kwargs
-) -> Runnable:
-    """montar_contexto | prompt | llm | StrOutputParser | sanitizar  ->  devolve str.
-    O ultimo elo (RunnableLambda) e a rede de seguranca de formatacao."""
-    prompt = _montar_chat_prompt(versao_prompt)
-    llm = construir_llm(**llm_kwargs)
+def construir_chain_conversa(*, versao_prompt: str = "rag_v3", **llm_kwargs) -> Runnable:
+    """garantir_contexto | prompt | llm | StrOutputParser | sanitizar  ->  str."""
     return (
-        _passo_contexto(acesso_gestao)
-        | prompt
-        | llm
+        RunnableLambda(_garantir_contexto)
+        | _montar_chat_prompt(versao_prompt)
+        | construir_llm(**llm_kwargs)
         | StrOutputParser()
         | RunnableLambda(sanitizar_resposta)
     )
 
 
-def construir_chain_estruturada(
-    *, versao_prompt: str = "v2", acesso_gestao: bool = False, **llm_kwargs
-) -> Runnable:
-    """montar_contexto | prompt | llm.with_structured_output(ConsultaRecarga)
-    ->  devolve um objeto ConsultaRecarga ja validado pelos field_validator."""
-    prompt = _montar_chat_prompt(versao_prompt)
-    llm = construir_llm(**llm_kwargs)
-    return _passo_contexto(acesso_gestao) | prompt | llm.with_structured_output(ConsultaRecarga)
-
-
-if __name__ == "__main__":
-    # `python -m src.chain.builder` — precisa de GROQ_API_KEY no ambiente.
-    from dotenv import load_dotenv
-
-    load_dotenv()
-    chain = construir_chain_conversa(acesso_gestao=True)
-    print(chain.invoke({"pergunta": "Qual carregador rendeu mais no historico?"}))
+def construir_chain_estruturada(*, versao_prompt: str = "rag_v3", **llm_kwargs) -> Runnable:
+    """garantir_contexto | prompt | llm.with_structured_output(ConsultaRecarga)."""
+    return (
+        RunnableLambda(_garantir_contexto)
+        | _montar_chat_prompt(versao_prompt)
+        | construir_llm(**llm_kwargs).with_structured_output(ConsultaRecarga)
+    )
