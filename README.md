@@ -81,6 +81,16 @@ Se a Ollama Cloud não servir o `nomic-embed-text` na sua conta, instale o Ollam
 
 ### Avaliação
 
+Um comando roda tudo (versão das Sprints 1/2, as 3 iterações, a comparação de modelos e os
+testes de segurança), aplica a rubrica de fallback e gera as tabelas e o PDF. Se cair no
+meio, rode de novo: ele continua de onde parou.
+
+```bash
+python -m evals.rodar_tudo
+```
+
+Com RAGAS, etapa por etapa:
+
 ```bash
 python -m evals.calibrar_limiar         # confere o limiar de relevância (só embeddings)
 python -m evals.run_legado_rag          # coluna "antes": chatbot das Sprints 1/2

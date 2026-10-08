@@ -71,6 +71,22 @@ def _metrica(r: dict | None, chave: str):
     return v
 
 
+def fonte_metricas() -> str:
+    """De onde vieram faithfulness e answer_relevancy nas tabelas."""
+    fontes = set()
+    for nome in ["legado_sprints12", "iter1", "iter2", "iter3"] + [p.stem for p in PASTA.glob("modelo_*.json")]:
+        r = carregar(nome)
+        if not r:
+            continue
+        if r.get("faithfulness") is not None and r.get("juiz_ragas"):
+            fontes.add(f"RAGAS (juiz {r['juiz_ragas']})")
+        elif r.get("fallback_manual"):
+            fontes.add(r["fallback_manual"].get("metodo") or "rubrica de fallback (evals/fallback/rubrica_manual.md)")
+    if not fontes:
+        return "_Faithfulness e answer relevancy: pendente._"
+    return "_Faithfulness e answer relevancy medidos com: " + "; ".join(sorted(fontes)) + "._"
+
+
 ITERACOES = [
     ("iter1", "Iteração 1", "chunk fixo 1000/150, prompt rag_v1, k=3, sem guardas em código"),
     ("iter2", "Iteração 2", "chunk por seção 500/75 com cabeçalho, prompt rag_v2 (grounding + citação), limiar 0,45, recusa em código"),
@@ -95,7 +111,7 @@ def tabela_iteracoes() -> str:
             f"{pct(_g(r, 'citacao_presente'))} | {pct(_g(r, 'modelo_citou'))} | {pct(_g(r, 'recusa_correta'))} |"
         )
         anterior = r
-    return "\n".join(linhas)
+    return "\n".join(linhas) + "\n\n" + fonte_metricas()
 
 
 def _contexto_legado(r: dict | None) -> str:
@@ -113,9 +129,9 @@ def tabela_antes_depois() -> str:
         "| Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |",
         "|---|---|---|",
         "| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |",
-        f"| Faithfulness (RAGAS) | {num(_metrica(antes, 'faithfulness'))} | {num(_metrica(depois, 'faithfulness'))} |",
+        f"| Faithfulness | {num(_metrica(antes, 'faithfulness'))} | {num(_metrica(depois, 'faithfulness'))} |",
         f"| Faithfulness por iteração | versão única | {scores_iter} |",
-        f"| Answer relevancy (RAGAS) | {num(_metrica(antes, 'answer_relevancy'))} | {num(_metrica(depois, 'answer_relevancy'))} |",
+        f"| Answer relevancy | {num(_metrica(antes, 'answer_relevancy'))} | {num(_metrica(depois, 'answer_relevancy'))} |",
         f"| Answer relevancy por iteração | versão única | {relev_iter} |",
         f"| Qualidade do contexto recuperado (documento certo entre os trechos) | {_contexto_legado(antes)} | {pct(_g(depois, 'recuperacao_hit'))} |",
         f"| Presença de citação de fonte | {pct(_g(antes, 'citacao_presente'))} | {pct(_g(depois, 'citacao_presente'))} |",
@@ -124,7 +140,7 @@ def tabela_antes_depois() -> str:
         f"| Latência média por turno | {seg(_g(antes, 'latencia_media_s'))} | {seg(_g(depois, 'latencia_media_s'))} |",
         f"| Tokens por turno (média) | {num(_g(antes, 'tokens_turno_medio'), 0)} | {num(_g(depois, 'tokens_turno_medio'), 0)} |",
     ]
-    return "\n".join(linhas)
+    return "\n".join(linhas) + "\n\n" + fonte_metricas()
 
 
 def _modelos() -> list[dict]:

@@ -23,7 +23,7 @@ from evals.avaliar_rag import (
 from src.contexto import contar_tokens
 
 
-def main(pausa: float = 16.0) -> dict:
+def main(pausa: float = 16.0, com_ragas: bool = True) -> dict:
     casos = json.loads(EVAL_SET.read_text(encoding="utf-8"))["casos"]
     linhas = []
     print(f"\n== LEGADO (Sprints 1/2) no eval set do RAG · {len(casos)} casos ==\n")
@@ -66,8 +66,9 @@ def main(pausa: float = 16.0) -> dict:
     medidos = [l for l in linhas if l["docs_esperados"] and not l["resposta"].startswith("[ERRO")]
     amostras = [{"user_input": l["pergunta"], "response": l["resposta"],
                  "retrieved_contexts": [l["contexto"] or "(nenhum contexto recuperado)"]} for l in medidos]
-    for linha, notas in zip(medidos, medir_ragas(amostras, JUIZ_PADRAO)):
-        linha.update(notas)
+    if com_ragas and amostras:
+        for linha, notas in zip(medidos, medir_ragas(amostras, JUIZ_PADRAO)):
+            linha.update(notas)
 
     fundamentadas = [l for l in linhas if l["docs_esperados"]]
     a_recusar = [l for l in linhas if not l["docs_esperados"]]
@@ -76,7 +77,7 @@ def main(pausa: float = 16.0) -> dict:
         "descricao": "chatbot das Sprints 1/2: busca por palavra-chave em frases da planilha SP2, prompt v1, sem citacao",
         "config": {"versao_prompt": "legado (Sprints 1/2)", "estrategia_chunking": "frases soltas (sem chunking)",
                    "k": 5, "provedor": "groq", "modelo": "openai/gpt-oss-20b", "temperature": 0.4},
-        "juiz_ragas": f"{JUIZ_PADRAO[0]}:{JUIZ_PADRAO[1]}",
+        "juiz_ragas": f"{JUIZ_PADRAO[0]}:{JUIZ_PADRAO[1]}" if com_ragas else None,
         "n_casos": len(linhas),
         "n_ragas": sum(1 for l in linhas if l["faithfulness"] is not None),
         "faithfulness": _media(l["faithfulness"] for l in linhas),
@@ -97,4 +98,6 @@ def main(pausa: float = 16.0) -> dict:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    main(com_ragas="--sem-ragas" not in sys.argv)

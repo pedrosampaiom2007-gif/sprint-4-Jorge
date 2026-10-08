@@ -14,14 +14,16 @@ Gerado por `python -m evals.consolidar` a partir de `evals/resultados/`.
 | Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 | Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 
+_Faithfulness e answer relevancy: pendente._
+
 ## Antes e depois
 
 | Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
 |---|---|---|
 | Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
-| Faithfulness (RAGAS) | pendente | pendente |
+| Faithfulness | pendente | pendente |
 | Faithfulness por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
-| Answer relevancy (RAGAS) | pendente | pendente |
+| Answer relevancy | pendente | pendente |
 | Answer relevancy por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
 | Qualidade do contexto recuperado (documento certo entre os trechos) | pendente | pendente |
 | Presença de citação de fonte | pendente | pendente |
@@ -29,6 +31,8 @@ Gerado por `python -m evals.consolidar` a partir de `evals/resultados/`.
 | Checagens determinísticas OK | pendente | pendente |
 | Latência média por turno | pendente | pendente |
 | Tokens por turno (média) | pendente | pendente |
+
+_Faithfulness e answer relevancy: pendente._
 
 ## Modelos
 

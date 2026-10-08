@@ -54,6 +54,8 @@ iterações 2 e 3, `secao_500`.
 | Iteração 1 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 | Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 | Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+
+_Faithfulness e answer relevancy: pendente._
 <!-- /AUTO:iteracoes -->
 
 ## Antes e depois
@@ -62,9 +64,9 @@ iterações 2 e 3, `secao_500`.
 | Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
 |---|---|---|
 | Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
-| Faithfulness (RAGAS) | pendente | pendente |
+| Faithfulness | pendente | pendente |
 | Faithfulness por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
-| Answer relevancy (RAGAS) | pendente | pendente |
+| Answer relevancy | pendente | pendente |
 | Answer relevancy por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
 | Qualidade do contexto recuperado (documento certo entre os trechos) | pendente | pendente |
 | Presença de citação de fonte | pendente | pendente |
@@ -72,6 +74,8 @@ iterações 2 e 3, `secao_500`.
 | Checagens determinísticas OK | pendente | pendente |
 | Latência média por turno | pendente | pendente |
 | Tokens por turno (média) | pendente | pendente |
+
+_Faithfulness e answer relevancy: pendente._
 <!-- /AUTO:antes_depois -->
 
 ## Guardrails do RAG
@@ -101,4 +105,10 @@ iterações 2 e 3, `secao_500`.
 - Sem juiz: recuperação (documento esperado entre os trechos), presença de citação
   na resposta final, se o próprio modelo citou `[n]` (sem contar a linha que o código
   acrescenta), recusa correta e checagens determinísticas.
-- Fallback manual: rubrica 0–1 equivalente em `evals/fallback/rubrica_manual.md`.
+- Fallback: rubrica 0–1 equivalente em `evals/fallback/rubrica_manual.md`, aplicada a
+  todos os casos com resposta na base. `python -m evals.rodar_tudo` aplica a rubrica com o
+  LLM-juiz `groq:openai/gpt-oss-120b` (temperatura 0) e grava a nota e a justificativa de
+  cada caso em `evals/resultados/*.json`; `python -m evals.fallback_manual exportar`
+  gera uma planilha para revisar ou refazer as notas à mão. Caso que tinha resposta na
+  base mas não foi respondido (recusa, erro) recebe faithfulness 1 e answer relevancy 0,
+  conforme a rubrica.

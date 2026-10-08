@@ -1,0 +1,119 @@
+"""
+rodar_tudo.py — roda todas as avaliacoes da Sprint 4 num comando so e gera as
+tabelas e o PDF.
+
+    python -m evals.rodar_tudo
+    python -m evals.rodar_tudo --modelos groq:openai/gpt-oss-20b groq:openai/gpt-oss-120b
+    python -m evals.rodar_tudo --refazer          # apaga os resultados e comeca do zero
+
+As notas de faithfulness e answer_relevancy usam a rubrica de fallback
+(evals/fallback/rubrica_manual.md) aplicada por um LLM-juiz, em vez do RAGAS:
+menos dependencias para quebrar no meio (o RAGAS precisa do juiz E dos
+embeddings ao mesmo tempo, em paralelo). Os comandos com RAGAS continuam
+disponiveis (evals.run_iteracoes, evals.run_modelos).
+
+Retoma de onde parou: etapa com resultado ja gravado e pulada, e a rubrica so
+avalia os casos que ainda nao tem nota. Se cair no meio, e so rodar de novo.
+"""
+
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+import traceback
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+_RAIZ = Path(__file__).resolve().parent.parent
+PASTA = _RAIZ / "evals" / "resultados"
+JUIZ = ("groq", "openai/gpt-oss-120b")
+
+
+def _existe(nome: str) -> bool:
+    return (PASTA / f"{nome}.json").exists()
+
+
+def etapa(titulo: str, funcao, *args, **kwargs) -> bool:
+    print(f"\n{'=' * 70}\n{titulo}\n{'=' * 70}", flush=True)
+    try:
+        funcao(*args, **kwargs)
+        return True
+    except SystemExit as saida:
+        print(f"[parou] {saida}")
+    except Exception:  # noqa: BLE001
+        traceback.print_exc()
+        print(f"[falhou] {titulo} — rode o comando de novo para tentar so o que faltou")
+    return False
+
+
+def avaliar_com_rubrica(nome: str, gerar) -> None:
+    from evals.fallback_manual import aplicar_rubrica_llm
+
+    if not _existe(nome):
+        gerar()
+    else:
+        print(f"{nome}.json ja existe — so completando a rubrica")
+    aplicar_rubrica_llm(nome, *JUIZ)
+
+
+def main() -> None:
+    from evals.avaliar_rag import avaliar
+    from evals.consolidar import consolidar
+    from evals.run_iteracoes import DESCRICOES
+    from evals.run_modelos import slug
+    from src.llm.provedores import MODELOS_DISPONIVEIS
+    from src.rag.chunking import ESTRATEGIAS
+    from src.rag.config import ITERACAO_3, ITERACOES
+    from src.rag.vector_store import indexar
+
+    ap = argparse.ArgumentParser(description="Todas as avaliacoes da Sprint 4")
+    ap.add_argument("--modelos", nargs="*", default=[f"{p}:{m}" for p, m in MODELOS_DISPONIVEIS])
+    ap.add_argument("--refazer", action="store_true", help="apaga os resultados anteriores")
+    args = ap.parse_args()
+
+    if args.refazer:
+        for arquivo in PASTA.glob("*.json"):
+            if arquivo.name != "sprint3_results.json":
+                arquivo.unlink()
+
+    status = {}
+    status["indexacao"] = etapa("Indexacao da base", lambda: [print(indexar(e)) for e in ESTRATEGIAS])
+
+    from evals import run_legado_rag
+
+    status["legado"] = etapa("Antes: chatbot das Sprints 1/2", avaliar_com_rubrica, "legado_sprints12",
+                             lambda: run_legado_rag.main(com_ragas=False))
+
+    for nome, cfg in ITERACOES.items():
+        status[nome] = etapa(f"Sprint 4: {nome} — {DESCRICOES[nome]}", avaliar_com_rubrica, nome,
+                             lambda cfg=cfg, nome=nome: avaliar(cfg, nome, com_ragas=False, descricao=DESCRICOES[nome]))
+
+    for item in args.modelos:
+        provedor, modelo = item.split(":", 1)
+        nome = slug(provedor, modelo)
+        cfg = ITERACAO_3.com(provedor=provedor, modelo=modelo)
+        status[nome] = etapa(f"Modelo {item}", avaliar_com_rubrica, nome,
+                             lambda cfg=cfg, nome=nome, item=item: avaliar(cfg, nome, com_ragas=False,
+                                                                            descricao=f"iter3 com {item}"))
+
+    if not _existe("seguranca_documentos"):
+        from evals import seguranca_documentos
+
+        status["seguranca_documentos"] = etapa("Injecao via documento", seguranca_documentos.main)
+    if not _existe("seguranca_sprint4"):
+        status["seguranca_sprint4"] = etapa(
+            "Bateria de seguranca da Sprint 3", subprocess.run,
+            [sys.executable, "-m", "evals.run_evals", "--sem-juiz"], check=True, cwd=_RAIZ)
+
+    etapa("Tabelas e PDF", consolidar)
+
+    falhas = [k for k, ok in status.items() if not ok]
+    print("\n" + ("Tudo certo." if not falhas else f"Etapas que falharam: {', '.join(falhas)} — rode de novo."))
+
+
+if __name__ == "__main__":
+    main()

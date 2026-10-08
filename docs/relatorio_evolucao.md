@@ -18,8 +18,9 @@ PROMOB-e, e os documentos do próprio ChargeGrid) são divididos em chunks, veto
 com **nomic-embed-text** e guardados num **ChromaDB persistente**. Toda resposta cita
 documento e seção, pergunta sem resposta na base é recusada em código, e instrução
 escondida dentro de documento é removida antes de chegar ao modelo. O resultado é
-medido com **RAGAS** em três iterações e aparece numa **interface web** (Gradio) com as
-fontes visíveis.
+medido em três iterações — faithfulness e answer relevancy pelo **RAGAS** ou, quando o
+RAGAS não roda no ambiente, pela **rubrica equivalente de fallback** — e aparece numa
+**interface web** (Gradio) com as fontes visíveis.
 
 ## 2. Pipeline RAG
 
@@ -56,15 +57,17 @@ descartado; calibrado por `evals/calibrar_limiar.py`), temperatura 0. Detalhes e
 
 Mesmo eval set (`evals/eval_set_rag.json`, 24 casos: 16 com resposta nos documentos, 2
 de gestão, 2 perguntas encadeadas, 2 sem resposta na base, 1 fora de escopo e 1 de dado
-restrito), mesmo juiz RAGAS para as duas versões.
+restrito), mesmo juiz e mesma rubrica para as duas versões. A linha abaixo de cada
+tabela informa se as notas vieram do RAGAS ou da rubrica de fallback
+(`evals/fallback/rubrica_manual.md`, com a equivalência justificada no próprio arquivo).
 
 <!-- AUTO:antes_depois -->
 | Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
 |---|---|---|
 | Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
-| Faithfulness (RAGAS) | pendente | pendente |
+| Faithfulness | pendente | pendente |
 | Faithfulness por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
-| Answer relevancy (RAGAS) | pendente | pendente |
+| Answer relevancy | pendente | pendente |
 | Answer relevancy por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
 | Qualidade do contexto recuperado (documento certo entre os trechos) | pendente | pendente |
 | Presença de citação de fonte | pendente | pendente |
@@ -72,6 +75,8 @@ restrito), mesmo juiz RAGAS para as duas versões.
 | Checagens determinísticas OK | pendente | pendente |
 | Latência média por turno | pendente | pendente |
 | Tokens por turno (média) | pendente | pendente |
+
+_Faithfulness e answer relevancy: pendente._
 <!-- /AUTO:antes_depois -->
 
 **Iterações do RAG** (o ganho de cada uma é atribuído à mudança listada):
@@ -86,6 +91,8 @@ restrito), mesmo juiz RAGAS para as duas versões.
 | Iteração 1 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 | Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 | Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+
+_Faithfulness e answer relevancy: pendente._
 <!-- /AUTO:iteracoes -->
 
 **Segurança:**
@@ -98,8 +105,8 @@ restrito), mesmo juiz RAGAS para as duas versões.
 <!-- /AUTO:seguranca -->
 
 Os números saem de `evals/resultados/*.json` e são reproduzidos com
-`python -m evals.run_legado_rag`, `python -m evals.run_iteracoes`,
-`python -m evals.seguranca_documentos` e `python -m evals.run_evals`.
+`python -m evals.rodar_tudo` (rubrica de fallback) ou, com RAGAS,
+`python -m evals.run_legado_rag`, `python -m evals.run_iteracoes` e `python -m evals.run_modelos`.
 
 ## 4. Problemas encontrados e soluções
 

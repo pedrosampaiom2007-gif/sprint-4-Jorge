@@ -24,11 +24,12 @@ def slug(provedor: str, modelo: str) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--modelos", nargs="*", default=[f"{p}:{m}" for p, m in MODELOS_DISPONIVEIS])
+    ap.add_argument("--sem-ragas", action="store_true")
     args = ap.parse_args()
     for item in args.modelos:
         provedor, modelo = item.split(":", 1)
         cfg = ITERACAO_3.com(provedor=provedor, modelo=modelo)
-        avaliar(cfg, slug(provedor, modelo), descricao=f"iter3 com {provedor}:{modelo}")
+        avaliar(cfg, slug(provedor, modelo), descricao=f"iter3 com {provedor}:{modelo}", com_ragas=not args.sem_ragas)
     consolidar()
 
 
