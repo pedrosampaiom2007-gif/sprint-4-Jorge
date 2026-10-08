@@ -4,7 +4,7 @@ tipo: faq
 acesso: publico
 versao: "1.0"
 data: 2026-10
-autoria: Pedro Sampaio Mochnacs Arruda (RM 573522, Turma 1CCPG) — ChargeGrid Intelligence, EV Challenge GoodWe/FIAP
+autoria: Projeto ChargeGrid Intelligence (Turma 1CCPG) — EV Challenge GoodWe/FIAP
 ---
 
 # FAQ de recarga para motoristas

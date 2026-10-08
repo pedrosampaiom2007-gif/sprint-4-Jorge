@@ -1,7 +1,7 @@
 # Chatbot ChargeGrid Intelligence — Sprint 4
 
 **EV Challenge — GoodWe / FIAP · Prompt and Artificial Intelligence · 2026.2**
-Pedro Sampaio Mochnacs Arruda · RM 573522 · Turma 1CCPG
+Turma 1CCPG
 
 Assistente de recarga e gestão de eletropostos. Na Sprint 4 o chatbot passa a responder
 com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-text` num
@@ -14,13 +14,16 @@ com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-tex
 
 ---
 
-## Autor
+## Integrantes
 
-Trabalho individual (autorizado pelo professor).
-
-| Nome | RM | Turma |
-|------|----|-------|
-| Pedro Sampaio Mochnacs Arruda | 573522 | 1CCPG |
+| Nome | RM |
+|------|----|
+| Luan de Araujo Carneiro | 573691 |
+| Pedro Sampaio Mochnacs Arruda | 573522 |
+| Raul Sampaio Mochnacs Arruda | 573523 |
+| Pedro Ribeiro Lopes | 570083 |
+| Kevin Rodrigues de Melo | 571777 |
+| Pedro Vianna | 570747 |
 
 ---
 
