@@ -13,14 +13,29 @@ prompt — que e o que o comparativo precisa. Isso esta documentado no relatorio
 
 from __future__ import annotations
 
-import tiktoken
+_ENCODER = None
+_ENCODER_CARREGADO = False
 
-_ENCODER = tiktoken.get_encoding("cl100k_base")
+
+def _encoder():
+    """O tiktoken baixa o vocabulario na primeira vez. Sem internet (ou com a
+    rede bloqueada), cai na aproximacao de ~4 caracteres por token."""
+    global _ENCODER, _ENCODER_CARREGADO
+    if not _ENCODER_CARREGADO:
+        _ENCODER_CARREGADO = True
+        try:
+            import tiktoken
+
+            _ENCODER = tiktoken.get_encoding("cl100k_base")
+        except Exception:  # noqa: BLE001
+            _ENCODER = None
+    return _ENCODER
 
 
 def contar_tokens(texto: str) -> int:
     """Numero aproximado de tokens de um texto."""
-    return len(_ENCODER.encode(texto))
+    enc = _encoder()
+    return len(enc.encode(texto)) if enc else max(1, len(texto) // 4)
 
 
 def contar_tokens_mensagens(mensagens: list) -> int:

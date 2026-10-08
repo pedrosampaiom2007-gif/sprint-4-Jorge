@@ -9,3 +9,6 @@ venv/
 .DS_Store
 
 # NAO ignorar evals/sprint3_results.json — e entregavel obrigatorio da sprint.
+
+# banco vetorial gerado localmente (recriado por python -m src.rag.vector_store)
+data/chroma/

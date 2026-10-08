@@ -8,11 +8,13 @@ duas vezes daria numeros diferentes e a comparacao antes/depois nao valeria.
 A fronteira `acesso_gestao` e a mesma do sistema em producao: sem ela, o chat so
 enxerga quais estacoes estao livres ou ocupadas — nada de faturamento, sessoes de
 outros clientes ou historico comercial.
+
+Na Sprint 4 o historico comercial saiu daqui: ele virou um documento da base de
+conhecimento (data/knowledge_base/relatorio_historico_sp2.md, acesso "gestao") e
+e encontrado pela busca vetorial. Aqui ficam so os dados de tempo real.
 """
 
 from __future__ import annotations
-
-from src.rag import buscar_documentos
 
 # Palavras que fazem a pergunta ser sobre o estado AGORA, e nao sobre historico.
 PALAVRAS_TEMPO_REAL = [
@@ -44,40 +46,32 @@ def _dados_tempo_real() -> dict:
     }
 
 
-def buscar_contexto(pergunta: str, acesso_gestao: bool = False) -> str:
-    """Monta o texto de <contexto>. Igual ao legado:
-    - padrao (acesso_gestao=False): so disponibilidade livre/ocupada.
-    - acesso_gestao=True: tambem faturamento, sessoes do dia, sessoes ativas e o
-      RAG historico comercial.
-    """
-    usa_tempo_real = any(p in pergunta.lower() for p in PALAVRAS_TEMPO_REAL)
+def pergunta_de_tempo_real(pergunta: str) -> bool:
+    return any(p in pergunta.lower() for p in PALAVRAS_TEMPO_REAL)
+
+
+def contexto_tempo_real(pergunta: str, acesso_gestao: bool = False) -> str:
+    """Bloco <dados_tempo_real>: disponibilidade para todos; faturamento e
+    sessoes ativas so com acesso de gestao. Vazio se a pergunta nao e sobre o
+    estado atual."""
+    if not pergunta_de_tempo_real(pergunta):
+        return ""
     partes: list[str] = []
-
-    if usa_tempo_real:
-        try:
-            d = _dados_tempo_real()
-            livres = [k for k, v in d["status_estacoes"].items() if v == "Livre"]
-            ocupadas = [k for k, v in d["status_estacoes"].items() if v == "Ocupada"]
-            partes.append("[DISPONIBILIDADE DAS ESTACOES — agora]")
-            partes.append(f"Estacoes ocupadas agora: {ocupadas if ocupadas else 'nenhuma'}")
-            partes.append(f"Estacoes livres agora: {livres}")
-
-            if acesso_gestao:
-                partes.append(f"Faturamento de hoje (sessoes pagas): R$ {d['faturamento_dia']:.2f}")
-                partes.append(f"Total de sessoes iniciadas hoje: {d['sessoes_dia']}")
-                for s in d["sessoes_ativas"]:
-                    partes.append(
-                        f"Sessao ativa — Estacao {s['estacao']}: usuario {s['usuario']}, "
-                        f"{s['kwh']:.2f} kWh consumidos, valor acumulado R$ {s['valor']:.2f}, "
-                        f"pagamento via {s['pagamento']}."
-                    )
-        except Exception as e:  # noqa: BLE001
-            partes.append(f"[AVISO] Fonte de dados indisponivel: {e}")
-
-    elif acesso_gestao:
-        relevantes = buscar_documentos(pergunta)
-        if relevantes:
-            partes.append("[DADOS HISTORICOS — planilha SP2, 60 sessoes reais]")
-            partes.extend(relevantes)
-
+    try:
+        d = _dados_tempo_real()
+        livres = [k for k, v in d["status_estacoes"].items() if v == "Livre"]
+        ocupadas = [k for k, v in d["status_estacoes"].items() if v == "Ocupada"]
+        partes.append(f"Estacoes ocupadas agora: {ocupadas if ocupadas else 'nenhuma'}")
+        partes.append(f"Estacoes livres agora: {livres}")
+        if acesso_gestao:
+            partes.append(f"Faturamento de hoje (sessoes pagas): R$ {d['faturamento_dia']:.2f}")
+            partes.append(f"Total de sessoes iniciadas hoje: {d['sessoes_dia']}")
+            for s in d["sessoes_ativas"]:
+                partes.append(
+                    f"Sessao ativa — Estacao {s['estacao']}: usuario {s['usuario']}, "
+                    f"{s['kwh']:.2f} kWh consumidos, valor acumulado R$ {s['valor']:.2f}, "
+                    f"pagamento via {s['pagamento']}."
+                )
+    except Exception as e:  # noqa: BLE001
+        partes.append(f"[AVISO] Fonte de dados indisponivel: {e}")
     return "\n".join(partes)
