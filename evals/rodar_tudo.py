@@ -5,6 +5,11 @@ tabelas e o PDF.
     python -m evals.rodar_tudo
     python -m evals.rodar_tudo --modelos groq:openai/gpt-oss-20b groq:openai/gpt-oss-120b
     python -m evals.rodar_tudo --refazer          # apaga os resultados e comeca do zero
+    python -m evals.rodar_tudo --juiz groq:openai/gpt-oss-20b   # outro juiz (cota diaria)
+
+A conta gratuita da Groq tem cota de tokens POR DIA por modelo. A ordem das etapas
+poe primeiro o que entra na tabela antes/depois (legado e iteracoes); se a cota
+acabar, rode de novo no dia seguinte e ele termina o resto.
 
 As notas de faithfulness e answer_relevancy usam a rubrica de fallback
 (evals/fallback/rubrica_manual.md) aplicada por um LLM-juiz, em vez do RAGAS:
@@ -30,6 +35,7 @@ load_dotenv()
 
 _RAIZ = Path(__file__).resolve().parent.parent
 PASTA = _RAIZ / "evals" / "resultados"
+JUIZ_PADRAO = "groq:openai/gpt-oss-120b"
 JUIZ = ("groq", "openai/gpt-oss-120b")
 
 
@@ -73,7 +79,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Todas as avaliacoes da Sprint 4")
     ap.add_argument("--modelos", nargs="*", default=[f"{p}:{m}" for p, m in MODELOS_DISPONIVEIS])
     ap.add_argument("--refazer", action="store_true", help="apaga os resultados anteriores")
+    ap.add_argument("--juiz", default=JUIZ_PADRAO, help="provedor:modelo que aplica a rubrica")
     args = ap.parse_args()
+    global JUIZ
+    JUIZ = tuple(args.juiz.split(":", 1))
 
     if args.refazer:
         for arquivo in PASTA.glob("*.json"):
@@ -96,6 +105,14 @@ def main() -> None:
         provedor, modelo = item.split(":", 1)
         nome = slug(provedor, modelo)
         cfg = ITERACAO_3.com(provedor=provedor, modelo=modelo)
+        if (provedor, modelo) == (ITERACAO_3.provedor, ITERACAO_3.modelo) and _existe("iter3") and not _existe(nome):
+            # mesma configuracao da iteracao 3: reaproveita em vez de gastar a cota de novo
+            import json
+
+            dados = json.loads((PASTA / "iter3.json").read_text(encoding="utf-8"))
+            dados["resumo"]["nome"] = nome
+            dados["resumo"]["descricao"] = f"iter3 com {item} (mesma execucao da iteracao 3)"
+            (PASTA / f"{nome}.json").write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
         status[nome] = etapa(f"Modelo {item}", avaliar_com_rubrica, nome,
                              lambda cfg=cfg, nome=nome, item=item: avaliar(cfg, nome, com_ragas=False,
                                                                             descricao=f"iter3 com {item}"))
