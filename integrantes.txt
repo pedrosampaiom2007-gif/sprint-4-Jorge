@@ -1,9 +1,9 @@
 EV Challenge - GoodWe / FIAP
-Prompt and Artificial Intelligence - Challenge Sprint 03
+Prompt and Artificial Intelligence - Challenge Sprint 04
 Professor: Jorge Luiz Gomes
 
 REPOSITORIO:
-https://github.com/pedrosampaiom2007-gif/Sprint-3-Evolucao-do-Chatbot
+https://github.com/pedrosampaiom2007-gif/sprint-4-Jorge
 
 INTEGRANTES:
 

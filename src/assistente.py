@@ -149,6 +149,12 @@ class Assistente:
             return Turno(f"{RESPOSTA_PADRAO}   [guardrail: vazamento-na-saida]", "vazamento-na-saida",
                          trechos=trechos, contexto=contexto, pergunta_busca=pergunta_busca)
 
-        final, citados = garantir_citacao(texto, trechos)
+        if self.cfg.citacao_garantida:
+            final, citados = garantir_citacao(texto, trechos)
+        else:
+            from src.rag.citacao import referencias_citadas
+
+            final = texto
+            citados = [trechos[n - 1] for n in referencias_citadas(texto, len(trechos))]
         return Turno(final, None, fontes=citados, trechos=trechos, contexto=contexto,
                      pergunta_busca=pergunta_busca, resposta_modelo=texto)

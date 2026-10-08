@@ -1,14 +1,27 @@
-# Chatbot ChargeGrid Intelligence — Sprint 3
-# Python 3.11+
+# Chatbot ChargeGrid Intelligence — Sprint 4
+# Python 3.11 a 3.13
 #
 #   pip install -r requirements.txt
 
-langchain-core>=0.3.0     # a chain, o prompt, a memoria por sessao
-langchain-groq>=0.2.0     # o modelo
-pydantic>=2.5.0           # schema da resposta estruturada
-tiktoken>=0.7.0           # contagem de tokens
-python-dotenv>=1.0.0      # le a GROQ_API_KEY do .env
+langchain-core>=0.3.0,<0.4.0      # chain, prompt, memoria por sessao
+langchain-community>=0.3.0,<0.4.0 # PyMuPDFLoader
+langchain-text-splitters>=0.3.0,<0.4.0
+langchain-groq>=0.2.0             # modelos da Groq (gpt-oss)
+langchain-ollama>=0.2.0,<0.4.0    # nomic-embed-text e gemma4:cloud na Ollama Cloud
+langchain-chroma>=0.1.4           # vector store
+chromadb>=0.5.0
+pymupdf>=1.24                     # leitura dos PDFs
+pydantic>=2.5.0                   # schema da resposta estruturada
+tiktoken>=0.7.0                   # contagem de tokens
+python-dotenv>=1.0.0              # chaves no .env
 
-# So para gerar o PDF do relatorio (docs/gerar_pdf.py)
+# Interface web
+gradio>=4.44.0,<7.0
+
+# Avaliacao
+ragas>=0.2.6,<0.3
+pandas>=2.0
+
+# Relatorio em PDF (docs/gerar_pdf.py)
 fpdf2>=2.7.0
 markdown>=3.5

@@ -18,6 +18,7 @@ class ConfigRAG:
     reescrever_pergunta: bool = True
     recusa_sem_contexto: bool = True
     blindagem_documentos: bool = True
+    citacao_garantida: bool = True
     provedor: str = "groq"
     modelo: str = "openai/gpt-oss-20b"
     temperature: float = 0.0
@@ -33,7 +34,8 @@ class ConfigRAG:
 
 
 # Iteracao 1: o RAG mais simples possivel — chunk grande, prompt que so manda
-# "usar o contexto", sem citacao obrigatoria e sem nenhuma guarda em codigo.
+# "usar o contexto", sem citacao obrigatoria e sem nenhuma guarda em codigo
+# (nem recusa sem contexto, nem blindagem, nem linha de fontes acrescentada).
 ITERACAO_1 = ConfigRAG(
     estrategia_chunking="fixo_1000",
     k=3,
@@ -42,6 +44,7 @@ ITERACAO_1 = ConfigRAG(
     reescrever_pergunta=False,
     recusa_sem_contexto=False,
     blindagem_documentos=False,
+    citacao_garantida=False,
 )
 
 # Iteracao 2: chunk por secao com cabecalho, grounding estrito e citacao no
@@ -85,4 +88,6 @@ def config_padrao() -> ConfigRAG:
         mudancas["modelo"] = os.environ["RAG_MODELO"].strip()
     if os.environ.get("RAG_K"):
         mudancas["k"] = int(os.environ["RAG_K"])
+    if os.environ.get("RAG_LIMIAR"):
+        mudancas["limiar_relevancia"] = float(os.environ["RAG_LIMIAR"].replace(",", "."))
     return base.com(**mudancas) if mudancas else base

@@ -1,11 +1,12 @@
 """
-app.py — CLI do chatbot refatorado (Sprint 3).
+cli.py — o chatbot no terminal.
 
-    python app.py --demo     3 turnos encadeados (evidencia de memoria p/ o relatorio)
-    python app.py            conversa livre no terminal ('sair' encerra)
+    python -m app.cli --demo     3 turnos encadeados (memoria + reescrita da pergunta)
+    python -m app.cli            conversa livre no terminal ('sair' encerra)
 
-Precisa de GROQ_API_KEY no .env. A orquestracao (guardrails + chain + memoria)
-vive em src/assistente.py — aqui e so a casca de terminal.
+Precisa de GROQ_API_KEY e OLLAMA_API_KEY no .env. A orquestracao (guardrails +
+RAG + chain + memoria) vive em src/assistente.py — aqui e so a casca de terminal.
+A interface web esta em app/web.py.
 """
 
 from __future__ import annotations
@@ -21,14 +22,15 @@ if hasattr(sys.stdout, "reconfigure"):  # stdout do Windows e cp1252 por padrao
 
 load_dotenv()
 
-if not os.environ.get("GROQ_API_KEY", "").strip():
+_faltam = [v for v in ("GROQ_API_KEY", "OLLAMA_API_KEY") if not os.environ.get(v, "").strip()]
+if _faltam:
     # Sem isto o erro vem como um traceback de 12 linhas la de dentro da
-    # biblioteca da Groq, que nao ajuda ninguem a entender o que fazer.
+    # biblioteca, que nao ajuda ninguem a entender o que fazer.
     print(
-        "\nFalta a GROQ_API_KEY.\n\n"
-        "  1. Crie uma chave gratuita em https://console.groq.com/keys\n"
+        f"\nFalta no .env: {', '.join(_faltam)}.\n\n"
+        "  1. Groq: https://console.groq.com/keys  |  Ollama: https://ollama.com -> Settings -> Keys\n"
         "  2. Copie o arquivo .env.example para .env\n"
-        "  3. Cole a chave na linha GROQ_API_KEY=\n\n"
+        "  3. Cole as chaves nas linhas correspondentes\n\n"
         "Os testes offline nao precisam de chave nenhuma:\n"
         "  python -m unittest discover -s tests -v\n"
     )
@@ -38,13 +40,13 @@ from src.assistente import Assistente
 from src.chain.memoria import limpar_sessao
 
 # ferramenta interna da equipe -> acesso de gestao (ve faturamento/historico comercial).
-_assistente = Assistente(versao_prompt="v2", acesso_gestao=True)
+_assistente = Assistente(acesso_gestao=True)
 
 
 DEMO_TURNOS = [
-    "Qual carregador teve mais receita no historico?",
-    "E o segundo colocado?",                        # so acerta se lembrou do turno 1
-    "Quanto foi o ticket medio desse primeiro?",    # "primeiro" = CP-09, do turno 1
+    "Qual a tarifa base do ChargeGrid?",
+    "E no horario de ponta?",                       # reescrita: "tarifa no horario de ponta"
+    "Quanto fica uma recarga de 20 kWh nesse horario?",
 ]
 
 
@@ -59,7 +61,7 @@ def rodar_demo() -> None:
 
 def repl() -> None:
     sid = "terminal"
-    print("ChargeGrid Intelligence — chatbot Sprint 3 (LCEL). 'sair' encerra.\n")
+    print("ChargeGrid Intelligence — chatbot Sprint 4 (RAG). 'sair' encerra.\n")
     while True:
         try:
             pergunta = input("Voce: ").strip()
@@ -75,7 +77,7 @@ def repl() -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Chatbot ChargeGrid — Sprint 3")
+    parser = argparse.ArgumentParser(description="Chatbot ChargeGrid — Sprint 4")
     parser.add_argument("--demo", action="store_true", help="roda os 3 turnos de demonstracao de memoria")
     args = parser.parse_args()
     rodar_demo() if args.demo else repl()

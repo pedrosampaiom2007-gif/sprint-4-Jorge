@@ -2,9 +2,11 @@
 gerar_pdf.py — converte docs/relatorio_evolucao.md em docs/relatorio_evolucao.pdf.
 
 O .md e a fonte editavel; o PDF sai dele com fpdf2 + markdown, sem depender de
-pandoc nem LaTeX. Depois de editar o .md, rode isto pra atualizar o PDF.
+pandoc nem LaTeX. Depois de editar o .md, rode isto pra atualizar o PDF
+(o `python -m evals.consolidar` ja chama isto no fim).
 
     python docs/gerar_pdf.py
+    python docs/gerar_pdf.py docs/sprint3/relatorio_evolucao.md
 """
 
 from __future__ import annotations
@@ -25,7 +27,7 @@ _TRANSLIT = {
     "–": "-", "—": "--", "‑": "-", "‘": "'", "’": "'",
     "“": '"', "”": '"', "…": "...", "×": "x", "•": "-",
     " ": " ", " ": " ", " ": " ", "≈": "~", "−": "-",
-    "✅": "[ok]", "❌": "[x]", "⚠": "[!]", "️": "",
+    "✅": "[ok]", "❌": "[x]", "⚠": "[!]", "️": "", "Δ": "var.", "›": ">",
 }
 
 
@@ -47,8 +49,10 @@ def _md_para_html(texto: str) -> str:
     return html
 
 
-def main() -> None:
-    html = _md_para_html(MD.read_text(encoding="utf-8"))
+def main(md: Path = MD) -> None:
+    md = Path(md)
+    pdf_saida = md.with_suffix(".pdf")
+    html = _md_para_html(md.read_text(encoding="utf-8"))
 
     pdf = FPDF(format="A4")
     pdf.set_margins(18, 16, 18)
@@ -56,9 +60,11 @@ def main() -> None:
     pdf.add_page()
     pdf.set_font("Helvetica", size=10)
     pdf.write_html(html, table_line_separators=True)
-    pdf.output(str(PDF))
-    print(f"gerado: {PDF}  ({PDF.stat().st_size // 1024} KB)")
+    pdf.output(str(pdf_saida))
+    print(f"gerado: {pdf_saida}  ({pdf_saida.stat().st_size // 1024} KB, {pdf.page_no()} paginas)")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    main(Path(sys.argv[1]) if len(sys.argv) > 1 else MD)

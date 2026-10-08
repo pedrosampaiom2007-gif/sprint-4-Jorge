@@ -27,10 +27,11 @@ def nome_colecao(estrategia: str) -> str:
     return f"{PREFIXO_COLECAO}_{estrategia}"
 
 
-def abrir(estrategia: str, embeddings: Embeddings | None = None, pasta: Path = PASTA_CHROMA):
+def abrir(estrategia: str, embeddings: Embeddings | None = None, pasta: Path | None = None):
     """langchain_chroma.Chroma da estrategia (cria a colecao vazia se nao existir)."""
     from langchain_chroma import Chroma
 
+    pasta = pasta or PASTA_CHROMA
     chave = (str(pasta), estrategia)
     if chave not in _CACHE:
         if embeddings is None:
@@ -55,7 +56,7 @@ def indexar(
     documentos: list[Document] | None = None,
     embeddings: Embeddings | None = None,
     recriar: bool = False,
-    pasta: Path = PASTA_CHROMA,
+    pasta: Path | None = None,
 ) -> dict:
     """Carrega, divide, gera embeddings e grava. Devolve um resumo da indexacao."""
     documentos = documentos if documentos is not None else carregar_base()
@@ -79,7 +80,7 @@ def indexar(
     return {"colecao": nome_colecao(estrategia), "chunks": len(ids), "indexados_agora": len(ids)}
 
 
-def total(estrategia: str, pasta: Path = PASTA_CHROMA) -> int:
+def total(estrategia: str, pasta: Path | None = None) -> int:
     return len(abrir(estrategia, pasta=pasta).get(include=[])["ids"])
 
 
