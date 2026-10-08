@@ -3,7 +3,7 @@ run_comparativo.py — roda a versao antiga e a nova nos mesmos casos.
 
 Roda o MESMO eval set (evals/eval_set.json) contra a versao MANUAL/LEGADO
 (legado/chatbot_legado.py, o entregas/chatbot.py das Sprints 1/2) e junta com os
-numeros da versao LCEL (evals/sprint3_results.json, gerado por run_evals.py --prompt v2)
+numeros da versao LCEL (evals/resultados/sprint3_results.json, gerado na Sprint 3 por run_evals.py --prompt v2)
 para montar a tabela antes/depois:
 
   | metrica                     | Sprints 1/2 (manual) | Sprint 03 (LCEL) |
@@ -146,7 +146,7 @@ def montar_tabela(legado_resumo: dict, lcel_resumo: dict) -> str:
 
 
 def main() -> None:
-    lcel_path = _RAIZ / "evals" / "sprint3_results.json"
+    lcel_path = _RAIZ / "evals" / "resultados" / "sprint3_results.json"
     if not lcel_path.exists():
         sys.exit("Rode antes:  python -m evals.run_evals --prompt v2")
     lcel = json.loads(lcel_path.read_text(encoding="utf-8"))

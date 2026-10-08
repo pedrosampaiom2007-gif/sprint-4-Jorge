@@ -1,6 +1,8 @@
 """
-run_evals.py — reexecuta o eval set (evals/eval_set.json) contra a chain LCEL e
-mede, por caso e agregado:
+run_evals.py — bateria de seguranca e comportamento da Sprint 3 (evals/eval_set.json,
+24 casos: 12 ataques, fora de escopo, dominio restrito, casos de borda). Na Sprint 4
+continua rodando contra o assistente completo (agora com RAG), como regressao:
+nenhum ataque que era barrado pode voltar a passar. Mede, por caso e agregado:
 
   - passou           : checagens deterministicas (deve_recusar, contem_algum, nao_contem)
   - nota             : 0..10 dada por um LLM-juiz (modelo maior que o testado)
@@ -9,11 +11,11 @@ mede, por caso e agregado:
   - structured_ok    : a chain estruturada devolve um ConsultaRecarga valido p/ a mesma pergunta
 
 Uso:
-  python -m evals.run_evals                      # prompt v2, modelo padrao
-  python -m evals.run_evals --prompt v1          # p/ comparar versoes de prompt
+  python -m evals.run_evals                      # prompt rag_v3, modelo padrao
+  python -m evals.run_evals --prompt v2          # prompt da Sprint 3
   python -m evals.run_evals --modelo openai/gpt-oss-120b
   python -m evals.run_evals --sem-juiz           # pula o LLM-juiz (so checagens)
-  python -m evals.run_evals --saida evals/sprint3_results.json   # (default)
+  python -m evals.run_evals --saida evals/resultados/seguranca_sprint4.json   # (default)
 """
 
 from __future__ import annotations
@@ -32,7 +34,9 @@ from src.assistente import Assistente
 from src.chain.builder import carregar_prompt, construir_chain_estruturada
 from src.chain.memoria import limpar_sessao
 from src.contexto import contar_tokens
-from src.integracao.dados_sistema import buscar_contexto
+from src.rag.config import config_padrao
+from src.rag.prompt_rag import montar_contexto
+from src.rag.retriever import recuperar
 
 load_dotenv()
 
@@ -127,41 +131,42 @@ def fazer_juiz(modelo_juiz: str):
     return julgar
 
 
-def structured_ok(pergunta: str, acesso_gestao: bool, modelo: str) -> bool:
+def structured_ok(pergunta: str, acesso_gestao: bool, modelo: str, versao: str) -> bool:
     """A chain estruturada devolve um ConsultaRecarga valido? (os field_validator
     ja rodam no parse; excecao aqui = structured output invalido)."""
     try:
-        chain = construir_chain_estruturada(
-            versao_prompt="v2", acesso_gestao=acesso_gestao, model=modelo
-        )
-        obj = chain.invoke({"pergunta": pergunta})
+        cfg = config_padrao()
+        contexto = montar_contexto(recuperar(pergunta, cfg, acesso_gestao))
+        chain = construir_chain_estruturada(versao_prompt=versao, model=modelo)
+        obj = chain.invoke({"pergunta": pergunta, "contexto": contexto})
         return type(obj).__name__ == "ConsultaRecarga"
     except Exception:  # noqa: BLE001
         return False
 
 
-def tokens_turno(versao_prompt: str, pergunta: str, acesso_gestao: bool, resposta: str) -> int:
+def tokens_turno(versao_prompt: str, pergunta: str, contexto: str, resposta: str) -> int:
     system = carregar_prompt(versao_prompt)
-    contexto = buscar_contexto(pergunta, acesso_gestao=acesso_gestao) or "(sem dados no contexto)"
-    humano = f"<contexto>\n{contexto}\n</contexto>\n\n<pergunta>\n{pergunta}\n</pergunta>"
+    humano = f"<contexto>\n{contexto or '(sem dados no contexto)'}\n</contexto>\n\n<pergunta>\n{pergunta}\n</pergunta>"
     return contar_tokens(system) + contar_tokens(humano) + contar_tokens(resposta)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Eval set da Sprint 3")
-    ap.add_argument("--prompt", default="v2", choices=["v1", "v2"])
+    ap.add_argument("--prompt", default="rag_v3", choices=["v1", "v2", "rag_v1", "rag_v2", "rag_v3"])
     ap.add_argument("--modelo", default=None, help="override do GROQ_MODEL")
     ap.add_argument("--sem-juiz", action="store_true")
     ap.add_argument("--pausa", type=float, default=10.0,
                     help="segundos de pausa entre casos (conta free tier: TPM 8000)")
-    ap.add_argument("--saida", default=str(_RAIZ / "evals" / "sprint3_results.json"))
+    ap.add_argument("--saida", default=str(_RAIZ / "evals" / "resultados" / "seguranca_sprint4.json"))
     args = ap.parse_args()
 
-    llm_kwargs = {"model": args.modelo} if args.modelo else {}
-    modelo_efetivo = args.modelo or "openai/gpt-oss-20b"
+    cfg = config_padrao().com(versao_prompt=args.prompt)
+    if args.modelo:
+        cfg = cfg.com(modelo=args.modelo)
+    modelo_efetivo = cfg.modelo
 
     casos = json.loads(_EVAL_SET.read_text(encoding="utf-8"))["casos"]
-    assistente = Assistente(versao_prompt=args.prompt, acesso_gestao=True, **llm_kwargs)
+    assistente = Assistente(cfg, acesso_gestao=True)
     julgar = None if args.sem_juiz else fazer_juiz(JUIZ_PADRAO)
 
     resultados = []
@@ -190,10 +195,10 @@ def main() -> None:
         # structured output so faz sentido em pergunta que pede dado (happy_path).
         # Em pergunta que exige recusa, o modelo as vezes recusa em texto puro e
         # nao emite o tool call (tool_use_failed) — comportamento esperado, e a
-        # chain de conversa que atende esses casos. Ver docs/relatorio_evolucao.md.
+        # chain de conversa que atende esses casos. Ver docs/sprint3/relatorio_evolucao.md.
         mede_struct = caso["categoria"] == "happy_path"
-        s_ok = structured_ok(caso["pergunta"], acesso, modelo_efetivo) if mede_struct else None
-        toks = tokens_turno(args.prompt, caso["pergunta"], acesso, turno.resposta)
+        s_ok = structured_ok(caso["pergunta"], acesso, modelo_efetivo, args.prompt) if mede_struct else None
+        toks = tokens_turno(args.prompt, caso["pergunta"], turno.contexto, turno.resposta)
 
         resultados.append({
             "id": caso["id"],

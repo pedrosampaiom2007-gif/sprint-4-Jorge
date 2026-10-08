@@ -1,0 +1,508 @@
+{
+ "descricao": "Eval set do RAG da Sprint 4. 'docs_esperados' mede a recuperacao; 'resposta_referencia' orienta a rubrica manual; RAGAS roda nos casos com docs_esperados.",
+ "casos": [
+  {
+   "id": 1,
+   "categoria": "fundamentada",
+   "pergunta": "Como é cobrada a recarga no ChargeGrid?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "tabela_tarifaria_chargegrid",
+    "manual_chargegrid_intelligence",
+    "faq_recarga_motorista"
+   ],
+   "resposta_referencia": "Por kWh consumido, com tarifa dinâmica: base de R$ 0,90/kWh, +30% no horário de ponta (18h-21h) e +15% com ocupação alta.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "kwh"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 2,
+   "categoria": "fundamentada",
+   "pergunta": "Quanto custa o kWh no horário de ponta?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "tabela_tarifaria_chargegrid"
+   ],
+   "resposta_referencia": "Entre 18h e 21h a tarifa base recebe 30% de acréscimo: R$ 1,17 por kWh.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "1,17",
+     "1.17"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 3,
+   "categoria": "fundamentada",
+   "pergunta": "Quanto fica uma recarga de 20 kWh fora do horário de ponta e sem ocupação alta?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "tabela_tarifaria_chargegrid"
+   ],
+   "resposta_referencia": "20 kWh × R$ 0,90 = R$ 18,00.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "18,00",
+     "18.00",
+     "R$ 18"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 4,
+   "categoria": "fundamentada",
+   "pergunta": "Como funciona o cashback do ChargeGrid?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "manual_chargegrid_intelligence",
+    "tabela_tarifaria_chargegrid"
+   ],
+   "resposta_referencia": "O motorista recebe 5% do valor de cada sessão paga como saldo em 'Meus pagamentos'; ainda não há resgate.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "5%",
+     "5 %",
+     "cinco por cento"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 5,
+   "categoria": "fundamentada",
+   "pergunta": "Para que serve o DLB no ChargeGrid?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "manual_chargegrid_intelligence",
+    "secovi_faq_carregadores_condominios"
+   ],
+   "resposta_referencia": "O balanceamento dinâmico de carga distribui a potência disponível entre os carregadores para não ultrapassar o limite da rede; na base SP2 reduziu a variância do consumo.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "potencia",
+     "carga",
+     "rede"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 6,
+   "categoria": "fundamentada",
+   "pergunta": "Qual o grau de proteção IP do carregador GoodWe HCA?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "goodwe_hca_manual_usuario"
+   ],
+   "resposta_referencia": "O carregador tem grau de proteção IP65 e o plugue de recarga, IP55.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "IP65"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 7,
+   "categoria": "fundamentada",
+   "pergunta": "Quais são os modos de recarga do carregador GoodWe HCA?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "goodwe_hca_manual_usuario"
+   ],
+   "resposta_referencia": "Três modos: Fast, PV priority e PV + Battery, escolhidos pelo app SEMS ou SolarGo.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "fast",
+     "pv",
+     "rapid",
+     "solar"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 8,
+   "categoria": "fundamentada",
+   "pergunta": "Qual a corrente mínima de partida por fase do carregador GoodWe HCA?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "goodwe_hca_manual_usuario"
+   ],
+   "resposta_referencia": "A corrente mínima de partida de cada fase é de 6 A.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "6 a",
+     "6a",
+     "6 ampere"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 9,
+   "categoria": "fundamentada",
+   "pergunta": "O que acontece com a potência quando um carregador trifásico GoodWe HCA carrega um carro que só aceita recarga monofásica?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "goodwe_hca_manual_usuario"
+   ],
+   "resposta_referencia": "A potência máxima cai para 1/3 da potência nominal do carregador, porque a potência real depende do carregador de bordo (OBC).",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "1/3",
+     "um terco",
+     "terca parte",
+     "um terço"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 10,
+   "categoria": "fundamentada",
+   "pergunta": "Quais normas técnicas a instalação de carregadores em condomínio deve seguir?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "secovi_faq_carregadores_condominios"
+   ],
+   "resposta_referencia": "ABNT NBR 5410, ABNT NBR 17019 e ABNT NBR IEC 61851-23 (estação de recarga em corrente contínua).",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "5410",
+     "17019"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 11,
+   "categoria": "fundamentada",
+   "pergunta": "Posso usar um carregador portátil ligado numa tomada comum da garagem do condomínio?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "secovi_faq_carregadores_condominios",
+    "regimento_condominial_recarga"
+   ],
+   "resposta_referencia": "Não. O Secovi informa que não é permitido usar carregador portátil em tomada NBR de até 20 A, e o regimento proíbe tomadas comuns e extensões.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "nao",
+     "proibid",
+     "permitid"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 12,
+   "categoria": "fundamentada",
+   "pergunta": "Qual potência de carregador é adequada para condomínios residenciais?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "secovi_faq_carregadores_condominios"
+   ],
+   "resposta_referencia": "Carregador de parede (wallbox) inteligente de 7 kW, com Wi-Fi, balanceamento de carga e leitor RFID.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "7 kw",
+     "7kw",
+     "7 kilowatt"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 13,
+   "categoria": "fundamentada",
+   "pergunta": "Quem paga a energia consumida nos carregadores do condomínio?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "secovi_faq_carregadores_condominios",
+    "regimento_condominial_recarga"
+   ],
+   "resposta_referencia": "Os custos da energia devem ser arcados pelos usuários, com rateio da energia consumida entre eles.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "usuari",
+     "unidade",
+     "quem"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 14,
+   "categoria": "fundamentada",
+   "pergunta": "Em quanto tempo o morador deve liberar a vaga depois que a recarga termina?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "regimento_condominial_recarga"
+   ],
+   "resposta_referencia": "Em até 30 minutos após o fim da recarga, pelo modelo de regimento.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "30"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 15,
+   "categoria": "fundamentada",
+   "pergunta": "Em que faixa de carga é melhor manter a bateria para preservar a vida útil?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "arval_guia_condutor_ve",
+    "faq_recarga_motorista"
+   ],
+   "resposta_referencia": "O guia da Arval recomenda carregamento otimizado de 20% a 80%.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "20",
+     "80"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 16,
+   "categoria": "fundamentada",
+   "pergunta": "O que fazer se um carro elétrico pegar fogo na garagem do condomínio?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "secovi_faq_carregadores_condominios"
+   ],
+   "resposta_referencia": "Evacuar a área imediatamente e chamar os bombeiros pelo 193; o combate é feito só por profissionais.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "193",
+     "evacu",
+     "bombeiro"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 17,
+   "categoria": "fundamentada_gestao",
+   "pergunta": "Qual ponto de carga teve mais receita no histórico?",
+   "acesso_gestao": true,
+   "docs_esperados": [
+    "relatorio_historico_sp2"
+   ],
+   "resposta_referencia": "O CP-09, com R$ 528,84 em 6 sessões (ticket médio de R$ 88,14).",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "CP-09",
+     "CP09",
+     "CP 09"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 18,
+   "categoria": "fundamentada_gestao",
+   "pergunta": "Qual o horário de pico do posto?",
+   "acesso_gestao": true,
+   "docs_esperados": [
+    "relatorio_historico_sp2"
+   ],
+   "resposta_referencia": "17h, com 7 sessões registradas; os três maiores horários são 17h, 10h e 18h.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "17"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 19,
+   "categoria": "encadeada",
+   "pergunta": "E no horário de ponta?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "tabela_tarifaria_chargegrid"
+   ],
+   "resposta_referencia": "No horário de ponta (18h-21h) a tarifa sobe 30%: R$ 1,17 por kWh.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "1,17",
+     "1.17"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   },
+   "turnos_anteriores": [
+    "Qual é a tarifa base do ChargeGrid?"
+   ]
+  },
+  {
+   "id": 20,
+   "categoria": "encadeada",
+   "pergunta": "E o do plugue?",
+   "acesso_gestao": false,
+   "docs_esperados": [
+    "goodwe_hca_manual_usuario"
+   ],
+   "resposta_referencia": "O plugue de recarga tem grau de proteção IP55.",
+   "checagens": {
+    "deve_recusar": false,
+    "contem_algum": [
+     "IP55"
+    ],
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   },
+   "turnos_anteriores": [
+    "Qual o grau de proteção do carregador GoodWe HCA?"
+   ]
+  },
+  {
+   "id": 21,
+   "categoria": "sem_resposta_na_base",
+   "pergunta": "Qual o preço do carregador GoodWe HCA de 22 kW?",
+   "acesso_gestao": false,
+   "docs_esperados": [],
+   "resposta_referencia": "Recusa: o preço não está na base.",
+   "checagens": {
+    "deve_recusar": true,
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 22,
+   "categoria": "sem_resposta_na_base",
+   "pergunta": "Quanto tempo dura a garantia da bateria do Renault Kwid E-Tech?",
+   "acesso_gestao": false,
+   "docs_esperados": [],
+   "resposta_referencia": "Recusa: garantia de bateria de modelo de carro não está na base.",
+   "checagens": {
+    "deve_recusar": true,
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 23,
+   "categoria": "fora_de_escopo",
+   "pergunta": "Quem ganhou a Copa do Mundo de 2022?",
+   "acesso_gestao": false,
+   "docs_esperados": [],
+   "resposta_referencia": "Recusa: assunto fora do escopo.",
+   "checagens": {
+    "deve_recusar": true,
+    "nao_contem": [
+     "|",
+     "##"
+    ]
+   }
+  },
+  {
+   "id": 24,
+   "categoria": "restrita_gestao",
+   "pergunta": "Qual foi a receita total do histórico de recargas?",
+   "acesso_gestao": false,
+   "docs_esperados": [],
+   "resposta_referencia": "Recusa: dado restrito à gestão; não deve aparecer R$ 2.701,43.",
+   "checagens": {
+    "deve_recusar": true,
+    "nao_contem": [
+     "2701",
+     "2.701",
+     "|",
+     "##"
+    ]
+   }
+  }
+ ]
+}

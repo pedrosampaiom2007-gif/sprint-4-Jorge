@@ -1,56 +1,54 @@
-# Modelos e parâmetros
+# Modelos e parâmetros — Sprint 4
 
-## Qual provedor usamos
+## Provedores
 
-O time usa **Groq** desde a Sprint 2, com a mesma chave que o sistema principal já
-usava. Ficamos nele porque o projeto inteiro já estava montado em cima disso e porque
-rodar um modelo grande localmente ia travar o notebook de todo mundo.
+| Provedor | Modelo | Papel |
+|---|---|---|
+| Groq | `openai/gpt-oss-20b` | modelo de produção do chatbot |
+| Groq | `openai/gpt-oss-120b` | comparado no chat; juiz do RAGAS |
+| Ollama Cloud | `gemma4:cloud` | comparado no chat; segundo provedor da chamada multi-provider |
+| Ollama Cloud | `nomic-embed-text` | embeddings (indexação, busca e answer_relevancy do RAGAS) |
 
-Os dois modelos que a conta dá acesso:
-
-| Modelo | Onde entra |
-|--------|------------|
-| `openai/gpt-oss-20b` | o modelo do chatbot — rápido e barato |
-| `openai/gpt-oss-120b` | avalia as respostas na bateria de testes |
-
-A conta é gratuita, então só os `gpt-oss` estão liberados (`llama-3.1` e `llama-3.3`
-devolvem 404) e o limite é de 8 mil tokens por minuto.
+A fábrica de modelos é `src/llm/provedores.py`: trocar de modelo é trocar o par
+`(provedor, modelo)`, e a chain não muda.
 
 ## Parâmetros
 
-| Parâmetro | Valor | Por quê |
-|-----------|-------|---------|
-| `temperature` | 0.4 | Testando ao vivo, a mesma pergunta às vezes voltava como uma lista de duas linhas e às vezes como um texto enorme com tabela. Baixar a temperatura deixou a resposta previsível. |
-| `top_p` | 1.0 | Deixamos o controle todo na temperatura, pra ter só uma variável mexendo no resultado. |
-| `max_tokens` | 450 | Teto contra resposta quilométrica. Com 250 uma lista de 3 itens cortava no meio da frase, o que fica pior que uma resposta longa. Com 450 o modelo termina o raciocínio e ainda assim não escreve um artigo. |
-| `reasoning_format` | `hidden` | Sem isso o texto da resposta vinha vazio (explicado no relatório de evolução). |
+| Parâmetro | Sprint 3 | Sprint 4 | Por quê |
+|---|---:|---:|---|
+| `temperature` | 0,4 | **0** | Com RAG a resposta tem que sair dos trechos; amostragem só abre espaço para o modelo "completar" com o que não está lá. |
+| `top_p` | 1,0 | 1,0 | Com temperatura 0 o `top_p` não muda nada; fica em 1 para só uma variável controlar a amostragem. |
+| `max_tokens` | 450 | 450 | Cabe uma resposta de 2 a 4 frases com citações; com 250 a lista cortava no meio. |
+| `k` (top-k) | 5 frases | **4 chunks** | A iteração 1 usa k = 3 com chunks de 1000 caracteres (~3000 caracteres de contexto); com chunks de 500, k = 4 entrega ~2000 caracteres, de mais documentos diferentes, sem inflar o prompt. O efeito aparece na métrica de recuperação (hit@k) das iterações. |
+| limiar de relevância | — | **0,45** (calibrável) | Sem limiar, toda pergunta recebe k trechos, mesmo sem nada a ver com a base, e o modelo tenta responder com eles. O valor inicial é calibrado com `python -m evals.calibrar_limiar`, que mede a relevância do melhor trecho nas perguntas com e sem resposta na base, e pode ser trocado pela variável `RAG_LIMIAR`. |
+| `reasoning_format` (gpt-oss) | `hidden` | `hidden` | Sem isso o texto vem vazio (Sprint 3). |
 
-O modelo que dá as notas na bateria roda com `temperature` 0.0, porque avaliação
-precisa ser o mais repetível possível.
+O juiz do RAGAS roda com temperatura 0 e `max_tokens` 2000, porque o faithfulness pede
+ao juiz a lista de afirmações da resposta em JSON.
 
-## Comparando os dois modelos
+## Comparação de modelos
 
-Mesma pergunta nos dois, mesmos parâmetros:
+Mesma configuração (iteração 3: `secao_500`, k = 4, limiar 0,45, prompt `rag_v3`),
+mesmo eval set e mesmo juiz. Gerado por `python -m evals.run_modelos`.
 
-| Modelo | Tempo | Tokens de resposta | Como se comportou |
-|--------|-------|--------------------|-------------------|
-| `gpt-oss-20b` | 0,9 – 1,6 s | 70 – 360 | Rápido. Segue bem a instrução de resposta curta. Às vezes oferece detalhe cedo demais. |
-| `gpt-oss-120b` | 1,3 – 1,5 s | 70 – 250 | Um pouco mais lento e mais direto. Recusa com mais firmeza quando o pedido é ambíguo. |
+<!-- AUTO:modelos -->
+| Modelo | temperature | top_p | max_tokens | k | Faithfulness | Answer relevancy | Recusa correta | Latência média | Tokens/turno |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| groq:openai/gpt-oss-20b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+| groq:openai/gpt-oss-120b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+| ollama:gemma4:cloud | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+<!-- /AUTO:modelos -->
 
-Rodando a bateria completa no `gpt-oss-20b`: 24 de 24 casos passaram, os 12 ataques
-foram recusados, as respostas estruturadas saíram todas válidas e a nota média ficou
-em 9,2.
+## Chamada multi-provider
 
-Pra rodar a bateria com o modelo maior:
+`src/llm/multi_provider.py` responde a mesma pergunta com mais de um modelo e mais de
+uma versão de prompt, em paralelo, usando **os mesmos trechos recuperados** — assim a
+diferença entre as respostas é do modelo e do prompt, não da busca. Combinações padrão:
 
-```bash
-python -m evals.run_evals --prompt v2 --modelo openai/gpt-oss-120b
-```
+| Provedor | Modelo | Prompt |
+|---|---|---|
+| Groq | `openai/gpt-oss-20b` | `rag_v3` |
+| Groq | `openai/gpt-oss-20b` | `rag_v2` |
+| Ollama Cloud | `gemma4:cloud` | `rag_v3` |
 
-## Conclusão
-
-O `120b` recusa com um pouco mais de firmeza, mas custa mais tempo. Como o chat roda
-num totem e num app, onde a resposta precisa ser quase instantânea, e as recusas já
-estão em 100 % com o `20b` mais os guardrails de código, ficamos com o
-**`gpt-oss-20b` em produção**. O `120b` fica só como avaliador da bateria de testes,
-onde qualidade importa mais que velocidade.
+Na interface, aba **Comparar modelos**.
