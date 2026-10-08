@@ -8,6 +8,7 @@ langchain-community>=0.3.0,<0.4.0 # PyMuPDFLoader
 langchain-text-splitters>=0.3.0,<0.4.0
 langchain-groq>=0.2.0             # modelos da Groq (gpt-oss)
 langchain-ollama>=0.2.0,<0.4.0    # nomic-embed-text e gemma4:cloud na Ollama Cloud
+langchain-openai>=0.2.0,<0.4.0    # Gemini pelo endpoint compativel com OpenAI
 langchain-chroma>=0.1.4           # vector store
 chromadb>=0.5.0
 pymupdf>=1.24                     # leitura dos PDFs

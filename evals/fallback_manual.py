@@ -156,7 +156,10 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
 
     arred = lambda v: min(NOTAS_VALIDAS, key=lambda n: abs(n - float(v)))  # noqa: E731
     caminho, dados = _resultado(nome)
-    llm = construir_llm(provedor, modelo, temperature=0.0, max_tokens=600).with_structured_output(Notas)
+    base = construir_llm(provedor, modelo, temperature=0.0, max_tokens=600)
+    # o endpoint compativel do Gemini aceita tool calling; json_schema nem sempre
+    llm = base.with_structured_output(Notas, method="function_calling") if provedor == "gemini" \
+        else base.with_structured_output(Notas)
     for linha in dados["resultados"]:
         if not linha.get("docs_esperados") or linha.get("faithfulness_rubrica") is not None:
             continue

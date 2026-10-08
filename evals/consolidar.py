@@ -85,7 +85,10 @@ def fonte_metricas() -> str:
             fontes.add(f"RAGAS (juiz {r['juiz_ragas']})")
     if not fontes:
         return "_Faithfulness e answer relevancy: pendente._"
-    return "_Faithfulness e answer relevancy medidos com: " + "; ".join(sorted(fontes)) + "._"
+    modelos = sorted({f"{r['config']['provedor']}:{r['config']['modelo']}"
+                      for r in (carregar(n) for n in ("legado_sprints12", "iter1", "iter2", "iter3")) if r and r.get("config")})
+    linha_modelo = f" Modelo que respondeu: {', '.join(modelos)}." if modelos else ""
+    return "_Faithfulness e answer relevancy medidos com: " + "; ".join(sorted(fontes)) + "." + linha_modelo + "_"
 
 
 ITERACOES = [

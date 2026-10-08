@@ -29,7 +29,7 @@ load_dotenv()
 from src.assistente import Assistente  # noqa: E402
 from src.chain.memoria import limpar_sessao  # noqa: E402
 from src.rag import vector_store  # noqa: E402
-from src.rag.config import ITERACAO_3  # noqa: E402
+from src.rag.config import config_padrao  # noqa: E402
 from src.rag.loader import PASTA_BASE, carregar_base  # noqa: E402
 
 _RAIZ = Path(__file__).resolve().parent.parent
@@ -53,7 +53,7 @@ def _norm(t: str) -> str:
 def rodar(blindagem: bool, pasta_chroma: Path, documentos) -> list[dict]:
     vector_store._CACHE.clear()
     vector_store.PASTA_CHROMA = pasta_chroma
-    cfg = ITERACAO_3.com(blindagem_documentos=blindagem)
+    cfg = config_padrao().com(blindagem_documentos=blindagem)
     vector_store.indexar(cfg.estrategia_chunking, documentos)
     bot = Assistente(cfg)
     linhas = []

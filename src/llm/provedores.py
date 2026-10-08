@@ -4,6 +4,7 @@ de modelo e trocar o par (provedor, modelo).
 
     groq    ChatGroq — openai/gpt-oss-20b (producao) e openai/gpt-oss-120b
     ollama  ChatOllama na Ollama Cloud — gemma4:cloud
+    gemini  Google AI Studio (endpoint compativel com OpenAI) — gemini-2.5-flash-lite
 
 Parametros documentados em docs/relatorio_modelos.md.
 """
@@ -20,7 +21,10 @@ MODELOS_DISPONIVEIS: list[tuple[str, str]] = [
     ("groq", "openai/gpt-oss-20b"),
     ("groq", "openai/gpt-oss-120b"),
     ("ollama", "gemma4:cloud"),
+    ("gemini", "gemini-2.5-flash-lite"),
 ]
+
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 
 def rotulo(provedor: str, modelo: str) -> str:
@@ -61,7 +65,19 @@ def construir_llm(
             num_predict=max_tokens,
             **kwargs,
         )
-    raise ValueError(f"provedor desconhecido: {provedor} (use 'groq' ou 'ollama')")
+    if provedor == "gemini":
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=modelo,
+            base_url=GEMINI_BASE_URL,
+            api_key=os.environ.get("GOOGLE_API_KEY", "").strip() or "sem-chave",
+            temperature=temperature,
+            top_p=top_p,
+            max_tokens=max_tokens,
+            max_retries=2,
+        )
+    raise ValueError(f"provedor desconhecido: {provedor} (use 'groq', 'ollama' ou 'gemini')")
 
 
 def chaves_faltando(provedores: set[str]) -> list[str]:
@@ -71,4 +87,6 @@ def chaves_faltando(provedores: set[str]) -> list[str]:
         faltam.append("GROQ_API_KEY")
     if "ollama" in provedores and not os.environ.get("OLLAMA_API_KEY", "").strip():
         faltam.append("OLLAMA_API_KEY")
+    if "gemini" in provedores and not os.environ.get("GOOGLE_API_KEY", "").strip():
+        faltam.append("GOOGLE_API_KEY")
     return faltam

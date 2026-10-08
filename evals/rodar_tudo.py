@@ -6,6 +6,10 @@ tabelas e o PDF.
     python -m evals.rodar_tudo --modelos groq:openai/gpt-oss-20b groq:openai/gpt-oss-120b
     python -m evals.rodar_tudo --refazer          # apaga os resultados e comeca do zero
     python -m evals.rodar_tudo --juiz groq:openai/gpt-oss-20b   # outro juiz (cota diaria)
+    python -m evals.rodar_tudo --geracao gemini:gemini-2.5-flash-lite --juiz gemini:gemini-2.5-flash-lite
+
+--geracao troca o modelo que RESPONDE em todas as etapas (legado, iteracoes e
+seguranca), para a comparacao antes/depois continuar no mesmo modelo.
 
 A conta gratuita da Groq tem cota de tokens POR DIA por modelo. A ordem das etapas
 poe primeiro o que entra na tabela antes/depois (legado e iteracoes); se a cota
@@ -86,9 +90,16 @@ def main() -> None:
     ap.add_argument("--modelos", nargs="*", default=[f"{p}:{m}" for p, m in MODELOS_DISPONIVEIS])
     ap.add_argument("--refazer", action="store_true", help="apaga os resultados anteriores")
     ap.add_argument("--juiz", default=JUIZ_PADRAO, help="provedor:modelo que aplica a rubrica")
+    ap.add_argument("--geracao", default=None, help="provedor:modelo que responde (padrao: o da iteracao 3)")
     args = ap.parse_args()
     global JUIZ
     JUIZ = tuple(args.juiz.split(":", 1))
+
+    import os
+
+    geracao = tuple(args.geracao.split(":", 1)) if args.geracao else (ITERACAO_3.provedor, ITERACAO_3.modelo)
+    os.environ["RAG_PROVEDOR"], os.environ["RAG_MODELO"] = geracao
+    print(f"modelo que responde: {geracao[0]}:{geracao[1]}  ·  juiz da rubrica: {JUIZ[0]}:{JUIZ[1]}")
 
     if args.refazer:
         for arquivo in PASTA.glob("*.json"):
@@ -100,10 +111,12 @@ def main() -> None:
 
     from evals import run_legado_rag
 
+    run_legado_rag.usar_modelo(*geracao)
     status["legado"] = etapa("Antes: chatbot das Sprints 1/2", avaliar_com_rubrica, "legado_sprints12",
                              lambda: run_legado_rag.main(com_ragas=False))
 
     for nome, cfg in ITERACOES.items():
+        cfg = cfg.com(provedor=geracao[0], modelo=geracao[1])
         status[nome] = etapa(f"Sprint 4: {nome} — {DESCRICOES[nome]}", avaliar_com_rubrica, nome,
                              lambda cfg=cfg, nome=nome: avaliar(cfg, nome, com_ragas=False, descricao=DESCRICOES[nome]))
 
@@ -111,7 +124,7 @@ def main() -> None:
         provedor, modelo = item.split(":", 1)
         nome = slug(provedor, modelo)
         cfg = ITERACAO_3.com(provedor=provedor, modelo=modelo)
-        if (provedor, modelo) == (ITERACAO_3.provedor, ITERACAO_3.modelo) and _existe("iter3") and not _existe(nome):
+        if (provedor, modelo) == geracao and _existe("iter3") and not _existe(nome):
             # mesma configuracao da iteracao 3: reaproveita em vez de gastar a cota de novo
             import json
 
@@ -130,7 +143,7 @@ def main() -> None:
     if not _existe("seguranca_sprint4"):
         status["seguranca_sprint4"] = etapa(
             "Bateria de seguranca da Sprint 3", subprocess.run,
-            [sys.executable, "-m", "evals.run_evals", "--sem-juiz"], check=True, cwd=_RAIZ)
+            [sys.executable, "-m", "evals.run_evals", "--sem-juiz", "--modelo", geracao[1]], check=True, cwd=_RAIZ)
 
     etapa("Tabelas e PDF", consolidar)
 

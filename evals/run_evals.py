@@ -137,7 +137,7 @@ def structured_ok(pergunta: str, acesso_gestao: bool, modelo: str, versao: str) 
     try:
         cfg = config_padrao()
         contexto = montar_contexto(recuperar(pergunta, cfg, acesso_gestao))
-        chain = construir_chain_estruturada(versao_prompt=versao, model=modelo)
+        chain = construir_chain_estruturada(versao_prompt=versao, provedor=cfg.provedor, model=modelo)
         obj = chain.invoke({"pergunta": pergunta, "contexto": contexto})
         return type(obj).__name__ == "ConsultaRecarga"
     except Exception:  # noqa: BLE001

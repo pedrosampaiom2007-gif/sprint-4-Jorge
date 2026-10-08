@@ -95,10 +95,12 @@ class CotaEsgotada(RuntimeError):
 
 def verificar_cota(erro: Exception) -> None:
     texto = str(erro)
-    if "tokens per day" in texto or "TPD" in texto or "requests per day" in texto:
+    diaria = ("tokens per day", "TPD", "requests per day", "PerDay", "per day")
+    if any(marca in texto for marca in diaria):
         raise CotaEsgotada(
-            "A cota DIARIA da Groq acabou (tokens per day). Nada desta etapa foi gravado. "
-            "Rode de novo amanha (a cota libera ~24h depois do uso) ou use outro juiz/modelo."
+            "A cota DIARIA do provedor acabou. Nada desta etapa foi gravado. "
+            "Rode de novo amanha (a cota libera ~24h depois do uso) ou use outro provedor "
+            "(--geracao / --juiz)."
         ) from erro
 
 

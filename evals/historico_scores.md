@@ -41,6 +41,7 @@ _Faithfulness e answer relevancy: pendente._
 | groq:openai/gpt-oss-20b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 | groq:openai/gpt-oss-120b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 | ollama:gemma4:cloud | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+| gemini:gemini-2.5-flash-lite | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 
 ## Segurança
 

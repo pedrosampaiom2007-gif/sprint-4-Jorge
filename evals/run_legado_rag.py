@@ -23,6 +23,25 @@ from evals.avaliar_rag import (
 from src.contexto import contar_tokens
 
 
+def usar_modelo(provedor: str, modelo: str) -> None:
+    """O legado chama o SDK da Groq direto. Para comparar com as iteracoes no MESMO
+    modelo, troca o cliente por um compativel (mesma interface chat.completions)."""
+    if provedor == "groq":
+        legado.MODELO = modelo
+        return
+    if provedor != "gemini":
+        raise ValueError(f"o legado roda com groq ou gemini, nao com {provedor}")
+    import os
+
+    from openai import OpenAI
+
+    from src.llm.provedores import GEMINI_BASE_URL
+
+    cliente = OpenAI(base_url=GEMINI_BASE_URL, api_key=os.environ.get("GOOGLE_API_KEY", "") or "sem-chave")
+    legado.MODELO = modelo
+    legado.obter_client = lambda: cliente
+
+
 def main(pausa: float = 16.0, com_ragas: bool = True) -> dict:
     casos = json.loads(EVAL_SET.read_text(encoding="utf-8"))["casos"]
     linhas = []
@@ -81,7 +100,8 @@ def main(pausa: float = 16.0, com_ragas: bool = True) -> dict:
         "nome": "legado_sprints12",
         "descricao": "chatbot das Sprints 1/2: busca por palavra-chave em frases da planilha SP2, prompt v1, sem citacao",
         "config": {"versao_prompt": "legado (Sprints 1/2)", "estrategia_chunking": "frases soltas (sem chunking)",
-                   "k": 5, "provedor": "groq", "modelo": "openai/gpt-oss-20b", "temperature": 0.4},
+                   "k": 5, "provedor": "groq" if not str(legado.MODELO).startswith("gemini") else "gemini",
+                   "modelo": legado.MODELO, "temperature": legado.TEMPERATURA},
         "juiz_ragas": f"{JUIZ_PADRAO[0]}:{JUIZ_PADRAO[1]}" if com_ragas else None,
         "n_casos": len(linhas),
         "n_ragas": sum(1 for l in linhas if l["faithfulness"] is not None),

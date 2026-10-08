@@ -40,8 +40,10 @@ dos relatórios, gera o `docs/relatorio_evolucao.pdf` e, se quiser, sobe a inter
 link público. **Professor, se preferir, é o jeito mais fácil de reproduzir os números.**
 
 1. Abra o link acima.
-2. No menu à esquerda do Colab, clique na chave (**Secrets**) e cadastre `GROQ_API_KEY` e
-   `OLLAMA_API_KEY`, liberando o acesso do notebook.
+2. No menu à esquerda do Colab, clique na chave (**Secrets**) e cadastre `GROQ_API_KEY`,
+   `OLLAMA_API_KEY` e, de preferência, `GOOGLE_API_KEY` (grátis em
+   <https://aistudio.google.com/apikey>), liberando o acesso do notebook. Se a cota diária
+   da Groq acabar, o notebook usa o Gemini automaticamente.
 3. **Ambiente de execução → Executar tudo.** Leva de 30 a 60 minutos por causa do limite da
    conta gratuita do Groq. No fim o notebook baixa o PDF e um `.zip` com os resultados.
 
@@ -60,11 +62,12 @@ pip install -r requirements.txt
 copy .env.example .env          # Windows  (Linux/Mac: cp .env.example .env)
 ```
 
-No `.env`, preencha as duas chaves — nenhuma chave fica no repositório:
+No `.env`, preencha as chaves — nenhuma chave fica no repositório:
 
 ```
 GROQ_API_KEY=...      # https://console.groq.com/keys
 OLLAMA_API_KEY=...    # https://ollama.com -> Settings -> Keys
+GOOGLE_API_KEY=...    # opcional: https://aistudio.google.com/apikey (Gemini, se a cota da Groq acabar)
 ```
 
 Depois:

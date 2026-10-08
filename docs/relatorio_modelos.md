@@ -7,10 +7,17 @@
 | Groq | `openai/gpt-oss-20b` | modelo de produção do chatbot |
 | Groq | `openai/gpt-oss-120b` | comparado no chat; juiz do RAGAS |
 | Ollama Cloud | `gemma4:cloud` | comparado no chat; segundo provedor da chamada multi-provider |
+| Google AI Studio | `gemini-2.5-flash-lite` | comparado no chat; alternativa de geração e de juiz quando a cota diária da Groq acaba |
 | Ollama Cloud | `nomic-embed-text` | embeddings (indexação, busca e answer_relevancy do RAGAS) |
 
 A fábrica de modelos é `src/llm/provedores.py`: trocar de modelo é trocar o par
 `(provedor, modelo)`, e a chain não muda.
+
+A conta gratuita da Groq tem cota de 200 mil tokens **por dia** por modelo, e uma rodada
+completa de avaliação passa disso. Por isso `python -m evals.rodar_tudo` aceita
+`--geracao` e `--juiz`: quando a Groq está sem cota, legado, iterações e testes de
+segurança rodam todos no mesmo modelo alternativo, e a linha abaixo das tabelas informa
+qual modelo respondeu e qual julgou.
 
 ## Parâmetros
 
@@ -37,6 +44,7 @@ mesmo eval set e mesmo juiz. Gerado por `python -m evals.run_modelos`.
 | groq:openai/gpt-oss-20b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 | groq:openai/gpt-oss-120b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 | ollama:gemma4:cloud | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+| gemini:gemini-2.5-flash-lite | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 <!-- /AUTO:modelos -->
 
 ## Chamada multi-provider
