@@ -1,0 +1,14 @@
+# Chatbot ChargeGrid Intelligence — Sprint 3
+# Python 3.11+
+#
+#   pip install -r requirements.txt
+
+langchain-core>=0.3.0     # a chain, o prompt, a memoria por sessao
+langchain-groq>=0.2.0     # o modelo
+pydantic>=2.5.0           # schema da resposta estruturada
+tiktoken>=0.7.0           # contagem de tokens
+python-dotenv>=1.0.0      # le a GROQ_API_KEY do .env
+
+# So para gerar o PDF do relatorio (docs/gerar_pdf.py)
+fpdf2>=2.7.0
+markdown>=3.5
