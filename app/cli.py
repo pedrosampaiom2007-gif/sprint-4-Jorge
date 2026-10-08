@@ -39,7 +39,7 @@ if _faltam:
 from src.assistente import Assistente
 from src.chain.memoria import limpar_sessao
 
-# ferramenta interna da equipe -> acesso de gestao (ve faturamento/historico comercial).
+# ferramenta interna -> acesso de gestao (ve faturamento/historico comercial).
 _assistente = Assistente(acesso_gestao=True)
 
 

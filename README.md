@@ -1,7 +1,7 @@
 # Chatbot ChargeGrid Intelligence — Sprint 4
 
 **EV Challenge — GoodWe / FIAP · Prompt and Artificial Intelligence · 2026.2**
-Turma 1CCPG
+Pedro Sampaio Mochnacs Arruda · RM 573522 · Turma 1CCPG
 
 Assistente de recarga e gestão de eletropostos. Na Sprint 4 o chatbot passa a responder
 com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-text` num
@@ -14,16 +14,13 @@ com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-tex
 
 ---
 
-## Equipe
+## Autor
 
-| Nome | RM |
-|------|----|
-| Luan de Araujo Carneiro | 573691 |
-| Pedro Sampaio Mochnacs Arruda | 573522 |
-| Raul Sampaio Mochnacs Arruda | 573523 |
-| Pedro Ribeiro Lopes | 570083 |
-| Kevin Rodrigues de Melo | 571777 |
-| Pedro Vianna | 570747 |
+Trabalho individual (autorizado pelo professor).
+
+| Nome | RM | Turma |
+|------|----|-------|
+| Pedro Sampaio Mochnacs Arruda | 573522 | 1CCPG |
 
 ---
 
@@ -122,7 +119,7 @@ citação               linha "Fontes: [1] documento › seção" garantida em c
 ## Onde está cada coisa
 
 ```
-data/knowledge_base/       base de conhecimento (PDFs + documentos da equipe) e fontes.json
+data/knowledge_base/       base de conhecimento (PDFs + documentos do projeto) e fontes.json
 src/
   rag/                     loader, chunking, embeddings, vector_store, retriever,
                            prompt_rag, blindagem, citacao, config (iterações)

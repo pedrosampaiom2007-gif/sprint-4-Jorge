@@ -7,10 +7,10 @@ nas respostas de uma iteracao.
     python -m evals.fallback_manual juiz-llm   --resultado iter3   # pre-preenche com um LLM
 
 `exportar` gera uma planilha CSV com pergunta, trechos e resposta de cada caso
-fundamentado; a equipe preenche as duas notas. `consolidar` le a planilha e
+fundamentado; o avaliador preenche as duas notas. `consolidar` le a planilha e
 grava as medias em "fallback_manual" dentro de evals/resultados/<iteracao>.json.
 `juiz-llm` preenche a planilha usando a mesma rubrica num LLM — e um rascunho
-para a equipe revisar, nao substitui a revisao.
+para revisar a mao, nao substitui a revisao.
 """
 
 from __future__ import annotations
