@@ -64,11 +64,12 @@ def _g(r: dict | None, chave: str):
 
 
 def _metrica(r: dict | None, chave: str):
-    """RAGAS quando existe; senao o fallback manual."""
-    v = _g(r, chave)
-    if v is None and r and r.get("fallback_manual"):
-        v = r["fallback_manual"].get(chave)
-    return v
+    """Rubrica de fallback quando ela foi aplicada; senao RAGAS. A rubrica vem
+    primeiro para todas as colunas usarem a MESMA medida — um RAGAS parcial
+    (interrompido por limite de cota) misturado com rubrica nao e comparavel."""
+    if r and r.get("fallback_manual") and r["fallback_manual"].get(chave) is not None:
+        return r["fallback_manual"][chave]
+    return _g(r, chave)
 
 
 def fonte_metricas() -> str:
@@ -78,10 +79,10 @@ def fonte_metricas() -> str:
         r = carregar(nome)
         if not r:
             continue
-        if r.get("faithfulness") is not None and r.get("juiz_ragas"):
-            fontes.add(f"RAGAS (juiz {r['juiz_ragas']})")
-        elif r.get("fallback_manual"):
+        if r.get("fallback_manual") and r["fallback_manual"].get("faithfulness") is not None:
             fontes.add(r["fallback_manual"].get("metodo") or "rubrica de fallback (evals/fallback/rubrica_manual.md)")
+        elif r.get("faithfulness") is not None and r.get("juiz_ragas"):
+            fontes.add(f"RAGAS (juiz {r['juiz_ragas']})")
     if not fontes:
         return "_Faithfulness e answer relevancy: pendente._"
     return "_Faithfulness e answer relevancy medidos com: " + "; ".join(sorted(fontes)) + "._"
