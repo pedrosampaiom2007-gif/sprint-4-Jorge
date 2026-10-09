@@ -92,14 +92,39 @@ def atualizar_relatorio() -> None:
         print(f"[aviso] relatorio nao atualizado: {erro}")
 
 
+GERACAO: tuple[str, str] | None = None
+
+
+def _modelo_do_resultado(nome: str) -> tuple[str, str] | None:
+    import json
+
+    config = json.loads((PASTA / f"{nome}.json").read_text(encoding="utf-8"))["resumo"].get("config", {})
+    return (config.get("provedor"), config.get("modelo")) if config.get("modelo") else None
+
+
+def separar_se_outro_modelo(nome: str) -> None:
+    """Resultado feito com OUTRO modelo de geracao nao pode entrar na mesma tabela:
+    vai para <nome>__<provedor>.bak e a etapa roda de novo com o modelo atual."""
+    if not _existe(nome) or GERACAO is None or nome.startswith("modelo_"):
+        return
+    anterior = _modelo_do_resultado(nome)
+    if anterior and anterior != GERACAO:
+        destino = PASTA / f"{nome}__{anterior[0]}.bak"
+        (PASTA / f"{nome}.json").rename(destino)
+        print(f"{nome}.json era de {anterior[0]}:{anterior[1]} — guardado em {destino.name}; refazendo com "
+              f"{GERACAO[0]}:{GERACAO[1]} para a tabela comparar o mesmo modelo")
+
+
 def avaliar_com_rubrica(nome: str, gerar) -> None:
     from evals.fallback_manual import aplicar_rubrica_llm
 
+    separar_se_outro_modelo(nome)
     if not _existe(nome):
         gerar()
     else:
         print(f"{nome}.json ja existe — so completando a rubrica")
-    aplicar_rubrica_llm(nome, *JUIZ)
+    # o Gemini gratuito limita requisicoes por minuto: espaca mais as chamadas do juiz
+    aplicar_rubrica_llm(nome, *JUIZ, pausa=5.0 if JUIZ[0] == "gemini" else 2.0)
 
 
 ETAPAS = ["legado", "iter1", "iter2", "iter3", "modelos", "seguranca"]
@@ -121,9 +146,11 @@ def _situacao_avaliacao(nome: str) -> str:
     dados = json.loads((PASTA / f"{nome}.json").read_text(encoding="utf-8"))
     linhas = [l for l in dados.get("resultados", []) if l.get("docs_esperados")]
     com_nota = sum(1 for l in linhas if l.get("faithfulness_rubrica") is not None)
+    config = dados.get("resumo", {}).get("config", {})
+    modelo = f"{config.get('provedor')}:{config.get('modelo')}" if config.get("modelo") else "?"
     if com_nota < len(linhas):
-        return f"FALTA completar a rubrica ({com_nota}/{len(linhas)} notas) — rode a celula de novo"
-    return f"ok ({com_nota}/{len(linhas)} notas)"
+        return f"FALTA completar a rubrica ({com_nota}/{len(linhas)} notas, {modelo}) — rode a celula de novo"
+    return f"ok ({com_nota}/{len(linhas)} notas, {modelo})"
 
 
 def mostrar_status() -> None:
@@ -171,6 +198,8 @@ def main() -> None:
     import os
 
     geracao = tuple(args.geracao.split(":", 1)) if args.geracao else (ITERACAO_3.provedor, ITERACAO_3.modelo)
+    global GERACAO
+    GERACAO = geracao
     os.environ["RAG_PROVEDOR"], os.environ["RAG_MODELO"] = geracao
     print(f"modelo que responde: {geracao[0]}:{geracao[1]}  ·  juiz da rubrica: {JUIZ[0]}:{JUIZ[1]}")
 
