@@ -173,6 +173,14 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
 
     arred = lambda v: min(NOTAS_VALIDAS, key=lambda n: abs(n - float(v)))  # noqa: E731
     caminho, dados = _resultado(nome)
+    metodo = f"rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz {provedor}:{modelo}"
+    anterior = (dados["resumo"].get("fallback_manual") or {}).get("metodo")
+    if anterior and anterior != metodo:
+        # notas de outro juiz nao se misturam: refaz so as notas (as respostas ficam)
+        print(f"{nome}: notas eram de outro juiz ({anterior.rsplit(' ', 1)[-1]}); refazendo com {provedor}:{modelo}")
+        for linha in dados["resultados"]:
+            for campo in ("faithfulness_rubrica", "answer_relevancy_rubrica", "justificativa_rubrica"):
+                linha.pop(campo, None)
     # 600 tokens cortava a justificativa no meio e o JSON da nota vinha quebrado
     base = construir_llm(provedor, modelo, temperature=0.0, max_tokens=1500)
     # o endpoint compativel do Gemini aceita tool calling; json_schema nem sempre
@@ -222,7 +230,7 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
         "faithfulness": round(statistics.mean(faith), 3) if faith else None,
         "answer_relevancy": round(statistics.mean(relev), 3) if relev else None,
         "n_avaliados": len(faith),
-        "metodo": f"rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz {provedor}:{modelo}",
+        "metodo": metodo,
         "rubrica": str(RUBRICA.relative_to(_RAIZ)),
     }
     dados["resumo"]["fallback_manual"] = resumo
