@@ -138,6 +138,23 @@ def _trechos_da_linha(linha: dict) -> str:
     return linha.get("contexto") or "(nenhum trecho recuperado)"
 
 
+def _notas_em_texto(llm, pedido: str):
+    """Plano B quando o modelo nao devolve a saida estruturada: pede JSON em texto
+    e le os dois numeros."""
+    import re
+    from types import SimpleNamespace
+
+    resposta = llm.invoke(pedido + '\n\nResponda APENAS com JSON no formato '
+                          '{"faithfulness": 0.0, "answer_relevancy": 0.0, "justificativa": "..."}').content
+    numeros = {chave: re.search(rf'"{chave}"\s*:\s*([0-9.]+)', str(resposta))
+               for chave in ("faithfulness", "answer_relevancy")}
+    if not all(numeros.values()):
+        raise ValueError(f"juiz nao devolveu as notas: {str(resposta)[:200]}")
+    return SimpleNamespace(faithfulness=float(numeros["faithfulness"].group(1)),
+                           answer_relevancy=float(numeros["answer_relevancy"].group(1)),
+                           justificativa="(lido do texto) " + str(resposta)[:200])
+
+
 def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai/gpt-oss-120b",
                         pausa: float = 2.0) -> dict:
     """Aplica a rubrica em todos os casos com resposta na base e grava as notas no
@@ -161,14 +178,20 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
     # o endpoint compativel do Gemini aceita tool calling; json_schema nem sempre
     llm = base.with_structured_output(Notas, method="function_calling") if provedor == "gemini" \
         else base.with_structured_output(Notas)
+    from evals.avaliar_rag import parece_recusa
+
     for linha in dados["resultados"]:
-        if not linha.get("docs_esperados") or linha.get("faithfulness_rubrica") is not None:
+        if not linha.get("docs_esperados"):
             continue
-        if linha.get("barrado_por") or str(linha.get("resposta", "")).startswith("[ERRO"):
+        recusou = parece_recusa(str(linha.get("resposta_modelo") or linha.get("resposta", "")))
+        if linha.get("faithfulness_rubrica") is not None and not recusou:
+            continue
+        if recusou or linha.get("barrado_por") or str(linha.get("resposta", "")).startswith("[ERRO"):
             # nao respondeu uma pergunta que tinha resposta na base: nada falso foi
             # afirmado (faithfulness 1), mas a pergunta ficou sem resposta (relevancy 0)
             linha.update(faithfulness_rubrica=1.0, answer_relevancy_rubrica=0.0,
-                         justificativa_rubrica=f"sem resposta do modelo ({linha.get('barrado_por') or 'erro'})")
+                         justificativa_rubrica="recusou ou nao respondeu uma pergunta que tinha resposta na base "
+                                               "(regra da rubrica: faithfulness 1, relevancy 0)")
             continue
         pedido = (f"Voce e um avaliador rigoroso. Aplique a rubrica.\n\n{RUBRICA_RESUMIDA}\n\n"
                   f"PERGUNTA: {linha['pergunta']}\n\nTRECHOS:\n{_trechos_da_linha(linha)[:6000]}\n\n"
@@ -176,6 +199,8 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
         for tentativa in range(5):
             try:
                 notas = llm.invoke(pedido)
+                if notas is None:
+                    notas = _notas_em_texto(base, pedido)
                 linha.update(faithfulness_rubrica=arred(notas.faithfulness),
                              answer_relevancy_rubrica=arred(notas.answer_relevancy),
                              justificativa_rubrica=notas.justificativa)

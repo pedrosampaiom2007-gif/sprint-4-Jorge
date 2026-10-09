@@ -21,8 +21,9 @@ pelos trechos recuperados. A linha "Fontes:" não conta como afirmação.
 | 0,00 | Nenhuma afirmação tem apoio, ou alguma contradiz os trechos (número trocado, especificação inventada). |
 
 Resposta que recusa ("Não encontrei essa informação...") num caso que tinha resposta
-nos trechos recebe faithfulness 1 (não afirmou nada falso) e é punida em
-answer_relevancy.
+na base recebe faithfulness 1 (não afirmou nada falso) e answer relevancy 0 (a pergunta
+ficou sem resposta). Essa regra é aplicada em código, igual para todas as versões, sem
+passar pelo juiz.
 
 ## Answer relevancy (resposta trata do que foi perguntado)
 
