@@ -23,23 +23,34 @@ from evals.avaliar_rag import (
 from src.contexto import contar_tokens
 
 
+class _ClienteLangChain:
+    """Imita client.chat.completions.create do SDK da Groq usando um modelo
+    LangChain de qualquer provedor (src/llm/provedores.py)."""
+
+    def __init__(self, provedor: str, modelo: str) -> None:
+        self.provedor, self.modelo = provedor, modelo
+        self.chat = self
+        self.completions = self
+
+    def create(self, model=None, messages=None, max_tokens=450, temperature=0.4, **_):
+        from types import SimpleNamespace
+
+        from src.llm.provedores import construir_llm
+
+        llm = construir_llm(self.provedor, self.modelo, temperature=temperature, max_tokens=max_tokens)
+        papeis = {"system": "system", "user": "human", "assistant": "ai"}
+        texto = llm.invoke([(papeis[m["role"]], m["content"]) for m in messages]).content
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=str(texto)))])
+
+
 def usar_modelo(provedor: str, modelo: str) -> None:
     """O legado chama o SDK da Groq direto. Para comparar com as iteracoes no MESMO
-    modelo, troca o cliente por um compativel (mesma interface chat.completions)."""
-    if provedor == "groq":
-        legado.MODELO = modelo
-        return
-    if provedor != "gemini":
-        raise ValueError(f"o legado roda com groq ou gemini, nao com {provedor}")
-    import os
-
-    from openai import OpenAI
-
-    from src.llm.provedores import GEMINI_BASE_URL
-
-    cliente = OpenAI(base_url=GEMINI_BASE_URL, api_key=os.environ.get("GOOGLE_API_KEY", "") or "sem-chave")
+    modelo, troca o cliente por um adaptador com a mesma interface."""
     legado.MODELO = modelo
-    legado.obter_client = lambda: cliente
+    legado.PROVEDOR_AVALIACAO = provedor
+    if provedor != "groq":
+        cliente = _ClienteLangChain(provedor, modelo)
+        legado.obter_client = lambda: cliente
 
 
 def main(pausa: float = 16.0, com_ragas: bool = True) -> dict:
@@ -100,7 +111,7 @@ def main(pausa: float = 16.0, com_ragas: bool = True) -> dict:
         "nome": "legado_sprints12",
         "descricao": "chatbot das Sprints 1/2: busca por palavra-chave em frases da planilha SP2, prompt v1, sem citacao",
         "config": {"versao_prompt": "legado (Sprints 1/2)", "estrategia_chunking": "frases soltas (sem chunking)",
-                   "k": 5, "provedor": "groq" if not str(legado.MODELO).startswith("gemini") else "gemini",
+                   "k": 5, "provedor": getattr(legado, "PROVEDOR_AVALIACAO", "groq"),
                    "modelo": legado.MODELO, "temperature": legado.TEMPERATURA},
         "juiz_ragas": f"{JUIZ_PADRAO[0]}:{JUIZ_PADRAO[1]}" if com_ragas else None,
         "n_casos": len(linhas),

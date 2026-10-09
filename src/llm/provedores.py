@@ -4,7 +4,8 @@ de modelo e trocar o par (provedor, modelo).
 
     groq    ChatGroq — openai/gpt-oss-20b (producao) e openai/gpt-oss-120b
     ollama  ChatOllama na Ollama Cloud — gemma4:cloud
-    gemini  Google AI Studio (endpoint compativel com OpenAI) — gemini-2.5-flash-lite
+    gemini  Google AI Studio (endpoint compativel com OpenAI) — o primeiro de GEMINI_CANDIDATOS
+            que a chave aceitar (o Google tira modelos antigos de contas novas)
 
 Parametros documentados em docs/relatorio_modelos.md.
 """
@@ -21,8 +22,11 @@ MODELOS_DISPONIVEIS: list[tuple[str, str]] = [
     ("groq", "openai/gpt-oss-20b"),
     ("groq", "openai/gpt-oss-120b"),
     ("ollama", "gemma4:cloud"),
-    ("gemini", "gemini-2.5-flash-lite"),
+    ("gemini", os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")),
 ]
+
+GEMINI_CANDIDATOS = ["gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-3-flash",
+                     "gemini-2.5-flash", "gemini-2.0-flash"]
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 

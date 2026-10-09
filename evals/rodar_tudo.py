@@ -6,7 +6,7 @@ tabelas e o PDF.
     python -m evals.rodar_tudo --modelos groq:openai/gpt-oss-20b groq:openai/gpt-oss-120b
     python -m evals.rodar_tudo --refazer          # apaga os resultados e comeca do zero
     python -m evals.rodar_tudo --juiz groq:openai/gpt-oss-20b   # outro juiz (cota diaria)
-    python -m evals.rodar_tudo --geracao gemini:gemini-2.5-flash-lite --juiz gemini:gemini-2.5-flash-lite
+    python -m evals.rodar_tudo --geracao ollama:gemma4:cloud --juiz ollama:gemma4:cloud
 
 --geracao troca o modelo que RESPONDE em todas as etapas (legado, iteracoes e
 seguranca), para a comparacao antes/depois continuar no mesmo modelo.
