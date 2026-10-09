@@ -228,7 +228,7 @@ def substituir_marcadores(texto: str, tabelas: dict[str, str]) -> str:
     return texto
 
 
-def consolidar(gerar_pdf: bool = True) -> dict[str, str]:
+def consolidar(gerar_pdf: bool = True, silencioso: bool = False) -> dict[str, str]:
     tabelas = {nome: f() for nome, f in TABELAS.items()}
     historico = (
         "# Histórico de scores do RAG\n\n"
@@ -249,7 +249,8 @@ def consolidar(gerar_pdf: bool = True) -> dict[str, str]:
             gerar()
         except Exception as erro:  # noqa: BLE001
             print(f"[aviso] PDF nao gerado: {erro}")
-    print(historico)
+    if not silencioso:
+        print(historico)
     return tabelas
 
 

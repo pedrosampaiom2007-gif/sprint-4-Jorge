@@ -23,6 +23,11 @@ disponiveis (evals.run_iteracoes, evals.run_modelos).
 
 Retoma de onde parou: etapa com resultado ja gravado e pulada, e a rubrica so
 avalia os casos que ainda nao tem nota. Se cair no meio, e so rodar de novo.
+
+Depois de CADA etapa que termina, as tabelas e o docs/relatorio_evolucao.pdf sao
+regerados. Com COPIAR_PDF_PARA=<pasta> no ambiente (o notebook usa o Google Drive),
+o PDF e copiado para la na hora — se a cota acabar no meio, o PDF que fica e o
+mais atual.
 """
 
 from __future__ import annotations
@@ -53,8 +58,10 @@ def etapa(titulo: str, funcao, *args, **kwargs) -> bool:
     print(f"\n{'=' * 70}\n{titulo}\n{'=' * 70}", flush=True)
     try:
         funcao(*args, **kwargs)
+        atualizar_relatorio()
         return True
     except CotaEsgotada as erro:
+        atualizar_relatorio()
         # as proximas etapas usam a mesma conta: tentar seria so esperar e falhar
         print(f"\n[PAROU] {erro}")
         raise SystemExit(1)
@@ -64,6 +71,23 @@ def etapa(titulo: str, funcao, *args, **kwargs) -> bool:
         traceback.print_exc()
         print(f"[falhou] {titulo} — rode o comando de novo para tentar so o que faltou")
     return False
+
+
+def atualizar_relatorio() -> None:
+    """Regera tabelas e PDF com o que ja terminou e copia o PDF, se pedido."""
+    import os
+    import shutil
+
+    from evals.consolidar import consolidar
+
+    try:
+        consolidar(gerar_pdf=True, silencioso=True)
+        destino = os.environ.get("COPIAR_PDF_PARA", "").strip()
+        if destino:
+            shutil.copy(_RAIZ / "docs" / "relatorio_evolucao.pdf", Path(destino) / "relatorio_evolucao.pdf")
+        print(f"[relatorio atualizado{' e copiado para ' + destino if destino else ''}]", flush=True)
+    except Exception as erro:  # noqa: BLE001  (relatorio nunca derruba a avaliacao)
+        print(f"[aviso] relatorio nao atualizado: {erro}")
 
 
 def avaliar_com_rubrica(nome: str, gerar) -> None:
@@ -78,7 +102,6 @@ def avaliar_com_rubrica(nome: str, gerar) -> None:
 
 def main() -> None:
     from evals.avaliar_rag import avaliar
-    from evals.consolidar import consolidar
     from evals.run_iteracoes import DESCRICOES
     from evals.run_modelos import slug
     from src.llm.provedores import MODELOS_DISPONIVEIS
@@ -145,7 +168,7 @@ def main() -> None:
             "Bateria de seguranca da Sprint 3", subprocess.run,
             [sys.executable, "-m", "evals.run_evals", "--sem-juiz", "--modelo", geracao[1]], check=True, cwd=_RAIZ)
 
-    etapa("Tabelas e PDF", consolidar)
+    etapa("Tabelas e PDF", lambda: None)
 
     falhas = [k for k, ok in status.items() if not ok]
     print("\n" + ("Tudo certo." if not falhas else f"Etapas que falharam: {', '.join(falhas)} — rode de novo."))
