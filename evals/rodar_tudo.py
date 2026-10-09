@@ -54,7 +54,7 @@ def _existe(nome: str) -> bool:
     return (PASTA / f"{nome}.json").exists()
 
 
-def etapa(titulo: str, funcao, *args, **kwargs) -> bool:
+def etapa(titulo: str, funcao, *args, parar_sem_cota: bool = True, **kwargs) -> bool:
     from evals.avaliar_rag import CotaEsgotada
 
     print(f"\n{'=' * 70}\n{titulo}\n{'=' * 70}", flush=True)
@@ -64,6 +64,10 @@ def etapa(titulo: str, funcao, *args, **kwargs) -> bool:
         return True
     except CotaEsgotada as erro:
         atualizar_relatorio()
+        if not parar_sem_cota:
+            # comparacao de modelos: a cota e por modelo, os outros ainda podem rodar
+            print(f"\n[sem cota, pulado] {titulo}: {erro}")
+            return False
         # as proximas etapas usam a mesma conta: tentar seria so esperar e falhar
         print(f"\n[PAROU] {erro}")
         raise SystemExit(1)
@@ -240,7 +244,8 @@ def main() -> None:
             (PASTA / f"{nome}.json").write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
         status[nome] = etapa(f"Modelo {item}", avaliar_com_rubrica, nome,
                              lambda cfg=cfg, nome=nome, item=item: avaliar(cfg, nome, com_ragas=False,
-                                                                            descricao=f"iter3 com {item}"))
+                                                                            descricao=f"iter3 com {item}"),
+                             parar_sem_cota=False)
 
     if quer("seguranca") and not _existe("seguranca_documentos"):
         from evals import seguranca_documentos
