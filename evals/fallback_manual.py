@@ -152,11 +152,12 @@ def aplicar_rubrica_llm(nome: str, provedor: str = "groq", modelo: str = "openai
     class Notas(BaseModel):
         faithfulness: float = Field(description="0, 0.25, 0.5, 0.75 ou 1")
         answer_relevancy: float = Field(description="0, 0.25, 0.5, 0.75 ou 1")
-        justificativa: str = Field(description="uma frase")
+        justificativa: str = Field(description="uma frase curta, de no maximo 25 palavras")
 
     arred = lambda v: min(NOTAS_VALIDAS, key=lambda n: abs(n - float(v)))  # noqa: E731
     caminho, dados = _resultado(nome)
-    base = construir_llm(provedor, modelo, temperature=0.0, max_tokens=600)
+    # 600 tokens cortava a justificativa no meio e o JSON da nota vinha quebrado
+    base = construir_llm(provedor, modelo, temperature=0.0, max_tokens=1500)
     # o endpoint compativel do Gemini aceita tool calling; json_schema nem sempre
     llm = base.with_structured_output(Notas, method="function_calling") if provedor == "gemini" \
         else base.with_structured_output(Notas)
