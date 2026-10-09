@@ -5,6 +5,8 @@ tabelas e o PDF.
     python -m evals.rodar_tudo
     python -m evals.rodar_tudo --modelos groq:openai/gpt-oss-20b groq:openai/gpt-oss-120b
     python -m evals.rodar_tudo --refazer          # apaga os resultados e comeca do zero
+    python -m evals.rodar_tudo --so iter2         # so uma etapa (legado, iter1, iter2, iter3, modelos, seguranca)
+    python -m evals.rodar_tudo --status           # o que ja terminou e o que falta
     python -m evals.rodar_tudo --juiz groq:openai/gpt-oss-20b   # outro juiz (cota diaria)
     python -m evals.rodar_tudo --geracao ollama:gemma4:cloud --juiz ollama:gemma4:cloud
 
@@ -100,6 +102,48 @@ def avaliar_com_rubrica(nome: str, gerar) -> None:
     aplicar_rubrica_llm(nome, *JUIZ)
 
 
+ETAPAS = ["legado", "iter1", "iter2", "iter3", "modelos", "seguranca"]
+NOMES_ETAPAS = {
+    "legado": "Antes: chatbot das Sprints 1/2",
+    "iter1": "Iteracao 1",
+    "iter2": "Iteracao 2",
+    "iter3": "Iteracao 3",
+    "modelos": "Comparacao de modelos",
+    "seguranca": "Testes de seguranca",
+}
+
+
+def _situacao_avaliacao(nome: str) -> str:
+    import json
+
+    if not _existe(nome):
+        return "FALTA rodar"
+    dados = json.loads((PASTA / f"{nome}.json").read_text(encoding="utf-8"))
+    linhas = [l for l in dados.get("resultados", []) if l.get("docs_esperados")]
+    com_nota = sum(1 for l in linhas if l.get("faithfulness_rubrica") is not None)
+    if com_nota < len(linhas):
+        return f"FALTA completar a rubrica ({com_nota}/{len(linhas)} notas) — rode a celula de novo"
+    return f"ok ({com_nota}/{len(linhas)} notas)"
+
+
+def mostrar_status() -> None:
+    """Checklist das etapas: o que ja terminou e o que falta executar."""
+    print("\nSITUACAO DAS ETAPAS")
+    for etapa_ in ETAPAS:
+        if etapa_ == "modelos":
+            arquivos = sorted(PASTA.glob("modelo_*.json"))
+            texto = ", ".join(f"{a.stem.replace('modelo_', '')}: {_situacao_avaliacao(a.stem)}" for a in arquivos) \
+                or "FALTA rodar"
+        elif etapa_ == "seguranca":
+            feitos = [n for n in ("seguranca_documentos", "seguranca_sprint4") if _existe(n)]
+            texto = "ok" if len(feitos) == 2 else f"FALTA rodar ({len(feitos)}/2 testes feitos)"
+        else:
+            texto = _situacao_avaliacao("legado_sprints12" if etapa_ == "legado" else etapa_)
+        marca = "[ok]   " if texto.startswith("ok") else "[falta]"
+        print(f"  {marca} {NOMES_ETAPAS[etapa_]:<32} {texto}")
+    print()
+
+
 def main() -> None:
     from evals.avaliar_rag import avaliar
     from evals.run_iteracoes import DESCRICOES
@@ -114,7 +158,13 @@ def main() -> None:
     ap.add_argument("--refazer", action="store_true", help="apaga os resultados anteriores")
     ap.add_argument("--juiz", default=JUIZ_PADRAO, help="provedor:modelo que aplica a rubrica")
     ap.add_argument("--geracao", default=None, help="provedor:modelo que responde (padrao: o da iteracao 3)")
+    ap.add_argument("--so", nargs="*", choices=ETAPAS, help="roda so estas etapas")
+    ap.add_argument("--status", action="store_true", help="mostra o que ja terminou e sai")
     args = ap.parse_args()
+    if args.status:
+        mostrar_status()
+        return
+    quer = (lambda e: e in args.so) if args.so else (lambda e: True)
     global JUIZ
     JUIZ = tuple(args.juiz.split(":", 1))
 
@@ -130,20 +180,24 @@ def main() -> None:
                 arquivo.unlink()
 
     status = {}
-    status["indexacao"] = etapa("Indexacao da base", lambda: [print(indexar(e)) for e in ESTRATEGIAS])
+    if not args.so:
+        status["indexacao"] = etapa("Indexacao da base", lambda: [print(indexar(e)) for e in ESTRATEGIAS])
 
     from evals import run_legado_rag
 
     run_legado_rag.usar_modelo(*geracao)
-    status["legado"] = etapa("Antes: chatbot das Sprints 1/2", avaliar_com_rubrica, "legado_sprints12",
-                             lambda: run_legado_rag.main(com_ragas=False))
+    if quer("legado"):
+        status["legado"] = etapa("Antes: chatbot das Sprints 1/2", avaliar_com_rubrica, "legado_sprints12",
+                                 lambda: run_legado_rag.main(com_ragas=False))
 
     for nome, cfg in ITERACOES.items():
+        if not quer(nome):
+            continue
         cfg = cfg.com(provedor=geracao[0], modelo=geracao[1])
         status[nome] = etapa(f"Sprint 4: {nome} — {DESCRICOES[nome]}", avaliar_com_rubrica, nome,
                              lambda cfg=cfg, nome=nome: avaliar(cfg, nome, com_ragas=False, descricao=DESCRICOES[nome]))
 
-    for item in args.modelos:
+    for item in (args.modelos if quer("modelos") else []):
         provedor, modelo = item.split(":", 1)
         nome = slug(provedor, modelo)
         cfg = ITERACAO_3.com(provedor=provedor, modelo=modelo)
@@ -159,19 +213,21 @@ def main() -> None:
                              lambda cfg=cfg, nome=nome, item=item: avaliar(cfg, nome, com_ragas=False,
                                                                             descricao=f"iter3 com {item}"))
 
-    if not _existe("seguranca_documentos"):
+    if quer("seguranca") and not _existe("seguranca_documentos"):
         from evals import seguranca_documentos
 
         status["seguranca_documentos"] = etapa("Injecao via documento", seguranca_documentos.main)
-    if not _existe("seguranca_sprint4"):
+    if quer("seguranca") and not _existe("seguranca_sprint4"):
         status["seguranca_sprint4"] = etapa(
             "Bateria de seguranca da Sprint 3", subprocess.run,
             [sys.executable, "-m", "evals.run_evals", "--sem-juiz", "--modelo", geracao[1]], check=True, cwd=_RAIZ)
 
-    etapa("Tabelas e PDF", lambda: None)
+    if not args.so:
+        etapa("Tabelas e PDF", lambda: None)
 
     falhas = [k for k, ok in status.items() if not ok]
-    print("\n" + ("Tudo certo." if not falhas else f"Etapas que falharam: {', '.join(falhas)} — rode de novo."))
+    print("\n" + ("Etapa(s) concluida(s)." if not falhas else f"Etapas que falharam: {', '.join(falhas)} — rode de novo."))
+    mostrar_status()
 
 
 if __name__ == "__main__":
