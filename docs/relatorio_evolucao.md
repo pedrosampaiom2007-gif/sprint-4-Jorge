@@ -62,21 +62,26 @@ tabela informa se as notas vieram do RAGAS ou da rubrica de fallback
 (`evals/fallback/rubrica_manual.md`, com a equivalência justificada no próprio arquivo).
 
 <!-- AUTO:antes_depois -->
-| Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
-|---|---|---|
-| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
-| Faithfulness | pendente | pendente |
-| Faithfulness por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
-| Answer relevancy | pendente | pendente |
-| Answer relevancy por iteração | versão única | it1 pendente → it2 pendente → it3 pendente |
-| Qualidade do contexto recuperado (documento certo entre os trechos) | pendente | pendente |
-| Presença de citação de fonte | pendente | pendente |
-| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | pendente | pendente |
-| Checagens determinísticas OK | pendente | pendente |
-| Latência média por turno | pendente | pendente |
-| Tokens por turno (média) | pendente | pendente |
+| Critério | Sprints 1/2 (versão original) | Sprint 04 — iteração 1 | Sprint 04 — iteração 2 | Sprint 04 — iteração 3 |
+|---|---|---|---|---|
+| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial, chunk fixo 1000 | busca vetorial, chunk por seção 500 | busca vetorial + reescrita da pergunta |
+| Faithfulness (rubrica) | 0,20 | 1,00 | pendente | pendente |
+| Answer relevancy (rubrica) | 0,91 | 0,76 | pendente | pendente |
+| Qualidade do contexto (documento certo entre os trechos) | 10% trouxe algum contexto | 75% | 85% | pendente |
+| Presença de citação de fonte | 0% | 0% | 100% | pendente |
+| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | 100% | 100% | pendente |
+| Checagens determinísticas OK | 46% | 67% | 71% | pendente |
+| Latência média por turno | 0,59 s | 10,42 s* | 6,24 s | pendente |
+| Tokens por turno (média) | 1289 | 2501 | 1842 | pendente |
 
-_Faithfulness e answer relevancy: pendente._
+_Resultado PARCIAL. Modelo que respondeu: groq:openai/gpt-oss-20b; faithfulness e answer
+relevancy pela rubrica de fallback (`evals/fallback/rubrica_manual.md`) aplicada por LLM-juiz
+groq:openai/gpt-oss-120b. Sprints 1/2 e iteração 1: execução de 09/10 (iteração 1 com 17
+de 20 casos avaliados pelo juiz; as recusas a perguntas com resposta na base receberam
+relevancy 0, como manda a rubrica). Iteração 2: métricas sem juiz da execução de 08/10, que
+gerou as 24 respostas; as notas do juiz não saíram porque a cota diária da Groq acabou.
+\* latência da iteração 1 inflada pela espera do limite de requisições por minuto. Esta
+tabela é substituída automaticamente quando `python -m evals.rodar_tudo` terminar._
 <!-- /AUTO:antes_depois -->
 
 **Iterações do RAG** (o ganho de cada uma é atribuído à mudança listada):
@@ -86,13 +91,19 @@ _Faithfulness e answer relevancy: pendente._
 - **Iteração 2:** chunk por seção 500/75 com cabeçalho, prompt rag_v2 (grounding + citação), limiar 0,45, recusa em código.
 - **Iteração 3:** prompt rag_v3 com exemplos + reescrita da pergunta encadeada.
 
-| Iteração | Faithfulness | Ganho | Answer relevancy | Ganho | Recuperação (hit@k) | Citação | Modelo citou [n] | Recusa correta |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Iteração 1 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
-| Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
-| Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+| Iteração | Faithfulness | Answer relevancy | Recuperação (hit@k) | Citação | Recusa correta | Checagens OK |
+|---|---:|---:|---:|---:|---:|---:|
+| Sprints 1/2 (antes) | 0,20 | 0,91 | 10% | 0% | 100% | 46% |
+| Iteração 1 | 1,00 | 0,76 | 75% | 0% | 100% | 67% |
+| Iteração 2 | pendente | pendente | 85% | 100% | 100% | 71% |
+| Iteração 3 | pendente | pendente | pendente | pendente | pendente | pendente |
 
-_Faithfulness e answer relevancy: pendente._
+**Leitura parcial.** Do chatbot antigo para o RAG, a fidelidade sobe de 0,20 para 1,00: o
+legado respondia "de cabeça" e quase nada do que dizia estava nos documentos. A relevância
+cai de 0,91 para 0,76 porque, na iteração 1, quando a busca não acha o documento certo o
+modelo recusa em vez de inventar — e recusa a uma pergunta que tinha resposta conta como
+relevância 0. A iteração 2 ataca exatamente isso: a recuperação sobe de 75% para 85% com o
+chunk por seção, e a citação de fonte vai de 0% para 100%.
 <!-- /AUTO:iteracoes -->
 
 **Segurança:**
