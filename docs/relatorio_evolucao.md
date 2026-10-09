@@ -18,9 +18,9 @@ PROMOB-e, e os documentos do próprio ChargeGrid) são divididos em chunks, veto
 com **nomic-embed-text** e guardados num **ChromaDB persistente**. Toda resposta cita
 documento e seção, pergunta sem resposta na base é recusada em código, e instrução
 escondida dentro de documento é removida antes de chegar ao modelo. O resultado é
-medido em três iterações — faithfulness e answer relevancy pelo **RAGAS** ou, quando o
-RAGAS não roda no ambiente, pela **rubrica equivalente de fallback** — e aparece numa
-**interface web** (Gradio) com as fontes visíveis.
+medido em três iterações — faithfulness e answer relevancy pela **rubrica manual de
+fallback** (`evals/fallback/rubrica_manual.md`), aplicada por um LLM-juiz — e aparece
+numa **interface web** (Gradio) com as fontes visíveis.
 
 ## 2. Pipeline RAG
 
@@ -55,33 +55,53 @@ descartado; calibrado por `evals/calibrar_limiar.py`), temperatura 0. Detalhes e
 
 ## 3. Comparativo antes/depois
 
-Mesmo eval set (`evals/eval_set_rag.json`, 24 casos: 16 com resposta nos documentos, 2
-de gestão, 2 perguntas encadeadas, 2 sem resposta na base, 1 fora de escopo e 1 de dado
-restrito), mesmo juiz e mesma rubrica para as duas versões. A linha abaixo de cada
-tabela informa se as notas vieram do RAGAS ou da rubrica de fallback
-(`evals/fallback/rubrica_manual.md`, com a equivalência justificada no próprio arquivo).
+**Como medimos.** Mesmo eval set (`evals/eval_set_rag.json`, 24 casos: 16 com resposta
+nos documentos, 2 de gestão, 2 perguntas encadeadas, 2 sem resposta na base, 1 fora de
+escopo e 1 de dado restrito), mesmo modelo respondendo, mesmo juiz e mesma rubrica para
+todas as versões.
+
+- **Avaliação: rubrica manual aplicada por LLM-juiz, no lugar do RAGAS.** O RAGAS
+  precisa do juiz e dos embeddings ao mesmo tempo, com chamadas em paralelo, e não
+  terminava dentro do limite da conta gratuita. Usamos então a rubrica de fallback
+  (`evals/fallback/rubrica_manual.md`), com notas de 0 a 1 em passos de 0,25 para
+  faithfulness e answer relevancy. A equivalência com o RAGAS está justificada no próprio
+  arquivo. O juiz recebe pergunta, trechos e resposta e devolve as duas notas. Recusar
+  uma pergunta que tinha resposta na base vale faithfulness 1 e relevancy 0, regra
+  aplicada em código, igual para todas as versões. O juiz de cada etapa (temperatura 0,
+  `max_tokens` 1500) aparece na última coluna da tabela abaixo.
+- **Embeddings no Ollama local.** O `nomic-embed-text` rodou num servidor Ollama
+  instalado dentro do Colab (`http://127.0.0.1:11434`), porque a Ollama Cloud recusava
+  as chamadas de embedding (HTTP 401). É o mesmo modelo, com os prefixos
+  `search_document:`/`search_query:`. Só muda onde ele roda.
+- **Modelos e parâmetros** de cada etapa (lidos dos arquivos de resultado):
+
+<!-- AUTO:metodologia -->
+| Etapa | Modelo que respondeu | temperature | top_p | max_tokens | k | Prompt | Juiz da rubrica |
+|---|---|---:|---:|---:|---:|---|---|
+| Sprints 1/2 | groq:openai/gpt-oss-20b | 0,4 | 1,0 | 450 | 5 | legado (Sprints 1/2) | gemini:gemini-3.1-flash-lite |
+| Iteração 1 | groq:openai/gpt-oss-20b | 0,0 | 1,0 | 450 | 3 | rag_v1 | gemini:gemini-3.1-flash-lite |
+| Iteração 2 | pendente | | | | | | |
+| Iteração 3 | pendente | | | | | | |
+<!-- /AUTO:metodologia -->
+
+**Tabela antes/depois** (Sprints 1/2 × Sprint 04, a coluna da Sprint 04 é a iteração 3):
 
 <!-- AUTO:antes_depois -->
-| Critério | Sprints 1/2 (versão original) | Sprint 04 — iteração 1 | Sprint 04 — iteração 2 | Sprint 04 — iteração 3 |
-|---|---|---|---|---|
-| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial, chunk fixo 1000 | busca vetorial, chunk por seção 500 | busca vetorial + reescrita da pergunta |
-| Faithfulness (rubrica) | 0,20 | 1,00 | pendente | pendente |
-| Answer relevancy (rubrica) | 0,91 | 0,76 | pendente | pendente |
-| Qualidade do contexto (documento certo entre os trechos) | 10% trouxe algum contexto | 75% | 85% | pendente |
-| Presença de citação de fonte | 0% | 0% | 100% | pendente |
-| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | 100% | 100% | pendente |
-| Checagens determinísticas OK | 46% | 67% | 71% | pendente |
-| Latência média por turno | 0,59 s | 10,42 s* | 6,24 s | pendente |
-| Tokens por turno (média) | 1289 | 2501 | 1842 | pendente |
+| Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
+|---|---|---|
+| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
+| Faithfulness | 0,350 | pendente |
+| Faithfulness por iteração | versão única | it1 0,84 → it2 pendente → it3 pendente |
+| Answer relevancy | 0,812 | pendente |
+| Answer relevancy por iteração | versão única | it1 0,68 → it2 pendente → it3 pendente |
+| Qualidade do contexto recuperado (documento certo entre os trechos) | 10% das perguntas trouxeram algum contexto (sem documento a conferir) | pendente |
+| Presença de citação de fonte | 0% | pendente |
+| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | pendente |
+| Checagens determinísticas OK | 46% | pendente |
+| Latência média por turno | 0,59 s | pendente |
+| Tokens por turno (média) | 1289 | pendente |
 
-_Resultado PARCIAL. Modelo que respondeu: groq:openai/gpt-oss-20b; faithfulness e answer
-relevancy pela rubrica de fallback (`evals/fallback/rubrica_manual.md`) aplicada por LLM-juiz
-groq:openai/gpt-oss-120b. Sprints 1/2 e iteração 1: execução de 09/10 (iteração 1 com 17
-de 20 casos avaliados pelo juiz; as recusas a perguntas com resposta na base receberam
-relevancy 0, como manda a rubrica). Iteração 2: métricas sem juiz da execução de 08/10, que
-gerou as 24 respostas; as notas do juiz não saíram porque a cota diária da Groq acabou.
-\* latência da iteração 1 inflada pela espera do limite de requisições por minuto. Esta
-tabela é substituída automaticamente quando `python -m evals.rodar_tudo` terminar._
+_Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:antes_depois -->
 
 **Iterações do RAG** (o ganho de cada uma é atribuído à mudança listada):
@@ -91,20 +111,27 @@ tabela é substituída automaticamente quando `python -m evals.rodar_tudo` termi
 - **Iteração 2:** chunk por seção 500/75 com cabeçalho, prompt rag_v2 (grounding + citação), limiar 0,45, recusa em código.
 - **Iteração 3:** prompt rag_v3 com exemplos + reescrita da pergunta encadeada.
 
-| Iteração | Faithfulness | Answer relevancy | Recuperação (hit@k) | Citação | Recusa correta | Checagens OK |
-|---|---:|---:|---:|---:|---:|---:|
-| Sprints 1/2 (antes) | 0,20 | 0,91 | 10% | 0% | 100% | 46% |
-| Iteração 1 | 1,00 | 0,76 | 75% | 0% | 100% | 67% |
-| Iteração 2 | pendente | pendente | 85% | 100% | 100% | 71% |
-| Iteração 3 | pendente | pendente | pendente | pendente | pendente | pendente |
+| Iteração | Faithfulness | Ganho | Answer relevancy | Ganho | Recuperação (hit@k) | Citação | Modelo citou [n] | Recusa correta |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Iteração 1 | 0,838 | — | 0,675 | — | 75% | 0% | 0% | 100% |
+| Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+| Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 
-**Leitura parcial.** Do chatbot antigo para o RAG, a fidelidade sobe de 0,20 para 1,00: o
-legado respondia "de cabeça" e quase nada do que dizia estava nos documentos. A relevância
-cai de 0,91 para 0,76 porque, na iteração 1, quando a busca não acha o documento certo o
-modelo recusa em vez de inventar — e recusa a uma pergunta que tinha resposta conta como
-relevância 0. A iteração 2 ataca exatamente isso: a recuperação sobe de 75% para 85% com o
-chunk por seção, e a citação de fonte vai de 0% para 100%.
+_Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:iteracoes -->
+
+**Leitura dos resultados.** Do chatbot antigo para a iteração 1, a faithfulness sobe de
+0,35 para 0,84. O legado respondia "de cabeça": em 13 dos 20 casos com resposta na base
+nenhum trecho sustentava o que ele disse. A answer relevancy cai de 0,81 para 0,68, e
+isso tem uma causa: o legado responde tudo (bem ou mal), enquanto a iteração 1
+recusa quando a busca não traz o documento certo. Os 5 casos sem recuperação da iteração 1
+(hit@k 75%) são todos do manual GoodWe HCA (grau IP, modos de recarga, corrente mínima,
+carro monofásico e a encadeada "e o do plugue?"). Em 4 deles o modelo recusou, e recusa
+a uma pergunta que tinha resposta vale relevancy 0 pela rubrica. No quinto respondeu sem
+apoio nos trechos e levou 0 nas duas notas. A iteração 2 ataca exatamente essa falha
+de recuperação (chunk por seção com cabeçalho do documento), e a iteração 3 ataca a
+pergunta encadeada (reescrita antes da busca). Os números delas entram aqui quando a
+medição terminar.
 
 **Segurança:**
 

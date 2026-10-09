@@ -42,6 +42,7 @@ from src.contexto import contar_tokens  # noqa: E402
 from src.llm.provedores import chaves_faltando, construir_llm  # noqa: E402
 from src.rag.citacao import e_recusa, referencias_citadas  # noqa: E402
 from src.rag.config import ITERACOES, ConfigRAG  # noqa: E402
+from src.rag.embeddings import MODELO_EMBEDDING, endpoint_embeddings  # noqa: E402
 from src.rag.vector_store import indexar  # noqa: E402
 
 _RAIZ = Path(__file__).resolve().parent.parent
@@ -226,6 +227,7 @@ def avaliar(cfg: ConfigRAG, nome: str, *, com_ragas: bool = True, juiz: tuple[st
         "nome": nome,
         "descricao": descricao,
         "config": cfg.como_dict(),
+        "embeddings": f"{MODELO_EMBEDDING} via Ollama em {endpoint_embeddings()}",
         "juiz_ragas": f"{juiz[0]}:{juiz[1]}" if com_ragas else None,
         "n_casos": len(linhas),
         "n_ragas": sum(1 for l in linhas if l["faithfulness"] is not None),

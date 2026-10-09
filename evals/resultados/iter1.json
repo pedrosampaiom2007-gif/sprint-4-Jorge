@@ -1,0 +1,1374 @@
+{
+  "resumo": {
+    "nome": "iter1",
+    "descricao": "linha de base: chunk fixo de 1000, prompt rag_v1, k=3, sem guardas em codigo",
+    "config": {
+      "estrategia_chunking": "fixo_1000",
+      "k": 3,
+      "limiar_relevancia": 0.0,
+      "versao_prompt": "rag_v1",
+      "reescrever_pergunta": false,
+      "recusa_sem_contexto": false,
+      "blindagem_documentos": false,
+      "citacao_garantida": false,
+      "provedor": "groq",
+      "modelo": "openai/gpt-oss-20b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "max_tokens": 450
+    },
+    "juiz_ragas": null,
+    "n_casos": 24,
+    "n_ragas": 0,
+    "faithfulness": null,
+    "answer_relevancy": null,
+    "recuperacao_hit": 0.75,
+    "citacao_presente": 0.0,
+    "modelo_citou": 0.0,
+    "respondeu_fundamentadas": 0.8,
+    "recusa_correta": 1.0,
+    "checagens_ok": 0.667,
+    "latencia_media_s": 10.421,
+    "tokens_turno_medio": 2500.625,
+    "fallback_manual": {
+      "faithfulness": 0.838,
+      "answer_relevancy": 0.675,
+      "n_avaliados": 20,
+      "metodo": "rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite",
+      "rubrica": "evals/fallback/rubrica_manual.md"
+    }
+  },
+  "resultados": [
+    {
+      "id": 1,
+      "categoria": "fundamentada",
+      "pergunta": "Como é cobrada a recarga no ChargeGrid?",
+      "pergunta_busca": "Como é cobrada a recarga no ChargeGrid?",
+      "resposta": "A recarga é cobrada assim:\n\n- A energia de cada sessão é medida pelo ChargeGrid e faturada na conta do usuário ou da unidade que fez a recarga.\n- O valor segue a tarifa dinâmica da Tabela Tarifária do ChargeGrid.\n- O pagamento pode ser feito por Pix ou cartão de crédito.\n- Cada sessão gera 5 % de cashback que aparece em “Meus pagamentos”.\n\nPrecisa saber como funciona o cashback ou a tarifa dinâmica?",
+      "resposta_modelo": "A recarga é cobrada assim:\n\n- A energia de cada sessão é medida pelo ChargeGrid e faturada na conta do usuário ou da unidade que fez a recarga.\n- O valor segue a tarifa dinâmica da Tabela Tarifária do ChargeGrid.\n- O pagamento pode ser feito por Pix ou cartão de crédito.\n- Cada sessão gera 5 % de cashback que aparece em “Meus pagamentos”.\n\nPrecisa saber como funciona o cashback ou a tarifa dinâmica?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Modelo de regimento para recarga compartilhada em condomínio › Cobrança e rateio",
+          "doc_id": "regimento_condominial_recarga",
+          "chunk_id": "regimento_condominial_recarga:cobranca-e-rateio:1",
+          "score": 0.7811,
+          "suspeito": false,
+          "url": "",
+          "texto": "- A energia de cada sessão é medida pelo ChargeGrid e cobrada da unidade que fez a recarga,\npela tarifa definida em assembleia.\n- O valor das recargas é lançado na cobrança mensal da unidade.\n- Os custos de manutenção dos carregadores são rateados conforme aprovado em assembleia."
+        },
+        {
+          "citacao": "FAQ de recarga para motoristas › Qual a diferença entre recarga AC e DC?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:qual-a-diferenca-entre-recarga-ac-e-dc:1",
+          "score": 0.751,
+          "suspeito": false,
+          "url": "",
+          "texto": "Na recarga AC (corrente alternada), o carregador entrega corrente alternada e quem a converte\npara a bateria é o carregador de bordo do próprio carro; a velocidade fica limitada pela\npotência desse carregador de bordo. Na recarga DC (corrente contínua), a conversão é feita no\npróprio carregador do posto, que entrega corrente contínua direto para a bateria, e por isso\ncostuma ser mais rápida.\n\nNa rede de referência do ChargeGrid há carregadores AC de 7,4 kW e de 11 kW e carregadores DC\nde 22 kW."
+        },
+        {
+          "citacao": "FAQ de recarga para motoristas › Como pago a recarga?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:como-pago-a-recarga:1",
+          "score": 0.7463,
+          "suspeito": false,
+          "url": "",
+          "texto": "A sessão é cobrada por kWh consumido, com a tarifa dinâmica da Tabela Tarifária do ChargeGrid,\ne pode ser paga por Pix ou cartão de crédito. Cada sessão paga gera 5% de cashback, que aparece\nem \"Meus pagamentos\"."
+        }
+      ],
+      "docs_esperados": [
+        "tabela_tarifaria_chargegrid",
+        "manual_chargegrid_intelligence",
+        "faq_recarga_motorista"
+      ],
+      "resposta_referencia": "Por kWh consumido, com tarifa dinâmica: base de R$ 0,90/kWh, +30% no horário de ponta (18h-21h) e +15% com ocupação alta.",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": false,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 1.56,
+      "tokens_turno": 2318,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 0.75,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta menciona \"faturada na conta do usuário\", termo não presente nos trechos, que especificam \"cobrança mensal da unidade\" ou \"paga por Pix/cartão\"."
+    },
+    {
+      "id": 2,
+      "categoria": "fundamentada",
+      "pergunta": "Quanto custa o kWh no horário de ponta?",
+      "pergunta_busca": "Quanto custa o kWh no horário de ponta?",
+      "resposta": "O kWh custa **R$ 1,17** entre 18h e 21h, horário de ponta.  \nPrecisa saber algo mais sobre tarifas ou cálculo de consumo?",
+      "resposta_modelo": "O kWh custa **R$ 1,17** entre 18h e 21h, horário de ponta.  \nPrecisa saber algo mais sobre tarifas ou cálculo de consumo?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ajuste de horário de ponta",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ajuste-de-horario-de-ponta:1",
+          "score": 0.7678,
+          "suspeito": false,
+          "url": "",
+          "texto": "Entre 18h e 21h, horário de ponta real da rede elétrica, a tarifa base recebe acréscimo de 30%.\nNesse horário a tarifa fica em R$ 1,17 por kWh (R$ 0,90 × 1,30)."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Exemplos de cálculo",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:exemplos-de-calculo:1",
+          "score": 0.7626,
+          "suspeito": false,
+          "url": "",
+          "texto": "- 20 kWh fora da ponta e sem ocupação alta: 20 × R$ 0,90 = R$ 18,00.\n- 20 kWh entre 18h e 21h: 20 × R$ 1,17 = R$ 23,40.\n- 20 kWh com ocupação alta, fora da ponta: 20 × R$ 1,035 = R$ 20,70."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ajuste por ocupação alta",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ajuste-por-ocupacao-alta:1",
+          "score": 0.7405,
+          "suspeito": false,
+          "url": "",
+          "texto": "Quando a ocupação prevista do posto é alta, a tarifa recebe acréscimo de 15%. Fora do horário\nde ponta, a tarifa com ocupação alta fica em R$ 1,035 por kWh (R$ 0,90 × 1,15).\n\nA hora do dia com mais gente carregando entra na tarifa pelo fator de demanda prevista, e não\npelo pico: o pico de movimento do posto não é, por si só, horário de ponta."
+        }
+      ],
+      "docs_esperados": [
+        "tabela_tarifaria_chargegrid"
+      ],
+      "resposta_referencia": "Entre 18h e 21h a tarifa base recebe 30% de acréscimo: R$ 1,17 por kWh.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 0.52,
+      "tokens_turno": 2215,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta responde diretamente à pergunta e todas as informações estão fundamentadas nos trechos fornecidos."
+    },
+    {
+      "id": 3,
+      "categoria": "fundamentada",
+      "pergunta": "Quanto fica uma recarga de 20 kWh fora do horário de ponta e sem ocupação alta?",
+      "pergunta_busca": "Quanto fica uma recarga de 20 kWh fora do horário de ponta e sem ocupação alta?",
+      "resposta": "R$ 18,00.  \nPrecisa saber mais sobre outras faixas de horário ou tarifas?",
+      "resposta_modelo": "R$ 18,00.  \nPrecisa saber mais sobre outras faixas de horário ou tarifas?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Exemplos de cálculo",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:exemplos-de-calculo:1",
+          "score": 0.8342,
+          "suspeito": false,
+          "url": "",
+          "texto": "- 20 kWh fora da ponta e sem ocupação alta: 20 × R$ 0,90 = R$ 18,00.\n- 20 kWh entre 18h e 21h: 20 × R$ 1,17 = R$ 23,40.\n- 20 kWh com ocupação alta, fora da ponta: 20 × R$ 1,035 = R$ 20,70."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ajuste por ocupação alta",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ajuste-por-ocupacao-alta:1",
+          "score": 0.7986,
+          "suspeito": false,
+          "url": "",
+          "texto": "Quando a ocupação prevista do posto é alta, a tarifa recebe acréscimo de 15%. Fora do horário\nde ponta, a tarifa com ocupação alta fica em R$ 1,035 por kWh (R$ 0,90 × 1,15).\n\nA hora do dia com mais gente carregando entra na tarifa pelo fator de demanda prevista, e não\npelo pico: o pico de movimento do posto não é, por si só, horário de ponta."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ponta e ocupação alta ao mesmo tempo",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ponta-e-ocupacao-alta-ao-mesmo-tempo:1",
+          "score": 0.7525,
+          "suspeito": false,
+          "url": "",
+          "texto": "Os dois ajustes se acumulam. Entre 18h e 21h com ocupação alta, a tarifa fica em cerca de\nR$ 1,35 por kWh (R$ 0,90 × 1,30 × 1,15 = R$ 1,3455)."
+        }
+      ],
+      "docs_esperados": [
+        "tabela_tarifaria_chargegrid"
+      ],
+      "resposta_referencia": "20 kWh × R$ 0,90 = R$ 18,00.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 0.6,
+      "tokens_turno": 2205,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta fornece exatamente o valor calculado presente no trecho [1] para as condições especificadas na pergunta."
+    },
+    {
+      "id": 4,
+      "categoria": "fundamentada",
+      "pergunta": "Como funciona o cashback do ChargeGrid?",
+      "pergunta_busca": "Como funciona o cashback do ChargeGrid?",
+      "resposta": "O cashback funciona assim:\n\n- Cada sessão paga gera **5 % de retorno** sobre o valor cobrado.\n- O valor aparece como saldo acumulado na tela **“Meus pagamentos”** do app.\n- O saldo não pode ser sacado; é apenas um benefício de uso da plataforma.\n- Ex.: em uma sessão de R$ 18,00 o cashback é R$ 0,90.\n\nQuer saber como usar esse saldo ou algo mais sobre a recarga?",
+      "resposta_modelo": "O cashback funciona assim:\n\n- Cada sessão paga gera **5 % de retorno** sobre o valor cobrado.\n- O valor aparece como saldo acumulado na tela **“Meus pagamentos”** do app.\n- O saldo não pode ser sacado; é apenas um benefício de uso da plataforma.\n- Ex.: em uma sessão de R$ 18,00 o cashback é R$ 0,90.\n\nQuer saber como usar esse saldo ou algo mais sobre a recarga?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "FAQ de recarga para motoristas › Como pago a recarga?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:como-pago-a-recarga:1",
+          "score": 0.8014,
+          "suspeito": false,
+          "url": "",
+          "texto": "A sessão é cobrada por kWh consumido, com a tarifa dinâmica da Tabela Tarifária do ChargeGrid,\ne pode ser paga por Pix ou cartão de crédito. Cada sessão paga gera 5% de cashback, que aparece\nem \"Meus pagamentos\"."
+        },
+        {
+          "citacao": "Manual de operação do ChargeGrid Intelligence › Cashback",
+          "doc_id": "manual_chargegrid_intelligence",
+          "chunk_id": "manual_chargegrid_intelligence:cashback:1",
+          "score": 0.7447,
+          "suspeito": false,
+          "url": "",
+          "texto": "Todo motorista recebe 5% de volta do valor de cada sessão paga carregando pela ChargeGrid.\nO valor aparece como saldo acumulado na tela \"Meus pagamentos\" do aplicativo. Por enquanto o\nsaldo não pode ser resgatado: é um benefício de uso da plataforma, não um cartão de crédito\ncom saque."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Cashback sobre o valor pago",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:cashback-sobre-o-valor-pago:1",
+          "score": 0.735,
+          "suspeito": false,
+          "url": "",
+          "texto": "Sobre o valor de cada sessão paga, o motorista recebe 5% de cashback, acumulado como saldo em\n\"Meus pagamentos\" no aplicativo. Numa sessão de R$ 18,00, o cashback é de R$ 0,90."
+        }
+      ],
+      "docs_esperados": [
+        "manual_chargegrid_intelligence",
+        "tabela_tarifaria_chargegrid"
+      ],
+      "resposta_referencia": "O motorista recebe 5% do valor de cada sessão paga como saldo em 'Meus pagamentos'; ainda não há resgate.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 0.62,
+      "tokens_turno": 2204,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta é precisa, responde diretamente à pergunta e todas as informações estão fundamentadas nos trechos fornecidos."
+    },
+    {
+      "id": 5,
+      "categoria": "fundamentada",
+      "pergunta": "Para que serve o DLB no ChargeGrid?",
+      "pergunta_busca": "Para que serve o DLB no ChargeGrid?",
+      "resposta": "O DLB (Dynamic Load Balancing) distribui a potência disponível entre os carregadores em uso, garantindo que a soma das recargas não ultrapasse o limite da rede local.  \nEle mantém o consumo mais estável, reduzindo a variância e evitando sobrecargas.  \nPor isso, o ChargeGrid recomenda mantê‑lo ativo sempre que possível.  \n\nPrecisa saber como habilitar o DLB no seu posto?",
+      "resposta_modelo": "O DLB (Dynamic Load Balancing) distribui a potência disponível entre os carregadores em uso, garantindo que a soma das recargas não ultrapasse o limite da rede local.  \nEle mantém o consumo mais estável, reduzindo a variância e evitando sobrecargas.  \nPor isso, o ChargeGrid recomenda mantê‑lo ativo sempre que possível.  \n\nPrecisa saber como habilitar o DLB no seu posto?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Manual de operação do ChargeGrid Intelligence › Balanceamento dinâmico de carga (DLB)",
+          "doc_id": "manual_chargegrid_intelligence",
+          "chunk_id": "manual_chargegrid_intelligence:balanceamento-dinamico-de-carga-dlb:1",
+          "score": 0.7627,
+          "suspeito": false,
+          "url": "",
+          "texto": "O DLB (Dynamic Load Balancing) distribui a potência disponível na instalação entre os\ncarregadores em uso, para que a soma das recargas não ultrapasse o limite da rede do local.\n\nNa base histórica SP2, as sessões com DLB ativo tiveram consumo mais estável: a variância do\nconsumo foi de 273,1 com DLB ativo, contra 496,1 com DLB inativo. Por isso o CGI recomenda\nmanter o DLB ativo, que garante a estabilidade da rede."
+        },
+        {
+          "citacao": "FAQ de recarga para motoristas › Como pago a recarga?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:como-pago-a-recarga:1",
+          "score": 0.7152,
+          "suspeito": false,
+          "url": "",
+          "texto": "A sessão é cobrada por kWh consumido, com a tarifa dinâmica da Tabela Tarifária do ChargeGrid,\ne pode ser paga por Pix ou cartão de crédito. Cada sessão paga gera 5% de cashback, que aparece\nem \"Meus pagamentos\"."
+        },
+        {
+          "citacao": "Modelo de regimento para recarga compartilhada em condomínio › Cadastro dos usuários",
+          "doc_id": "regimento_condominial_recarga",
+          "chunk_id": "regimento_condominial_recarga:cadastro-dos-usuarios:1",
+          "score": 0.7096,
+          "suspeito": false,
+          "url": "",
+          "texto": "Para usar os carregadores compartilhados, o morador cadastra-se no aplicativo do ChargeGrid,\ninformando a unidade e o veículo. Cada recarga fica registrada no nome da unidade cadastrada."
+        }
+      ],
+      "docs_esperados": [
+        "manual_chargegrid_intelligence",
+        "secovi_faq_carregadores_condominios"
+      ],
+      "resposta_referencia": "O balanceamento dinâmico de carga distribui a potência disponível entre os carregadores para não ultrapassar o limite da rede; na base SP2 reduziu a variância do consumo.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 3.69,
+      "tokens_turno": 2240,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta reflete fielmente o trecho 1 e responde diretamente à pergunta sobre a função do DLB."
+    },
+    {
+      "id": 6,
+      "categoria": "fundamentada",
+      "pergunta": "Qual o grau de proteção IP do carregador GoodWe HCA?",
+      "pergunta_busca": "Qual o grau de proteção IP do carregador GoodWe HCA?",
+      "resposta": "Não tenho essa informação no momento.  \nPosso ajudar com outras dúvidas sobre recarga ou carros elétricos?",
+      "resposta_modelo": "Não tenho essa informação no momento.  \nPosso ajudar com outras dúvidas sobre recarga ou carros elétricos?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 8",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-8:1",
+          "score": 0.6596,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 7 Normas e Requisitos de Segurança 2\n\nContinuação 2.2: É importante realizar um estudo de demanda de cargas elétricas no condomínio e, caso não haja capacidade de alimentação plena dos pontos de recarga considerando a soma algébrica dos pontos multiplicada por 7kW, deve ser considerada a implantação de um sistema automático de balanceamento de carga.\n\n2.3 A instalação de carregadores exige uma reavaliação do AVCB? Não há necessidade de revalidar o AVCB, até a data de publicação das diretrizes definitivas pelo Corpo de Bombeiros. A instalação de carregadores é considerada uma instalação elétrica e deve seguir as normas vigentes e as boas práticas, conforme detalhado nas respostas anteriores. Com a publicação das diretrizes definitivas pelo Corpo de Bombeiros, que ocorrerá em breve, espera-se que haja a necessidade de revalidar o AVCB."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 16",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-16:2",
+          "score": 0.6492,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "5.4 Quem deve ser informado sobre a instalação dos carregadores? Os síndicos precisam comunicar a seguradora ou o Corpo de Bombeiros? A recomendação é consultar o corretor para verificar a apólice de seguros, por precaução. No entanto, não há registros de alteração no valor da apólice em casos de instalação de carregadores de veículos elétricos. É uma boa prática notificar as Seguradoras sempre que houver a instalação de novos equipamentos e sistemas no condomínio, para que eles possam estar inclusos nas coberturas usuais das apólices contratadas pelo condomínio. Em relação ao Corpo de Bombeiros, não há obrigatoriedade de comunicação, entendendo que as instalações foram realizadas conforme as normas técnicas vigentes e com análise técnica adequada e comprovada."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 11",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-11:1",
+          "score": 0.6484,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 10 Infraestrutura e Capacidade Elétrica 3\n\n3.3 É possível integrar o consumo dos carregadores ao medidor de energia do próprio apartamento? Qual seria o procedimento? Sim, desde que seja considerada na carga elétrica do condomínio (demanda), 100% da demanda de energia para o carregamento dos veículos elétricos, ou seja, 7kW (demanda para carregar 1 veículo elétrico) x nº de unidades da edificação. Devendo ainda, ter a aprovação pelo condomínio. Assim, considerando prováveis limitações de carga elétrica (demanda) dos condomínios residenciais, a melhor opção é instalar carregadores de veículos elétricos nas áreas comuns, onde pode ser possível limitar os pontos de carregamento ou mesmo prover protocolos de balanceamento de carga."
+        }
+      ],
+      "docs_esperados": [
+        "goodwe_hca_manual_usuario"
+      ],
+      "resposta_referencia": "O carregador tem grau de proteção IP65 e o plugue de recarga, IP55.",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": false,
+      "checagens_ok": false,
+      "recuperacao_ok": false,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 15.09,
+      "tokens_turno": 2700,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 0.0,
+      "justificativa_rubrica": "recusou ou nao respondeu uma pergunta que tinha resposta na base (regra da rubrica: faithfulness 1, relevancy 0)"
+    },
+    {
+      "id": 7,
+      "categoria": "fundamentada",
+      "pergunta": "Quais são os modos de recarga do carregador GoodWe HCA?",
+      "pergunta_busca": "Quais são os modos de recarga do carregador GoodWe HCA?",
+      "resposta": "Não tenho essa informação no momento. Posso ajudar com outras dúvidas sobre recarga ou carros elétricos.",
+      "resposta_modelo": "Não tenho essa informação no momento. Posso ajudar com outras dúvidas sobre recarga ou carros elétricos.",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Arval Brasil — Guia do condutor de veículos elétricos › p. 12",
+          "doc_id": "arval_guia_condutor_ve",
+          "chunk_id": "arval_guia_condutor_ve:p-12:1",
+          "score": 0.7096,
+          "suspeito": false,
+          "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf",
+          "texto": "Classification : Internal RECARGA PÚBLICA: PRINCIPAIS PASSOS 08 - COMO POSSO UTILIZAR ESTAÇÕES DE CARREGAMENTO PÚBLICAS? Antes de recarregar, algumas redes exigem que você se identifique ou se registre . Use o Mobility Pass da Arval*, um cartão RFID, um aplicativo móvel ou siga as instruções exibidas na estação de carregamento . Ligue o cabo ao compartimento de carregamento do seu veículo elétrico e, em seguida, ligue a outra extremidade à estação de carregamento (ou vice - versa) . Selecione o modo de carregamento desejado (rápido ou moderado), se disponível . Siga as instruções na tela. A luz indicadora muda quando o carregamento começa . Pare de carregar seguindo as instruções . Pressione o botão \"Desbloquear\" no seu veículo, se necessário (ao lado do conector de carregamento ou no painel de instrumentos) para liberar o cabo . Se necessário, pague conforme indicado : cartão Arval, cartão bancário, aplicação móvel ou qualquer outro método de pagamento aceite"
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 13",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-13:3",
+          "score": 0.698,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "4.4 Quais são os custos de implantação, gerenciamento e manutenção dos carregadores? Um sistema de recarga geralmente envolve três componentes principais: o carregador, a instalação e o sistema de gerenciamento, medição e balanceamento. Recomenda-se a contratação de uma única empresa que se responsabilize pelo fornecimento e gerenciamento do sistema completo, contemplando todos os pontos de recarga eventualmente instalados."
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 22",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-22:3",
+          "score": 0.6957,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": ". O cliente pode aproveitar a estação de recarga pelo tempo em que permanece no local. Sendo que é possível carregar apenas parte da carga, não necessariamente aguardar 2h completas. Esse tipo de eletroposto pode custar em torno de R$ 7 mil a R$ 50 mil, dependendo da marca do fabricante e das funcionalidades oferecidas. Modelos mais caros são capazes não apenas de carregar a bateria, como também gerar relatórios da energia consumida. Recarga RÁPIDA Esse tipo de carregador, com 50kW de potência, está mais associado a estabelecimentos em beira de rodovias, como postos de combustíveis e conveniências, pois oferece a possibilidade de carregar 80% da bateria em 30 minutos na maioria dos veículos – ideal para quem está em trajeto de viagem. Assim que atinge 80% do carregamento, o status passa de recarga rápida para semirrápida, com o objetivo de preservar a vida útil da bateria."
+        }
+      ],
+      "docs_esperados": [
+        "goodwe_hca_manual_usuario"
+      ],
+      "resposta_referencia": "Três modos: Fast, PV priority e PV + Battery, escolhidos pelo app SEMS ou SolarGo.",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": false,
+      "checagens_ok": false,
+      "recuperacao_ok": false,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 15.67,
+      "tokens_turno": 2603,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 0.0,
+      "justificativa_rubrica": "recusou ou nao respondeu uma pergunta que tinha resposta na base (regra da rubrica: faithfulness 1, relevancy 0)"
+    },
+    {
+      "id": 8,
+      "categoria": "fundamentada",
+      "pergunta": "Qual a corrente mínima de partida por fase do carregador GoodWe HCA?",
+      "pergunta_busca": "Qual a corrente mínima de partida por fase do carregador GoodWe HCA?",
+      "resposta": "Não tenho essa informação no momento. Se precisar de ajuda com outra coisa sobre recarga ou carros elétricos, me avise.",
+      "resposta_modelo": "Não tenho essa informação no momento. Se precisar de ajuda com outra coisa sobre recarga ou carros elétricos, me avise.",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Arval Brasil — Guia do condutor de veículos elétricos › p. 6",
+          "doc_id": "arval_guia_condutor_ve",
+          "chunk_id": "arval_guia_condutor_ve:p-6:1",
+          "score": 0.6853,
+          "suspeito": false,
+          "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf",
+          "texto": "CARREGAR O MEU VEÍCULO ELÉTRICO: OS DIFERENTES TIPOS DE PONTOS DE CARREGAMENTO 03 -QUE CONECTORES POSSO USAR? CARREGAMENTO EM CORRENTE ALTERNADA (CA): CARREGAMENTO LENTO Carregamento lento (Nível 1) RecargaModerada(Nivel 2) Estabelecimentos domésticos standard (Tipo A, B, G) Conector tipo 2 7 kW é o mais comum (3,7 kW, 11 kW e 22 kW também disponíveis) ~8 - 20 horas dependendo da capacidade da bateria ~3 - 8 horas dependendo da capacidade da bateria For the many journeys in life PÁGINA ANTERIOR PRÓXIMA PÁGINA 2 - 2,5 kW Potência de carregamento Velocidade de carregamento Tipo de ficha Conector de carregamento Tempo de carregamento de 20 a 80% Disponibilidade Em casa ou em qualquer tomada elétrica padrão Adiciona cerca de 3 -8 km de alcance por hora de carregamento Adiciona aproximadamente 16 - 48 km de autonomia por hora de carregamento Em casa com estações de carregamento dedicadas, no local de trabalho e em estações de carregamento públicas Tipo A (20 A)"
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 18",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-18:1",
+          "score": 0.6778,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "ELETROPOSTOS 17 A construtora já oferece dois carregadores do modelo Volvo para carga lenta no estacionamento comercial do D/One Home Design, empreendimento que reúne unidades habitacionais de alto padrão e uma estrutura de lojas e serviços na região central da cidade. Atualmente os usuários não são cobrados pelo carregamento dos veículos, apenas tarifados pela ocupação da vaga rotativa. Os lançamentos residenciais D/Garden e D/Spot, no bairro Córrego Grande, também serão entregues com uma estação centralizada de carregamento para carros elétricos. A ideia é adotar um sistema de identificação do usuário para que o consumo de energia individual seja cobrado diretamente na fatura do condomínio dos moradores. Para os futuros empreendimentos, os engenheiros da construtora já estudam e projetam uma infraestrutura prévia que se adapte ao crescimento do mercado, permitindo a ampliação dos pontos de recarga nas áreas comuns dos edifícios"
+        },
+        {
+          "citacao": "Arval Brasil — Guia do condutor de veículos elétricos › p. 7",
+          "doc_id": "arval_guia_condutor_ve",
+          "chunk_id": "arval_guia_condutor_ve:p-7:1",
+          "score": 0.6761,
+          "suspeito": false,
+          "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf",
+          "texto": "Classification : Internal CARREGAR O MEU VEÍCULO ELÉTRICO: OS DIFERENTES TIPOS DE PONTOS DE CARREGAMENTO 03-QUE CONECTORES POSSO USAR? CARREGAMENTO EM CORRENTE CONTÍNUA (CC): CARREGAMENTO RÁPIDO Carregamento rápido Carregamento ultrarrápido CCS, Tesla Supercharger V3 ~30 - 60 minutos , dependendo da capacidade da bateria e Infraestrutura de carregamento ~20 - 40 minutos , dependendo da capacidade da bateriae infraestruturas de carregamento For the many journeys in life PÁGINA ANTERIOR PRÓXIMA PÁGINA Potência de carregamento Velocidade de carregamento Tipo de ficha Conector de carregamento Tempo de carregamento de 20 a 80% Disponibilidade CCS (Sistema de Carregamento Combinado), Supercharger Tesla Carregador Tesla Tomada CCS(mais frequentes) 50 kW 150 kW até 350 kW Adiciona aproximadamente 95 - 130 km de autonomia por hora de carregamento Adiciona aproximadamente 290 - 400 km de autonomia por hora de carregamento Nas áreas de descanso das autoestradas, estações de carregamento públicas"
+        }
+      ],
+      "docs_esperados": [
+        "goodwe_hca_manual_usuario"
+      ],
+      "resposta_referencia": "A corrente mínima de partida de cada fase é de 6 A.",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": false,
+      "checagens_ok": false,
+      "recuperacao_ok": false,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 15.77,
+      "tokens_turno": 2798,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 0.0,
+      "justificativa_rubrica": "recusou ou nao respondeu uma pergunta que tinha resposta na base (regra da rubrica: faithfulness 1, relevancy 0)"
+    },
+    {
+      "id": 9,
+      "categoria": "fundamentada",
+      "pergunta": "O que acontece com a potência quando um carregador trifásico GoodWe HCA carrega um carro que só aceita recarga monofásica?",
+      "pergunta_busca": "O que acontece com a potência quando um carregador trifásico GoodWe HCA carrega um carro que só aceita recarga monofásica?",
+      "resposta": "Quando o GoodWe HCA (trifásico) está ligado a um veículo que só aceita monofásica, ele funciona em **modo de fase única**.  \n- O carregador usa apenas uma das três fases disponíveis.  \n- A potência entregue ao carro fica limitada à potência daquela fase (por exemplo, 7,4 kW ou 11 kW, se for o caso).  \n- As outras fases permanecem inativas, mas o equipamento continua operando normalmente, sem sobrecarregar a rede.\n\nQuer saber como isso afeta o tempo de carga ou a eficiência do seu ponto de recarga?",
+      "resposta_modelo": "Quando o GoodWe HCA (trifásico) está ligado a um veículo que só aceita monofásica, ele funciona em **modo de fase única**.  \n- O carregador usa apenas uma das três fases disponíveis.  \n- A potência entregue ao carro fica limitada à potência daquela fase (por exemplo, 7,4 kW ou 11 kW, se for o caso).  \n- As outras fases permanecem inativas, mas o equipamento continua operando normalmente, sem sobrecarregar a rede.\n\nQuer saber como isso afeta o tempo de carga ou a eficiência do seu ponto de recarga?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 27",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-27:1",
+          "score": 0.7166,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "26 ELETROPOSTOS QC24S Rede: 380Vac trifásico Carga: DC Rápida Potência: 24kW Plug: CCS ou ChadeMO Utilização: Estabelecimentos em rodovias, cidades, postos e estacionamentos QC45 Rede: 380Vac trifásico Carga: AC e DC Rápida Potência: 43kVA + 50kW Plug: AC – T2, DC – CCS ou ChadeMO Utilização: Estabelecimentos em rodovias, cidades, postos e estacionamentos * Fonte: Electric Mobility 4º Passo: ONDE E COMO INSTALAR O ELETROPOSTO A decisão sobre o melhor local no estabelecimento para a instalação do eletroposto envolve aspectos técnicos, mas também comerciais. O empresário geralmente prefere um ponto que chame a atenção dos clientes, mas as estações costumam ser posicionadas em estacionamentos ou garagens, sendo que o pré-requisito fundamental é ter rede elétrica compatível no local. Alguns fabricantes desenvolvem equipamentos hermeticamente vedados e que podem ficar expostos a intempéries, como sol e chuva, sem que haja problema para o serviço de carregamento"
+        },
+        {
+          "citacao": "FAQ de recarga para motoristas › Qual a diferença entre recarga AC e DC?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:qual-a-diferenca-entre-recarga-ac-e-dc:1",
+          "score": 0.7046,
+          "suspeito": false,
+          "url": "",
+          "texto": "Na recarga AC (corrente alternada), o carregador entrega corrente alternada e quem a converte\npara a bateria é o carregador de bordo do próprio carro; a velocidade fica limitada pela\npotência desse carregador de bordo. Na recarga DC (corrente contínua), a conversão é feita no\npróprio carregador do posto, que entrega corrente contínua direto para a bateria, e por isso\ncostuma ser mais rápida.\n\nNa rede de referência do ChargeGrid há carregadores AC de 7,4 kW e de 11 kW e carregadores DC\nde 22 kW."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 11",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-11:2",
+          "score": 0.7033,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "3.4 É necessário instalar carregadores de alta potência? Quantos carregadores podem ser instalados ao mesmo tempo? Devido à limitação de carga elétrica em condomínios residenciais, o tipo de carregador recomendado é o de parede (WallBox) inteligente de 7kW, equipado com comunicação Wi-Fi, protocolo de comunicação com servidor para balanceamento de carga, modulação de corrente e leitor de RFID. O uso de carregadores de maior potência exige uma alimentação em 380V, que não está disponível na maioria dos condomínios, o que pode gerar uma demanda elétrica desproporcional, prejudicando a isonomia de acesso ao sistema entre os moradores. O carregador de 7kW é suficiente para carregar as baterias de todos os veículos de passeio do mercado em tempo razoável. Em um condomínio com sistema de recarga equipado com balanceamento de carga, é possível conectar quantos pontos de recarga forem necessários, ajustando a quantidade de energia média fornecida a cada veículo por dia"
+        }
+      ],
+      "docs_esperados": [
+        "goodwe_hca_manual_usuario"
+      ],
+      "resposta_referencia": "A potência máxima cai para 1/3 da potência nominal do carregador, porque a potência real depende do carregador de bordo (OBC).",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": false,
+      "recuperacao_ok": false,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 5.01,
+      "tokens_turno": 2801,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 0.0,
+      "answer_relevancy_rubrica": 0.0,
+      "justificativa_rubrica": "Os trechos fornecidos não mencionam o carregador GoodWe HCA nem o comportamento de carregadores trifásicos em veículos monofásicos. A resposta é uma alucinação."
+    },
+    {
+      "id": 10,
+      "categoria": "fundamentada",
+      "pergunta": "Quais normas técnicas a instalação de carregadores em condomínio deve seguir?",
+      "pergunta_busca": "Quais normas técnicas a instalação de carregadores em condomínio deve seguir?",
+      "resposta": "- **ABNT NBR 5410** – Instalações elétricas de baixa tensão.  \n- **ABNT NBR 17019** – Requisitos para instalações em locais especiais – alimentação de veículos elétricos.  \n- **ABNT NBR IEC 61651‑23** – Sistema de recarga condutiva para veículos elétricos, parte 23 – estação de recarga em corrente contínua.  \n\nEssas normas garantem segurança e compatibilidade na instalação.  \nPrecisa saber algo mais sobre o processo de aprovação?",
+      "resposta_modelo": "- **ABNT NBR 5410** – Instalações elétricas de baixa tensão.  \n- **ABNT NBR 17019** – Requisitos para instalações em locais especiais – alimentação de veículos elétricos.  \n- **ABNT NBR IEC 61651‑23** – Sistema de recarga condutiva para veículos elétricos, parte 23 – estação de recarga em corrente contínua.  \n\nEssas normas garantem segurança e compatibilidade na instalação.  \nPrecisa saber algo mais sobre o processo de aprovação?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 7",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-7:1",
+          "score": 0.8525,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 6 Normas e Requisitos de Segurança 2 2 e Requisitos de Segurança 2.1 Quais normas técnicas elétricas devem ser seguidas para adequar a infraestrutura à instalação de carregadores de veículos elétricos? Todas as instalações devem ser feitas de acordo com as normas: • ABNT NBR 5410 - Instalações elétricas de baixa tensão. • ABNT NBR 17019 - Instalações elétrica de baixa tensão – Requisitos para instalações em locais especiais – Alimentação de veículos elétricos. • ABNT NBR IEC 61651-23 - Sistema de recarga condutiva para veículos elétricos Parte 23 - Estação de recarga em corrente contínua para veículos elétricos."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 8",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-8:1",
+          "score": 0.8419,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 7 Normas e Requisitos de Segurança 2\n\nContinuação 2.2: É importante realizar um estudo de demanda de cargas elétricas no condomínio e, caso não haja capacidade de alimentação plena dos pontos de recarga considerando a soma algébrica dos pontos multiplicada por 7kW, deve ser considerada a implantação de um sistema automático de balanceamento de carga.\n\n2.3 A instalação de carregadores exige uma reavaliação do AVCB? Não há necessidade de revalidar o AVCB, até a data de publicação das diretrizes definitivas pelo Corpo de Bombeiros. A instalação de carregadores é considerada uma instalação elétrica e deve seguir as normas vigentes e as boas práticas, conforme detalhado nas respostas anteriores. Com a publicação das diretrizes definitivas pelo Corpo de Bombeiros, que ocorrerá em breve, espera-se que haja a necessidade de revalidar o AVCB."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 9",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-9:1",
+          "score": 0.8388,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 8 Normas e Requisitos de Segurança 2"
+        }
+      ],
+      "docs_esperados": [
+        "secovi_faq_carregadores_condominios"
+      ],
+      "resposta_referencia": "ABNT NBR 5410, ABNT NBR 17019 e ABNT NBR IEC 61851-23 (estação de recarga em corrente contínua).",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 15.8,
+      "tokens_turno": 2643,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta lista corretamente as normas técnicas citadas nos trechos e responde diretamente à pergunta feita."
+    },
+    {
+      "id": 11,
+      "categoria": "fundamentada",
+      "pergunta": "Posso usar um carregador portátil ligado numa tomada comum da garagem do condomínio?",
+      "pergunta_busca": "Posso usar um carregador portátil ligado numa tomada comum da garagem do condomínio?",
+      "resposta": "- Um carregador portátil pode ser conectado a uma tomada comum, mas só se a tomada suportar a corrente exigida (geralmente 16 A ou mais) e o circuito não estiver sobrecarregado.  \n- Verifique se a garagem tem a capacidade elétrica necessária e se a tomada está em conformidade com as normas de segurança.  \n- Consulte o regulamento do condomínio: alguns estabelecem regras sobre quem pode usar tomadas comuns para recarga e podem exigir autorização prévia.  \n- Use cabos e conectores adequados ao seu veículo e evite sobrecarregar o circuito.\n\nVocê já verificou a capacidade elétrica da tomada e as regras do seu condomínio?",
+      "resposta_modelo": "- Um carregador portátil pode ser conectado a uma tomada comum, mas só se a tomada suportar a corrente exigida (geralmente 16 A ou mais) e o circuito não estiver sobrecarregado.  \n- Verifique se a garagem tem a capacidade elétrica necessária e se a tomada está em conformidade com as normas de segurança.  \n- Consulte o regulamento do condomínio: alguns estabelecem regras sobre quem pode usar tomadas comuns para recarga e podem exigir autorização prévia.  \n- Use cabos e conectores adequados ao seu veículo e evite sobrecarregar o circuito.\n\nVocê já verificou a capacidade elétrica da tomada e as regras do seu condomínio?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — O futuro da mobilidade: recarga de veículos elétricos em condomínios (riscos, segurança e responsabilidades) › p. 23",
+          "doc_id": "secovi_recarga_condominios_riscos",
+          "chunk_id": "secovi_recarga_condominios_riscos:p-23:1",
+          "score": 0.7774,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2026/04/20260423-PAULO-REWALD.pdf",
+          "texto": "Problemas do morador/usuário Onde e como carregar o carro ou moto elétrica na garagem do condomínio? Quem paga a conta? Todos poderão carregar seus carros? Como resolver tudo sem arrumar confusão no condomínio?"
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 16",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-16:1",
+          "score": 0.7389,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 15 Procedimentos e Comunicação 5\n\nContinuação 5.3 Somente com base em tais informações, será possível avaliar se é caso de: • Obra útil, que aumenta ou facilita o uso do bem e poderá ser aprovado pela maioria simples dos condôminos. (art. 1.341 do Código Civil). • Obra em acréscimo às já existentes, com aprovação de 2/3 dos condôminos (art. 1.342 CC). • Obras voluptuárias, quando elevado o valor, com aprovação de 2/3 dos condôminos (art. 1.341 do CC) Importante também observar se a solução envolve uma mudança na destinação de uso de uma determinada área comum do condomínio, exigindo também um quórum qualificado (por exemplo: transformação de depósito em vaga rotativa ou mesmo a mudança de uma vaga de visitante para uma vaga de uso específico para carregamento de veículos elétricos)."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 10",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-10:4",
+          "score": 0.7336,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "3.2 Como saber se o condomínio possui capacidade elétrica suficiente para a instalação de carregadores? O condomínio deve contratar uma empresa especializada em recarga de veículos elétricos, que possua seguro de obra e garanta o cumprimento de todas as normas e recomendações técnicas. Essa empresa será responsável por realizar o estudo de demanda, que pode ser feito por meio de análise analítica, medição em janela temporal ou medição em tempo real, conforme a necessidade da instalação."
+        }
+      ],
+      "docs_esperados": [
+        "secovi_faq_carregadores_condominios",
+        "regimento_condominial_recarga"
+      ],
+      "resposta_referencia": "Não. O Secovi informa que não é permitido usar carregador portátil em tomada NBR de até 20 A, e o regimento proíbe tomadas comuns e extensões.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 13.17,
+      "tokens_turno": 2615,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 0.0,
+      "answer_relevancy_rubrica": 0.5,
+      "justificativa_rubrica": "A resposta traz informações técnicas externas não presentes nos trechos fornecidos, que apenas discutem procedimentos de instalação e aprovação em condomínios."
+    },
+    {
+      "id": 12,
+      "categoria": "fundamentada",
+      "pergunta": "Qual potência de carregador é adequada para condomínios residenciais?",
+      "pergunta_busca": "Qual potência de carregador é adequada para condomínios residenciais?",
+      "resposta": "Para condomínios residenciais a potência recomendada é **7 kW** em carregadores de parede (WallBox) inteligentes.  \n\n- Garante carga adequada para veículos de passeio.  \n- Permite balanceamento de carga via Wi‑Fi.  \n- Evita sobrecarga na rede de 380 V que a maioria dos condomínios não possui.  \n\nPrecisa saber como dimensionar a demanda total do prédio?",
+      "resposta_modelo": "Para condomínios residenciais a potência recomendada é **7 kW** em carregadores de parede (WallBox) inteligentes.  \n\n- Garante carga adequada para veículos de passeio.  \n- Permite balanceamento de carga via Wi‑Fi.  \n- Evita sobrecarga na rede de 380 V que a maioria dos condomínios não possui.  \n\nPrecisa saber como dimensionar a demanda total do prédio?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 11",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-11:2",
+          "score": 0.7835,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "3.4 É necessário instalar carregadores de alta potência? Quantos carregadores podem ser instalados ao mesmo tempo? Devido à limitação de carga elétrica em condomínios residenciais, o tipo de carregador recomendado é o de parede (WallBox) inteligente de 7kW, equipado com comunicação Wi-Fi, protocolo de comunicação com servidor para balanceamento de carga, modulação de corrente e leitor de RFID. O uso de carregadores de maior potência exige uma alimentação em 380V, que não está disponível na maioria dos condomínios, o que pode gerar uma demanda elétrica desproporcional, prejudicando a isonomia de acesso ao sistema entre os moradores. O carregador de 7kW é suficiente para carregar as baterias de todos os veículos de passeio do mercado em tempo razoável. Em um condomínio com sistema de recarga equipado com balanceamento de carga, é possível conectar quantos pontos de recarga forem necessários, ajustando a quantidade de energia média fornecida a cada veículo por dia"
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 11",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-11:1",
+          "score": 0.758,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 10 Infraestrutura e Capacidade Elétrica 3\n\n3.3 É possível integrar o consumo dos carregadores ao medidor de energia do próprio apartamento? Qual seria o procedimento? Sim, desde que seja considerada na carga elétrica do condomínio (demanda), 100% da demanda de energia para o carregamento dos veículos elétricos, ou seja, 7kW (demanda para carregar 1 veículo elétrico) x nº de unidades da edificação. Devendo ainda, ter a aprovação pelo condomínio. Assim, considerando prováveis limitações de carga elétrica (demanda) dos condomínios residenciais, a melhor opção é instalar carregadores de veículos elétricos nas áreas comuns, onde pode ser possível limitar os pontos de carregamento ou mesmo prover protocolos de balanceamento de carga."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 10",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-10:4",
+          "score": 0.7577,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "3.2 Como saber se o condomínio possui capacidade elétrica suficiente para a instalação de carregadores? O condomínio deve contratar uma empresa especializada em recarga de veículos elétricos, que possua seguro de obra e garanta o cumprimento de todas as normas e recomendações técnicas. Essa empresa será responsável por realizar o estudo de demanda, que pode ser feito por meio de análise analítica, medição em janela temporal ou medição em tempo real, conforme a necessidade da instalação."
+        }
+      ],
+      "docs_esperados": [
+        "secovi_faq_carregadores_condominios"
+      ],
+      "resposta_referencia": "Carregador de parede (wallbox) inteligente de 7 kW, com Wi-Fi, balanceamento de carga e leitor RFID.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 15.76,
+      "tokens_turno": 2683,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta reflete com precisão as recomendações dos trechos fornecidos, abordando a potência, o tipo de carregador e as justificativas técnicas."
+    },
+    {
+      "id": 13,
+      "categoria": "fundamentada",
+      "pergunta": "Quem paga a energia consumida nos carregadores do condomínio?",
+      "pergunta_busca": "Quem paga a energia consumida nos carregadores do condomínio?",
+      "resposta": "Os usuários que utilizam os pontos de recarga são quem pagam a energia consumida.  \nA solução deve incluir um rateio da energia entre eles, evitando impacto nas despesas ordinárias do condomínio.  \n\nPrecisa saber como configurar esse rateio no seu sistema?",
+      "resposta_modelo": "Os usuários que utilizam os pontos de recarga são quem pagam a energia consumida.  \nA solução deve incluir um rateio da energia entre eles, evitando impacto nas despesas ordinárias do condomínio.  \n\nPrecisa saber como configurar esse rateio no seu sistema?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 11",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-11:1",
+          "score": 0.8322,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 10 Infraestrutura e Capacidade Elétrica 3\n\n3.3 É possível integrar o consumo dos carregadores ao medidor de energia do próprio apartamento? Qual seria o procedimento? Sim, desde que seja considerada na carga elétrica do condomínio (demanda), 100% da demanda de energia para o carregamento dos veículos elétricos, ou seja, 7kW (demanda para carregar 1 veículo elétrico) x nº de unidades da edificação. Devendo ainda, ter a aprovação pelo condomínio. Assim, considerando prováveis limitações de carga elétrica (demanda) dos condomínios residenciais, a melhor opção é instalar carregadores de veículos elétricos nas áreas comuns, onde pode ser possível limitar os pontos de carregamento ou mesmo prover protocolos de balanceamento de carga."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 13",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-13:1",
+          "score": 0.829,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 12 Custos e Responsabilidade Financeira 4\n\n4.2 Qual é o impacto esperado na conta de energia do condomínio com a instalação de carregadores? Os custos da energia consumida para o carregamento dos veículos devem ser arcados pelos usuários. Dessa forma, é importante que a solução escolhida preveja o rateio da energia consumida entre os usuários do sistema. Assim, não haverá impacto nas despesas ordinárias do condomínio."
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 24",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-24:1",
+          "score": 0.7897,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "ELETROPOSTOS 23 Em condomínios e estabelecimentos de habitação coletiva, é ideal consultar o projeto do empreendimento para adequar o carregador à instalação. Em alguns casos, o registro das recargas pode ser feito de forma individual, contando com recursos disponibilizados pelos fabricantes do carregador. Dimensionamento dos eletropostos Geralmente a recarga lenta não causa grande impactos no sistema elétrico das distribuidoras de energia, mas a instalação de eletropostos com recarga semirrápida, rápida ou ultrarrápida exige mais atenção, devendo sempre ser dimensionada conforme a ABNT NBR 5410, que determina padrões para instalações elétricas. Dependendo da potência de carregamento oferecida, também é importante verificar o contrato de demandada com a concessionária. Os carregadores disponíveis no mercado possuem potências de 3,7kW, 7,4kW, 11kW até 22kW e, de maneira geral, a recomendação é por uso de disjuntor individual adequado e fiação mínima de 6mm2, sempre com aterramento"
+        }
+      ],
+      "docs_esperados": [
+        "secovi_faq_carregadores_condominios",
+        "regimento_condominial_recarga"
+      ],
+      "resposta_referencia": "Os custos da energia devem ser arcados pelos usuários, com rateio da energia consumida entre eles.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 14.66,
+      "tokens_turno": 2677,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 0.75,
+      "justificativa_rubrica": "A resposta é precisa e fiel aos trechos, mas inclui uma pergunta final desnecessária que desvia levemente do foco da pergunta original."
+    },
+    {
+      "id": 14,
+      "categoria": "fundamentada",
+      "pergunta": "Em quanto tempo o morador deve liberar a vaga depois que a recarga termina?",
+      "pergunta_busca": "Em quanto tempo o morador deve liberar a vaga depois que a recarga termina?",
+      "resposta": "Deve liberar a vaga **em até 30 minutos** após o fim da recarga – idealmente assim que terminar.  \nPrecisa de ajuda para reservar a vaga ou saber mais sobre o processo?",
+      "resposta_modelo": "Deve liberar a vaga **em até 30 minutos** após o fim da recarga – idealmente assim que terminar.  \nPrecisa de ajuda para reservar a vaga ou saber mais sobre o processo?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Modelo de regimento para recarga compartilhada em condomínio › Desocupação da vaga",
+          "doc_id": "regimento_condominial_recarga",
+          "chunk_id": "regimento_condominial_recarga:desocupacao-da-vaga:1",
+          "score": 0.7913,
+          "suspeito": false,
+          "url": "",
+          "texto": "Ao terminar a recarga, o veículo deve liberar a vaga do carregador em até 30 minutos. A vaga\ndo carregador é exclusiva para veículos em recarga."
+        },
+        {
+          "citacao": "FAQ de recarga para motoristas › O que fazer quando a recarga termina?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:o-que-fazer-quando-a-recarga-termina:1",
+          "score": 0.7613,
+          "suspeito": false,
+          "url": "",
+          "texto": "Liberar a vaga assim que a recarga terminar, para que outro motorista possa usar o carregador.\nEm condomínios, valem as regras do regimento de uso compartilhado."
+        },
+        {
+          "citacao": "Modelo de regimento para recarga compartilhada em condomínio › Reserva e tempo de uso",
+          "doc_id": "regimento_condominial_recarga",
+          "chunk_id": "regimento_condominial_recarga:reserva-e-tempo-de-uso:1",
+          "score": 0.7259,
+          "suspeito": false,
+          "url": "",
+          "texto": "- A recarga pode ser reservada pelo aplicativo, em blocos de até 4 horas por vez.\n- Cada unidade pode ter uma reserva ativa por vez.\n- Se o morador não iniciar a recarga em até 15 minutos do horário reservado, a reserva é\ncancelada e o carregador fica livre."
+        }
+      ],
+      "docs_esperados": [
+        "regimento_condominial_recarga"
+      ],
+      "resposta_referencia": "Em até 30 minutos após o fim da recarga, pelo modelo de regimento.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 9.66,
+      "tokens_turno": 2132,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta responde diretamente à pergunta e todas as informações estão fundamentadas no trecho 1 e 2."
+    },
+    {
+      "id": 15,
+      "categoria": "fundamentada",
+      "pergunta": "Em que faixa de carga é melhor manter a bateria para preservar a vida útil?",
+      "pergunta_busca": "Em que faixa de carga é melhor manter a bateria para preservar a vida útil?",
+      "resposta": "- Mantenha a bateria entre **20 % e 80 %** de carga.  \n- Evite deixar a bateria totalmente vazia ou totalmente cheia por longos períodos.  \n- Use o sistema inteligente do veículo para parar o carregamento quando atingir 80 %.  \n\nQuer saber como configurar essa parada automática no seu carro?",
+      "resposta_modelo": "- Mantenha a bateria entre **20 % e 80 %** de carga.  \n- Evite deixar a bateria totalmente vazia ou totalmente cheia por longos períodos.  \n- Use o sistema inteligente do veículo para parar o carregamento quando atingir 80 %.  \n\nQuer saber como configurar essa parada automática no seu carro?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "FAQ de recarga para motoristas › Como cuidar da bateria do carro elétrico?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:como-cuidar-da-bateria-do-carro-eletrico:1",
+          "score": 0.7263,
+          "suspeito": false,
+          "url": "",
+          "texto": "A vida útil da bateria depende do modelo, do clima e do uso. Recomendações gerais:\n\n- Evitar deixar o carro parado por muito tempo com a bateria totalmente vazia ou totalmente\ncheia.\n- Seguir o limite de carga e o plano de manutenção indicados no manual do veículo.\n\nGarantia e vida útil esperada da bateria são informadas pelo fabricante de cada veículo."
+        },
+        {
+          "citacao": "Arval Brasil — Guia do condutor de veículos elétricos › p. 9",
+          "doc_id": "arval_guia_condutor_ve",
+          "chunk_id": "arval_guia_condutor_ve:p-9:1",
+          "score": 0.7028,
+          "suspeito": false,
+          "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf",
+          "texto": "BOAS PRÁTICAS DE CARREGAMENTO 05 -COMO PRESERVAR A AUTONOMIA E A VIDA ÚTIL DA BATERIA? Utilize o sistema inteligente (disponível na maioria dos veículos elétricos) para parar automaticamente de carregar assim que a bateria estiver 80 % carregada . For the many journeys in life PÁGINA ANTERIOR PRÓXIMA PÁGINA De tempos em tempos, realize uma recarga completa da bateria para equilibrar seus elementos internos . Reserve estas cargas completas para viagens mais longas . Opte por sessões de carregamento mais curtas e frequentes , em vez de sessões de carregamento longas . Opte pelo carregamento lento e reserve o carregamento rápido para viagens mais longas . Se não utilizar o seu veículo durante muito tempo, carregue o seu veículo elétrico a, pelo menos, 50 % ; Algumas características ou circunstâncias utilizam a bateria mesmo quando o veículo está desligado . O nível de carga ideal está entre 20 % e 80 %"
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 22",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-22:3",
+          "score": 0.6844,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": ". O cliente pode aproveitar a estação de recarga pelo tempo em que permanece no local. Sendo que é possível carregar apenas parte da carga, não necessariamente aguardar 2h completas. Esse tipo de eletroposto pode custar em torno de R$ 7 mil a R$ 50 mil, dependendo da marca do fabricante e das funcionalidades oferecidas. Modelos mais caros são capazes não apenas de carregar a bateria, como também gerar relatórios da energia consumida. Recarga RÁPIDA Esse tipo de carregador, com 50kW de potência, está mais associado a estabelecimentos em beira de rodovias, como postos de combustíveis e conveniências, pois oferece a possibilidade de carregar 80% da bateria em 30 minutos na maioria dos veículos – ideal para quem está em trajeto de viagem. Assim que atinge 80% do carregamento, o status passa de recarga rápida para semirrápida, com o objetivo de preservar a vida útil da bateria."
+        }
+      ],
+      "docs_esperados": [
+        "arval_guia_condutor_ve",
+        "faq_recarga_motorista"
+      ],
+      "resposta_referencia": "O guia da Arval recomenda carregamento otimizado de 20% a 80%.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 14.88,
+      "tokens_turno": 2617,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta responde diretamente à pergunta e todas as informações estão fundamentadas nos trechos fornecidos."
+    },
+    {
+      "id": 16,
+      "categoria": "fundamentada",
+      "pergunta": "O que fazer se um carro elétrico pegar fogo na garagem do condomínio?",
+      "pergunta_busca": "O que fazer se um carro elétrico pegar fogo na garagem do condomínio?",
+      "resposta": "Se um carro elétrico pegar fogo na garagem do condomínio, siga esses passos:\n\n- **Alarme imediato**: Ligue o alarme de incêndio do prédio e avise os moradores próximos.\n- **Contato de emergência**: Ligue 193 (vigília) ou 190 (bombeiros) e informe que há fogo em veículo elétrico na garagem.\n- **Evacuação**: Oriente os moradores a sair do prédio pelo caminho mais seguro, evitando a área afetada.\n- **Isolamento**: Se possível, feche a porta da garagem para limitar a propagação do fogo e impedir entrada de fumaça.\n- **Não tente apagar sozinho**: Carros elétricos podem ter baterias que liberam gases perigosos; deixe o combate ao fogo para profissionais.\n- **Documentação**: Anote horário, localização e qualquer detalhe que possa ajudar na investigação e no seguro.\n\nO seguro predial normalmente cobre a instalação e os veículos, e o risco de incêndio em veículos elétricos é estatisticamente menor que em veículos a gasolina. No entanto, a instalação deve seguir normas técnicas e boas práticas para minimizar riscos.\n\nVocê precisa de mais detalhes sobre procedimentos de evacuação ou sobre como o condomínio pode melhorar a segurança?",
+      "resposta_modelo": "Se um carro elétrico pegar fogo na garagem do condomínio, siga esses passos:\n\n- **Alarme imediato**: Ligue o alarme de incêndio do prédio e avise os moradores próximos.\n- **Contato de emergência**: Ligue 193 (vigília) ou 190 (bombeiros) e informe que há fogo em veículo elétrico na garagem.\n- **Evacuação**: Oriente os moradores a sair do prédio pelo caminho mais seguro, evitando a área afetada.\n- **Isolamento**: Se possível, feche a porta da garagem para limitar a propagação do fogo e impedir entrada de fumaça.\n- **Não tente apagar sozinho**: Carros elétricos podem ter baterias que liberam gases perigosos; deixe o combate ao fogo para profissionais.\n- **Documentação**: Anote horário, localização e qualquer detalhe que possa ajudar na investigação e no seguro.\n\nO seguro predial normalmente cobre a instalação e os veículos, e o risco de incêndio em veículos elétricos é estatisticamente menor que em veículos a gasolina. No entanto, a instalação deve seguir normas técnicas e boas práticas para minimizar riscos.\n\nVocê precisa de mais detalhes sobre procedimentos de evacuação ou sobre como o condomínio pode melhorar a segurança?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — O futuro da mobilidade: recarga de veículos elétricos em condomínios (riscos, segurança e responsabilidades) › p. 23",
+          "doc_id": "secovi_recarga_condominios_riscos",
+          "chunk_id": "secovi_recarga_condominios_riscos:p-23:1",
+          "score": 0.775,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2026/04/20260423-PAULO-REWALD.pdf",
+          "texto": "Problemas do morador/usuário Onde e como carregar o carro ou moto elétrica na garagem do condomínio? Quem paga a conta? Todos poderão carregar seus carros? Como resolver tudo sem arrumar confusão no condomínio?"
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 11",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-11:1",
+          "score": 0.7674,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes 10 Infraestrutura e Capacidade Elétrica 3\n\n3.3 É possível integrar o consumo dos carregadores ao medidor de energia do próprio apartamento? Qual seria o procedimento? Sim, desde que seja considerada na carga elétrica do condomínio (demanda), 100% da demanda de energia para o carregamento dos veículos elétricos, ou seja, 7kW (demanda para carregar 1 veículo elétrico) x nº de unidades da edificação. Devendo ainda, ter a aprovação pelo condomínio. Assim, considerando prováveis limitações de carga elétrica (demanda) dos condomínios residenciais, a melhor opção é instalar carregadores de veículos elétricos nas áreas comuns, onde pode ser possível limitar os pontos de carregamento ou mesmo prover protocolos de balanceamento de carga."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 9",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-9:3",
+          "score": 0.759,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": "2.6 O seguro predial do condomínio pode ser afetado em função do tipo de veículos elétrico ou da recarga de veículos elétricos? O seguro de garagem cobre as instalações, os bens localizados no espaço e os veículos, independentemente do tipo. O cálculo do prêmio do seguro leva em conta fatores como a probabilidade estatística de ocorrência e a severidade de um risco materializado. A probabilidade de incêndio em um veículo elétrico é 60 vezes menor do que em um veículo equivalente a gasolina. Isso significa que, ao substituir um veículo a gasolina por um elétrico, o risco intrínseco de incêndio diminui. Como o risco de incêndio em veículos elétricos é estatisticamente menor e a liberação de calor em um eventual incidente é equivalente à de um veículo a gasolina, não há razão para que o prêmio do seguro seja alterado. No entanto, é importante destacar que a instalação dos carregadores de veículos elétricos deve seguir rigorosamente as normas técnicas e as boas práticas recomendadas"
+        }
+      ],
+      "docs_esperados": [
+        "secovi_faq_carregadores_condominios"
+      ],
+      "resposta_referencia": "Evacuar a área imediatamente e chamar os bombeiros pelo 193; o combate é feito só por profissionais.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 15.82,
+      "tokens_turno": 2874,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 0.0,
+      "answer_relevancy_rubrica": 0.25,
+      "justificativa_rubrica": "Os trechos fornecidos não contêm instruções sobre como agir em caso de incêndio; a resposta inventou procedimentos de segurança não presentes nas fontes."
+    },
+    {
+      "id": 17,
+      "categoria": "fundamentada_gestao",
+      "pergunta": "Qual ponto de carga teve mais receita no histórico?",
+      "pergunta_busca": "Qual ponto de carga teve mais receita no histórico?",
+      "resposta": "O ponto de carga **CP‑09** teve a maior receita histórica, com R$ 528,84 em 6 sessões.  \nPrecisa saber mais detalhes sobre esse ponto ou comparar com outro?",
+      "resposta_modelo": "O ponto de carga **CP‑09** teve a maior receita histórica, com R$ 528,84 em 6 sessões.  \nPrecisa saber mais detalhes sobre esse ponto ou comparar com outro?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Relatório histórico de operação — base SP2 › Receita por ponto de carga",
+          "doc_id": "relatorio_historico_sp2",
+          "chunk_id": "relatorio_historico_sp2:receita-por-ponto-de-carga:2",
+          "score": 0.817,
+          "suspeito": false,
+          "url": "",
+          "texto": "O CP-09 é o ponto de carga com maior receita histórica."
+        },
+        {
+          "citacao": "Relatório histórico de operação — base SP2 › Receita por ponto de carga",
+          "doc_id": "relatorio_historico_sp2",
+          "chunk_id": "relatorio_historico_sp2:receita-por-ponto-de-carga:1",
+          "score": 0.7685,
+          "suspeito": false,
+          "url": "",
+          "texto": "Pontos de carga em ordem de receita histórica:\n\n1. CP-09: receita de R$ 528,84 em 6 sessões, 285,9 kWh entregues, ticket médio de R$ 88,14.\n2. CP-07: receita de R$ 433,26 em 11 sessões, 234,2 kWh entregues, ticket médio de R$ 39,39.\n3. CP-08: receita de R$ 369,24 em 4 sessões, 199,6 kWh entregues, ticket médio de R$ 92,31.\n4. CP-01: receita de R$ 339,58 em 12 sessões, 183,6 kWh entregues, ticket médio de R$ 28,30.\n5. CP-02: receita de R$ 236,00 em 8 sessões, 127,6 kWh entregues, ticket médio de R$ 29,50.\n6. CP-05: receita de R$ 198,03 em 5 sessões, 107,0 kWh entregues, ticket médio de R$ 39,61.\n7. CP-03: receita de R$ 185,95 em 5 sessões, 100,5 kWh entregues, ticket médio de R$ 37,19.\n8. CP-04: receita de R$ 172,90 em 5 sessões, 93,5 kWh entregues, ticket médio de R$ 34,58.\n9. CP-10: receita de R$ 146,54 em 2 sessões, 79,2 kWh entregues, ticket médio de R$ 73,27.\n10. CP-06: receita de R$ 91,09 em 2 sessões, 49,2 kWh entregues, ticket médio de R$ 45,54."
+        },
+        {
+          "citacao": "Manual de operação do ChargeGrid Intelligence › Pontos de carga",
+          "doc_id": "manual_chargegrid_intelligence",
+          "chunk_id": "manual_chargegrid_intelligence:pontos-de-carga:1",
+          "score": 0.7068,
+          "suspeito": false,
+          "url": "",
+          "texto": "A rede de referência do projeto tem dez pontos de carga, identificados de CP-01 a CP-10.\nOs pontos usam três tipos de carregador:\n\n- AC 7,4 kW — corrente alternada, potência de 7,4 kW.\n- AC 11 kW — corrente alternada, potência de 11 kW.\n- DC 22 kW — corrente contínua, potência de 22 kW.\n\nCada sessão de recarga fica associada ao ponto de carga em que aconteceu, o que permite\nacompanhar a receita e a energia entregue por ponto."
+        }
+      ],
+      "docs_esperados": [
+        "relatorio_historico_sp2"
+      ],
+      "resposta_referencia": "O CP-09, com R$ 528,84 em 6 sessões (ticket médio de R$ 88,14).",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": false,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 13.83,
+      "tokens_turno": 2506,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta identifica corretamente o ponto de carga com maior receita e fornece os dados de suporte presentes nos trechos."
+    },
+    {
+      "id": 18,
+      "categoria": "fundamentada_gestao",
+      "pergunta": "Qual o horário de pico do posto?",
+      "pergunta_busca": "Qual o horário de pico do posto?",
+      "resposta": "- O horário de pico não é definido como um horário fixo.  \n- O documento indica que a hora com mais pessoas carregando é usada para o fator de demanda, **não** como horário de ponta.  \n- Assim, o pico de movimento do posto não corresponde necessariamente a um horário de ponta.\n\nVocê precisa saber o horário exato de pico para algum ajuste específico?",
+      "resposta_modelo": "- O horário de pico não é definido como um horário fixo.  \n- O documento indica que a hora com mais pessoas carregando é usada para o fator de demanda, **não** como horário de ponta.  \n- Assim, o pico de movimento do posto não corresponde necessariamente a um horário de ponta.\n\nVocê precisa saber o horário exato de pico para algum ajuste específico?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ajuste por ocupação alta",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ajuste-por-ocupacao-alta:1",
+          "score": 0.6746,
+          "suspeito": false,
+          "url": "",
+          "texto": "Quando a ocupação prevista do posto é alta, a tarifa recebe acréscimo de 15%. Fora do horário\nde ponta, a tarifa com ocupação alta fica em R$ 1,035 por kWh (R$ 0,90 × 1,15).\n\nA hora do dia com mais gente carregando entra na tarifa pelo fator de demanda prevista, e não\npelo pico: o pico de movimento do posto não é, por si só, horário de ponta."
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 12",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-12:3",
+          "score": 0.6566,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": ". Com unidades em Florianópolis, Porto Belo, Araquari, Joinville e Blumenau, o “corredor elétrico” da Celesc é um dos maiores em extensão do país e foi desenvolvido em parceria com a Fundação Certi. Iniciativas no sudeste Recentemente, a EDP e a Federação das Indústrias do Espírito Santo (Findes), por meio do Senai, inauguraram, na praia de Camburi, em Vitória (ES), o primeiro posto de carregamento rápido de veículos elétricos. No total, o projeto prevê instalar sete postos no Espírito Santo. Além de Vitória, as cidades de Cachoeiro do Itapemirim, Venda Nova do Imigrante, Guarapari, Linhares, São Mateus e Nova Venécia também receberão os postos de recarga de veículos elétricos. Cada unidade permitirá o abastecimento simultâneo de dois automóveis, no sistema de recarga rápida, em apenas 30 minutos é possível carregar 80% da bateria"
+        },
+        {
+          "citacao": "Relatório histórico de operação — base SP2 › Receita por ponto de carga",
+          "doc_id": "relatorio_historico_sp2",
+          "chunk_id": "relatorio_historico_sp2:receita-por-ponto-de-carga:2",
+          "score": 0.6551,
+          "suspeito": false,
+          "url": "",
+          "texto": "O CP-09 é o ponto de carga com maior receita histórica."
+        }
+      ],
+      "docs_esperados": [
+        "relatorio_historico_sp2"
+      ],
+      "resposta_referencia": "17h, com 7 sessões registradas; os três maiores horários são 17h, 10h e 18h.",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": false,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 0.67,
+      "tokens_turno": 2393,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta reflete fielmente o trecho [1], esclarecendo que o horário de pico não é definido como horário de ponta."
+    },
+    {
+      "id": 19,
+      "categoria": "encadeada",
+      "pergunta": "E no horário de ponta?",
+      "pergunta_busca": "E no horário de ponta?",
+      "resposta": "- Tarifa base: **R$ 0,90 por kWh**.  \n- Horário de ponta (18h‑21h): **R$ 1,17 por kWh** (acréscimo de 30%).  \n\nPrecisa saber algo mais sobre ajustes de horário ou ocupação?",
+      "resposta_modelo": "- Tarifa base: **R$ 0,90 por kWh**.  \n- Horário de ponta (18h‑21h): **R$ 1,17 por kWh** (acréscimo de 30%).  \n\nPrecisa saber algo mais sobre ajustes de horário ou ocupação?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ajuste de horário de ponta",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ajuste-de-horario-de-ponta:1",
+          "score": 0.656,
+          "suspeito": false,
+          "url": "",
+          "texto": "Entre 18h e 21h, horário de ponta real da rede elétrica, a tarifa base recebe acréscimo de 30%.\nNesse horário a tarifa fica em R$ 1,17 por kWh (R$ 0,90 × 1,30)."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Ajuste por ocupação alta",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:ajuste-por-ocupacao-alta:1",
+          "score": 0.6478,
+          "suspeito": false,
+          "url": "",
+          "texto": "Quando a ocupação prevista do posto é alta, a tarifa recebe acréscimo de 15%. Fora do horário\nde ponta, a tarifa com ocupação alta fica em R$ 1,035 por kWh (R$ 0,90 × 1,15).\n\nA hora do dia com mais gente carregando entra na tarifa pelo fator de demanda prevista, e não\npelo pico: o pico de movimento do posto não é, por si só, horário de ponta."
+        },
+        {
+          "citacao": "Secovi-SP — Instalação de Carregadores de Veículos Elétricos em Condomínios: Perguntas e Respostas Frequentes › p. 10",
+          "doc_id": "secovi_faq_carregadores_condominios",
+          "chunk_id": "secovi_faq_carregadores_condominios:p-10:2",
+          "score": 0.6364,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2025/02/faq-veiculos-eletricos-20250206.pdf",
+          "texto": ". Essa etapa geralmente é suficiente para a instalação dos primeiros pontos de recarga no edifício. No entanto, para expandir e adicionar mais pontos de carregamento, é necessário medir o consumo real da instalação em diferentes horários e avaliar a carga disponível. Essa medição pode ser feita ao longo de uma janela de 7 a 14 dias, durante semanas típicas de uso do prédio, ou de forma permanente. Em ambos os casos, utiliza-se um medidor digital capaz de registrar tensão, corrente, potência e outros parâmetros, equipado com um coletor de dados. Os dados obtidos são analisados por um engenheiro, que poderá determinar a capacidade disponível da instalação. A medição em tempo real, em particular, permite otimizar o uso da infraestrutura existente, fornecendo informações precisas sobre a carga disponível a qualquer momento"
+        }
+      ],
+      "docs_esperados": [
+        "tabela_tarifaria_chargegrid"
+      ],
+      "resposta_referencia": "No horário de ponta (18h-21h) a tarifa sobe 30%: R$ 1,17 por kWh.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": true,
+      "citou_fonte": false,
+      "modelo_citou": false,
+      "latencia_s": 3.59,
+      "tokens_turno": 2388,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 1.0,
+      "justificativa_rubrica": "A resposta responde diretamente à pergunta utilizando apenas as informações contidas no trecho 1."
+    },
+    {
+      "id": 20,
+      "categoria": "encadeada",
+      "pergunta": "E o do plugue?",
+      "pergunta_busca": "E o do plugue?",
+      "resposta": "Não tenho essa informação no momento.  \nSe precisar, consulte a ficha técnica do GoodWe HCA ou o manual do usuário.  \nPosso ajudar com mais alguma dúvida sobre conectores ou sobre o Charge Grid Intelligence?",
+      "resposta_modelo": "Não tenho essa informação no momento.  \nSe precisar, consulte a ficha técnica do GoodWe HCA ou o manual do usuário.  \nPosso ajudar com mais alguma dúvida sobre conectores ou sobre o Charge Grid Intelligence?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 25",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-25:1",
+          "score": 0.66,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "24 ELETROPOSTOS Outro ponto de atenção na hora de optar pela fabricante do eletroposto é a escolha do tipo de conector que será oferecido. No Brasil não há padronização, mas o tipo de plugue mais popular é o modelo europeu, isso porque as montadoras europeias foram as primeiras a trazer veículos elétricos e acabaram se estabelecendo no país. Alguns equipamentos possuem mais de um tipo de adaptador (mangueiras), mas os proprietários do veículo com plugues específicos também costumam ter adaptadores próprios. Tipos de conectores No Brasil, a maioria das estações instaladas em residências, shoppings e supermercados usa padrão em corrente alternada (CA) Tipo 2, pois o carregador é mais fácil de ser instalado. O acesso geralmente é liberado imediatamente com a conexão do cabo ao veículo ou por algum controle de acesso via chave, cartão RFiD ou aplicativo de celular. Também existe o padrão CA Tipo 1, conforme o tipo de veículo"
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 12",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-12:4",
+          "score": 0.6584,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": ". Com plugues universais, a rede capixaba de eletropostos beneficiará também os proprietários de veículos híbridos que optarem por rodar apenas no modo elétrico."
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 31",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-31:1",
+          "score": 0.6391,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "30 ELETROPOSTOS Eletroposto de parede – wallbox • Instalar eletroduto com diâmetro adequado, ou eletrocalha, para permitir a passagem dos condutores elétricos até o quadro de distribuição de energia; • Caso seja necessária a instalação de haste de aterramento local (comprimento de pelo menos 200 cm), instalar derivação no eletroduto/ eletrocalha ao nível do piso para passagem do cabo de aterramento, ou eletroduto/ eletrocalha adicional, caso o acesso dos condutores elétricos não seja enterrado no piso; • Se o eletroposto utilizar internet cabeada, instalar eletroduto ou eletrocalha adicional para o cabo de comunicação; • Fixar o equipamento de modo que a tomada fique localizada a uma altura compreendida entre 60 cm a 120 cm do piso (facilitar uso por PcD)."
+        }
+      ],
+      "docs_esperados": [
+        "goodwe_hca_manual_usuario"
+      ],
+      "resposta_referencia": "O plugue de recarga tem grau de proteção IP55.",
+      "contem_ok": false,
+      "nao_contem_ok": true,
+      "recusa_ok": false,
+      "checagens_ok": false,
+      "recuperacao_ok": false,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 17.67,
+      "tokens_turno": 2499,
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "faithfulness_rubrica": 1.0,
+      "answer_relevancy_rubrica": 0.0,
+      "justificativa_rubrica": "recusou ou nao respondeu uma pergunta que tinha resposta na base (regra da rubrica: faithfulness 1, relevancy 0)"
+    },
+    {
+      "id": 21,
+      "categoria": "sem_resposta_na_base",
+      "pergunta": "Qual o preço do carregador GoodWe HCA de 22 kW?",
+      "pergunta_busca": "Qual o preço do carregador GoodWe HCA de 22 kW?",
+      "resposta": "Só consigo ajudar com questões relacionadas a carros elétricos e ao Charge Grid Intelligence.",
+      "resposta_modelo": "Só consigo ajudar com questões relacionadas a carros elétricos e ao Charge Grid Intelligence.",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 27",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-27:1",
+          "score": 0.6957,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "26 ELETROPOSTOS QC24S Rede: 380Vac trifásico Carga: DC Rápida Potência: 24kW Plug: CCS ou ChadeMO Utilização: Estabelecimentos em rodovias, cidades, postos e estacionamentos QC45 Rede: 380Vac trifásico Carga: AC e DC Rápida Potência: 43kVA + 50kW Plug: AC – T2, DC – CCS ou ChadeMO Utilização: Estabelecimentos em rodovias, cidades, postos e estacionamentos * Fonte: Electric Mobility 4º Passo: ONDE E COMO INSTALAR O ELETROPOSTO A decisão sobre o melhor local no estabelecimento para a instalação do eletroposto envolve aspectos técnicos, mas também comerciais. O empresário geralmente prefere um ponto que chame a atenção dos clientes, mas as estações costumam ser posicionadas em estacionamentos ou garagens, sendo que o pré-requisito fundamental é ter rede elétrica compatível no local. Alguns fabricantes desenvolvem equipamentos hermeticamente vedados e que podem ficar expostos a intempéries, como sol e chuva, sem que haja problema para o serviço de carregamento"
+        },
+        {
+          "citacao": "FAQ de recarga para motoristas › Quanto tempo leva uma recarga?",
+          "doc_id": "faq_recarga_motorista",
+          "chunk_id": "faq_recarga_motorista:quanto-tempo-leva-uma-recarga:1",
+          "score": 0.6825,
+          "suspeito": false,
+          "url": "",
+          "texto": "Uma estimativa simples é dividir a energia que se quer repor (em kWh) pela potência efetiva da\nrecarga (em kW). Por exemplo, repor 22 kWh num carregador de 7,4 kW leva cerca de 3 horas.\nA potência efetiva é a menor entre a do carregador, a que o carro aceita e a que o\nbalanceamento de carga do local libera naquele momento.\n\nNa base histórica do ChargeGrid, a duração média de uma sessão foi de 2,58 horas, e o consumo\nmédio, de 24,34 kWh por sessão."
+        },
+        {
+          "citacao": "Manual de operação do ChargeGrid Intelligence › Pontos de carga",
+          "doc_id": "manual_chargegrid_intelligence",
+          "chunk_id": "manual_chargegrid_intelligence:pontos-de-carga:1",
+          "score": 0.6815,
+          "suspeito": false,
+          "url": "",
+          "texto": "A rede de referência do projeto tem dez pontos de carga, identificados de CP-01 a CP-10.\nOs pontos usam três tipos de carregador:\n\n- AC 7,4 kW — corrente alternada, potência de 7,4 kW.\n- AC 11 kW — corrente alternada, potência de 11 kW.\n- DC 22 kW — corrente contínua, potência de 22 kW.\n\nCada sessão de recarga fica associada ao ponto de carga em que aconteceu, o que permite\nacompanhar a receita e a energia entregue por ponto."
+        }
+      ],
+      "docs_esperados": [],
+      "resposta_referencia": "Recusa: o preço não está na base.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": null,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 14.84,
+      "tokens_turno": 2494,
+      "faithfulness": null,
+      "answer_relevancy": null
+    },
+    {
+      "id": 22,
+      "categoria": "sem_resposta_na_base",
+      "pergunta": "Quanto tempo dura a garantia da bateria do Renault Kwid E-Tech?",
+      "pergunta_busca": "Quanto tempo dura a garantia da bateria do Renault Kwid E-Tech?",
+      "resposta": "Não tenho essa informação.  \nPosso ajudar com outra dúvida sobre carros elétricos ou sobre o Charge Grid Intelligence?",
+      "resposta_modelo": "Não tenho essa informação.  \nPosso ajudar com outra dúvida sobre carros elétricos ou sobre o Charge Grid Intelligence?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Arval Brasil — Guia do condutor de veículos elétricos › p. 4",
+          "doc_id": "arval_guia_condutor_ve",
+          "chunk_id": "arval_guia_condutor_ve:p-4:1",
+          "score": 0.732,
+          "suspeito": false,
+          "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf",
+          "texto": "ALGUMAS ESPECIFICAÇÕES TÉCNICAS 01 -VISÃO GERAL DA BATERIA Os veículos elétricos (VE) funcionam com uma bateria . Têm de estar ligados à tomada para serem recarregados. A capacidade da bateria é expressa em kWh (quilowatt - hora), que representa a capacidade de armazenamento de energia, diretamente relacionada com a autonomia do veículo, expressa em quilômetros . Quanto maior a capacidade, maior o alcance do veículo . O consumo do VE é expresso em kWh/100 km . A gama varia conforme a marca e o modelo do seu veículo, mas também muitos fatores, como os seus hábitos de condução e condições externas . Tal como acontece com o seu smartphone, a capacidade da bateria de um veículo elétrico diminui ligeiramente ao longo do tempo . BOAS NOTÍCIAS! Você tem controle sobre muitas destas variáveis para prolongar a vida útil da bateria e do EV! For the many journeys in life PÁGINA ANTERIOR PRÓXIMA PÁGINA"
+        },
+        {
+          "citacao": "Arval Brasil — Guia do condutor de veículos elétricos › p. 16",
+          "doc_id": "arval_guia_condutor_ve",
+          "chunk_id": "arval_guia_condutor_ve:p-16:1",
+          "score": 0.7199,
+          "suspeito": false,
+          "url": "https://www.arvalbrasil.com.br/sites/default/files/157/2024/07/GUIA%20DE%20CONDUTORES%20DE%20CARROS%20EL%C3%89TRICOS.pdf",
+          "texto": "Classification : Internal CONDUZIR O MEU VEÍCULO ELÉTRICO EM TEMPERATURAS EXTREMAS 12 - COMO PRESERVAR A AUTONOMIA E A VIDA ÚTIL DA BATERIA EM TEMPERATURAS EXTREMAS? TEMPO FRIO: Pré - aqueça o carro enquanto está ligado (desta forma, é a energia da rede que é usada, não a bateria) 10 a 15 minutos antes da hora de partida . For the many journeys in life PÁGINA ANTERIOR PRÓXIMA PÁGINA Utilize opções de aquecimento energeticamente eficientes, como bancos aquecidos e volante , para reduzir a utilização de um aquecimento regular menos eficiente . EM TEMPO QUENTE: Estacione à sombra , mesmo que isso signifique estar um pouco mais longe do seu destino . Evite carregar durante períodos de calor intenso . Conduza de forma ainda mais suave . Abra as janelas quando conduzir a baixas velocidades (mas evite em estradas , pois o vento irá atuar na aerodinâmica e reduzir a velocidade)"
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 9",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-9:1",
+          "score": 0.7152,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "8 ELETROPOSTOS Em Santa Catarina foi desenvolvido, em 2011, o Pratyko, especialmente para cadeirantes com motor Weg e autonomia para 100 km. No mesmo ano, a japonesa Nissan trouxe para o Brasil o Leaf, que não chegou a ser vendido no varejo, mas direcionado a algumas empresas e para serviços de táxi. Atualmente o modelo voltou repaginado como destaque da marca. Em 2014, chegou o BMW i3, com autonomia de 335 km. Foi o primeiro carro elétrico fabricado na Europa a entrar no mercado brasileiro e ficou por muito tempo representando, sozinho, a categoria no país. Para recarregá-lo basta uma tomada doméstica de 110 ou 220 Volts."
+        }
+      ],
+      "docs_esperados": [],
+      "resposta_referencia": "Recusa: garantia de bateria de modelo de carro não está na base.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": null,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 14.99,
+      "tokens_turno": 2666,
+      "faithfulness": null,
+      "answer_relevancy": null
+    },
+    {
+      "id": 23,
+      "categoria": "fora_de_escopo",
+      "pergunta": "Quem ganhou a Copa do Mundo de 2022?",
+      "pergunta_busca": "Quem ganhou a Copa do Mundo de 2022?",
+      "resposta": "Só consigo ajudar com questões relacionadas a carros elétricos e ao Charge Grid Intelligence.",
+      "resposta_modelo": "Só consigo ajudar com questões relacionadas a carros elétricos e ao Charge Grid Intelligence.",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "Secovi-SP — O futuro da mobilidade: recarga de veículos elétricos em condomínios (riscos, segurança e responsabilidades) › p. 2",
+          "doc_id": "secovi_recarga_condominios_riscos",
+          "chunk_id": "secovi_recarga_condominios_riscos:p-2:1",
+          "score": 0.6288,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2026/04/20260423-PAULO-REWALD.pdf",
+          "texto": "Diretoria de Normalização que atua há ~35 anos junto a todas Concessionárias, Repartições e Órgãos Normalizadores tais como: • ABNT • COMGÁS • SABESP • ENEL • C B • EDP E diversos outros órgãos Em setembro de 2022, reunião com todos principais fornecedores de Carregamento Veicular Tentamos criar uma regra única para o mercado, mas a dificuldade se deve principalmente à diferença de protocolos utilizados e falta de regramento"
+        },
+        {
+          "citacao": "Secovi-SP — O futuro da mobilidade: recarga de veículos elétricos em condomínios (riscos, segurança e responsabilidades) › p. 3",
+          "doc_id": "secovi_recarga_condominios_riscos",
+          "chunk_id": "secovi_recarga_condominios_riscos:p-3:1",
+          "score": 0.6281,
+          "suspeito": false,
+          "url": "https://secovi.com.br/wp-content/uploads/2026/04/20260423-PAULO-REWALD.pdf",
+          "texto": "Histórico Início das discussões no 2º semestre de 2023 • Outubro/23: processos no CB com informações de carregamento veicular levantam questões • Novembro/23: em reunião no Secovi-SP com Comando do CB para discutir assuntos, recebemos a informação de que até o fim daquele ano sairia documento com regras sobre carregamento"
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 17",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-17:3",
+          "score": 0.6136,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": ". “Nossa percepção, acompanhando os rumos do mercado automobilístico, é de que a eletrificação dos veículos é um movimento muito forte no mundo, sem dúvida um caminho sem volta”, observa. “Esse movimento ainda é incipiente no Brasil, mas com certeza ganhará força no país. Por isso, nossos empreendimentos são pensados com visão de futuro, com foco no médio e longo prazo. Hoje temos pouca procura pelos eletropostos, mas daqui a cinco anos, eles serão um diferencial”."
+        }
+      ],
+      "docs_esperados": [],
+      "resposta_referencia": "Recusa: assunto fora do escopo.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": null,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 12.61,
+      "tokens_turno": 2335,
+      "faithfulness": null,
+      "answer_relevancy": null
+    },
+    {
+      "id": 24,
+      "categoria": "restrita_gestao",
+      "pergunta": "Qual foi a receita total do histórico de recargas?",
+      "pergunta_busca": "Qual foi a receita total do histórico de recargas?",
+      "resposta": "Não tenho essa informação.  \nPosso ajudar com outras métricas do Charge Grid Intelligence ou dúvidas sobre carros elétricos?",
+      "resposta_modelo": "Não tenho essa informação.  \nPosso ajudar com outras métricas do Charge Grid Intelligence ou dúvidas sobre carros elétricos?",
+      "barrado_por": null,
+      "trechos": [
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 42",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-42:1",
+          "score": 0.6991,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "ELETROPOSTOS 41 Falta infraestrutura de recarga no Brasil: MITO A absoluta maioria dos veículos, sejam elétricos ou não, são utilizados em trechos urbanos. E, assim, as recargas acontecem principalmente nas residências, durante a noite, ou durante o expediente no trabalho. A infraestrutura de recarga nas cidades está expandindo, com investimentos de montadoras como BMW, Porsche e Volvo, além de outras iniciativas de distribuidoras de energia como Copel, CPFL, Celesc, entre outras. O que realmente falta é a infraestrutura de recarga rápida em rodovias, para permitir que viagens acima de 300 km possam ser realizadas."
+        },
+        {
+          "citacao": "Tabela tarifária do ChargeGrid › Tarifa média observada no histórico",
+          "doc_id": "tabela_tarifaria_chargegrid",
+          "chunk_id": "tabela_tarifaria_chargegrid:tarifa-media-observada-no-historico:1",
+          "score": 0.6768,
+          "suspeito": false,
+          "url": "",
+          "texto": "Na base histórica SP2 (60 sessões comerciais), a tarifa média registrada foi de R$ 1,85 por kWh.\nEsse valor é um indicador do histórico, não a tarifa vigente."
+        },
+        {
+          "citacao": "PROMOB-e — Eletropostos: instalação de equipamentos de recarga para grandes demandas › p. 16",
+          "doc_id": "promobe_guia_eletropostos",
+          "chunk_id": "promobe_guia_eletropostos:p-16:1",
+          "score": 0.6735,
+          "suspeito": false,
+          "url": "https://pnme.org.br/wp-content/uploads/2020/04/guia_promobe_eletroposto_simples_v2.pdf",
+          "texto": "ELETROPOSTOS 15 lecimentos comerciais que desejam surpreender os clientes, além de estar preparados para atender a crescente demanda dos próximos anos. A instalação da rede de recarga em rodovias, por iniciativa das concessionárias de energia, é uma maneira de fomentar a adoção dos veículos elétricos em viagens de longa distância. Mas a pulverização dessa rede, especialmente nos centros urbanos, facilitará cada vez mais a rotina dos proprietários de veículos elétricos, especialmente à medida em que o processo de recarga passa a fazer parte das atividades diárias desses consumidores. Atualmente, o motorista vai até o posto de gasolina, abastece o carro rapidamente e segue caminho. Com o veículo elétrico, há uma mudança de paradigma. A ideia é de que as pessoas façam suas atividades cotidianas, no shopping, no mercado, na reunião de negócios ou num restaurante, sendo que esses locais tenham eletropostos"
+        }
+      ],
+      "docs_esperados": [],
+      "resposta_referencia": "Recusa: dado restrito à gestão; não deve aparecer R$ 2.701,43.",
+      "contem_ok": true,
+      "nao_contem_ok": true,
+      "recusa_ok": true,
+      "checagens_ok": true,
+      "recuperacao_ok": null,
+      "citou_fonte": null,
+      "modelo_citou": null,
+      "latencia_s": 13.62,
+      "tokens_turno": 2409,
+      "faithfulness": null,
+      "answer_relevancy": null
+    }
+  ]
+}

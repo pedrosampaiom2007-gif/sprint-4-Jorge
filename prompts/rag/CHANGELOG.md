@@ -35,7 +35,7 @@ fazer quando a resposta não está na base.
 <!-- AUTO:prompts -->
 | Versão | Tokens do prompt | Usada na | Faithfulness | Answer relevancy | Ganho de faithfulness vs versão anterior |
 |---|---:|---|---:|---:|---:|
-| rag_v1 | 1514 | Iteração 1 | pendente | pendente | — |
+| rag_v1 | 1514 | Iteração 1 | 0,838 | 0,675 | — |
 | rag_v2 | 902 | Iteração 2 | pendente | pendente | — |
 | rag_v3 | 1404 | Iteração 3 | pendente | pendente | — |
 <!-- /AUTO:prompts -->

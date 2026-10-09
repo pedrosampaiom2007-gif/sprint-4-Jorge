@@ -6,7 +6,8 @@ Turma 1CCPG
 Assistente de recarga e gestão de eletropostos. Na Sprint 4 o chatbot passa a responder
 com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-text` num
 **ChromaDB persistente** —, cita a fonte em toda resposta, recusa o que não está na base,
-é medido com **RAGAS** e ganhou uma **interface web**.
+é medido (faithfulness e answer relevancy pela rubrica equivalente ao RAGAS, aplicada por
+LLM-juiz) e ganhou uma **interface web**.
 
 - Relatório de evolução (PDF): [`docs/relatorio_evolucao.pdf`](docs/relatorio_evolucao.pdf)
 - RAG: [`docs/relatorio_rag.md`](docs/relatorio_rag.md) · Modelos e parâmetros: [`docs/relatorio_modelos.md`](docs/relatorio_modelos.md)
@@ -34,7 +35,7 @@ com base num **RAG** — documentos do domínio vetorizados com `nomic-embed-tex
 [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pedrosampaiom2007-gif/sprint-4-Jorge/blob/main/notebooks/avaliacao_colab.ipynb)
 
 O notebook [`notebooks/avaliacao_colab.ipynb`](notebooks/avaliacao_colab.ipynb) clona este
-repositório, instala as dependências, indexa a base, roda todas as avaliações (RAGAS por
+repositório, instala as dependências, indexa a base, roda todas as avaliações (rubrica por
 iteração, versão das Sprints 1/2, comparação de modelos e segurança), preenche as tabelas
 dos relatórios, gera o `docs/relatorio_evolucao.pdf` e, se quiser, sobe a interface web com
 link público. **Professor, se preferir, é o jeito mais fácil de reproduzir os números.**
