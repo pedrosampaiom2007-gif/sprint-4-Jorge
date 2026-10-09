@@ -30,6 +30,13 @@ class NomicEmbeddings(Embeddings):
         return self.base.embed_query(PREFIXO_CONSULTA + text)
 
 
+def endpoint_embeddings() -> str:
+    """Servidor Ollama que gera os embeddings (gravado junto dos resultados)."""
+    return os.environ.get("OLLAMA_EMBED_BASE_URL", "").strip() or os.environ.get(
+        "OLLAMA_BASE_URL", "https://ollama.com"
+    ).strip()
+
+
 def criar_embeddings() -> NomicEmbeddings:
     """OllamaEmbeddings(model='nomic-embed-text').
 
@@ -38,9 +45,7 @@ def criar_embeddings() -> NomicEmbeddings:
     """
     from langchain_ollama import OllamaEmbeddings
 
-    base_url = os.environ.get("OLLAMA_EMBED_BASE_URL", "").strip() or os.environ.get(
-        "OLLAMA_BASE_URL", "https://ollama.com"
-    ).strip()
+    base_url = endpoint_embeddings()
     chave = os.environ.get("OLLAMA_API_KEY", "").strip()
     kwargs = {"client_kwargs": {"headers": {"Authorization": f"Bearer {chave}"}}} if chave else {}
     return NomicEmbeddings(OllamaEmbeddings(model=MODELO_EMBEDDING, base_url=base_url, **kwargs))

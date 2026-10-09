@@ -49,44 +49,33 @@ iterações 2 e 3, `secao_500`.
 - **Iteração 2:** chunk por seção 500/75 com cabeçalho, prompt rag_v2 (grounding + citação), limiar 0,45, recusa em código.
 - **Iteração 3:** prompt rag_v3 com exemplos + reescrita da pergunta encadeada.
 
-| Iteração | Faithfulness | Answer relevancy | Recuperação (hit@k) | Citação | Recusa correta | Checagens OK |
-|---|---:|---:|---:|---:|---:|---:|
-| Sprints 1/2 (antes) | 0,20 | 0,91 | 10% | 0% | 100% | 46% |
-| Iteração 1 | 1,00 | 0,76 | 75% | 0% | 100% | 67% |
-| Iteração 2 | pendente | pendente | 85% | 100% | 100% | 71% |
-| Iteração 3 | pendente | pendente | pendente | pendente | pendente | pendente |
+| Iteração | Faithfulness | Ganho | Answer relevancy | Ganho | Recuperação (hit@k) | Citação | Modelo citou [n] | Recusa correta |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Iteração 1 | 0,838 | — | 0,675 | — | 75% | 0% | 0% | 100% |
+| Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+| Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
 
-**Leitura parcial.** Do chatbot antigo para o RAG, a fidelidade sobe de 0,20 para 1,00: o
-legado respondia "de cabeça" e quase nada do que dizia estava nos documentos. A relevância
-cai de 0,91 para 0,76 porque, na iteração 1, quando a busca não acha o documento certo o
-modelo recusa em vez de inventar — e recusa a uma pergunta que tinha resposta conta como
-relevância 0. A iteração 2 ataca exatamente isso: a recuperação sobe de 75% para 85% com o
-chunk por seção, e a citação de fonte vai de 0% para 100%.
+_Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:iteracoes -->
 
 ## Antes e depois
 
 <!-- AUTO:antes_depois -->
-| Critério | Sprints 1/2 (versão original) | Sprint 04 — iteração 1 | Sprint 04 — iteração 2 | Sprint 04 — iteração 3 |
-|---|---|---|---|---|
-| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial, chunk fixo 1000 | busca vetorial, chunk por seção 500 | busca vetorial + reescrita da pergunta |
-| Faithfulness (rubrica) | 0,20 | 1,00 | pendente | pendente |
-| Answer relevancy (rubrica) | 0,91 | 0,76 | pendente | pendente |
-| Qualidade do contexto (documento certo entre os trechos) | 10% trouxe algum contexto | 75% | 85% | pendente |
-| Presença de citação de fonte | 0% | 0% | 100% | pendente |
-| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | 100% | 100% | pendente |
-| Checagens determinísticas OK | 46% | 67% | 71% | pendente |
-| Latência média por turno | 0,59 s | 10,42 s* | 6,24 s | pendente |
-| Tokens por turno (média) | 1289 | 2501 | 1842 | pendente |
+| Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
+|---|---|---|
+| Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
+| Faithfulness | 0,350 | pendente |
+| Faithfulness por iteração | versão única | it1 0,84 → it2 pendente → it3 pendente |
+| Answer relevancy | 0,812 | pendente |
+| Answer relevancy por iteração | versão única | it1 0,68 → it2 pendente → it3 pendente |
+| Qualidade do contexto recuperado (documento certo entre os trechos) | 10% das perguntas trouxeram algum contexto (sem documento a conferir) | pendente |
+| Presença de citação de fonte | 0% | pendente |
+| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | pendente |
+| Checagens determinísticas OK | 46% | pendente |
+| Latência média por turno | 0,59 s | pendente |
+| Tokens por turno (média) | 1289 | pendente |
 
-_Resultado PARCIAL. Modelo que respondeu: groq:openai/gpt-oss-20b; faithfulness e answer
-relevancy pela rubrica de fallback (`evals/fallback/rubrica_manual.md`) aplicada por LLM-juiz
-groq:openai/gpt-oss-120b. Sprints 1/2 e iteração 1: execução de 09/10 (iteração 1 com 17
-de 20 casos avaliados pelo juiz; as recusas a perguntas com resposta na base receberam
-relevancy 0, como manda a rubrica). Iteração 2: métricas sem juiz da execução de 08/10, que
-gerou as 24 respostas; as notas do juiz não saíram porque a cota diária da Groq acabou.
-\* latência da iteração 1 inflada pela espera do limite de requisições por minuto. Esta
-tabela é substituída automaticamente quando `python -m evals.rodar_tudo` terminar._
+_Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:antes_depois -->
 
 ## Guardrails do RAG
@@ -110,15 +99,18 @@ tabela é substituída automaticamente quando `python -m evals.rodar_tudo` termi
 
 ## Avaliação
 
-- RAGAS: `faithfulness` e `answer_relevancy`, juiz `groq:openai/gpt-oss-120b`
-  (temperatura 0), embeddings `nomic-embed-text`. Roda nos casos com documento
-  esperado que passaram pelo modelo.
+- Números do relatório: rubrica de fallback (abaixo), aplicada por LLM-juiz. O juiz de
+  cada execução fica gravado em `evals/resultados/*.json` e aparece abaixo de cada tabela.
+- RAGAS (disponível em `evals.run_iteracoes`/`evals.run_modelos`): `faithfulness` e
+  `answer_relevancy`, juiz `groq:openai/gpt-oss-120b` (temperatura 0), embeddings
+  `nomic-embed-text`. Não terminava dentro da cota gratuita, por isso o relatório usa a rubrica.
 - Sem juiz: recuperação (documento esperado entre os trechos), presença de citação
   na resposta final, se o próprio modelo citou `[n]` (sem contar a linha que o código
   acrescenta), recusa correta e checagens determinísticas.
 - Fallback: rubrica 0–1 equivalente em `evals/fallback/rubrica_manual.md`, aplicada a
   todos os casos com resposta na base. `python -m evals.rodar_tudo` aplica a rubrica com o
-  LLM-juiz `groq:openai/gpt-oss-120b` (temperatura 0) e grava a nota e a justificativa de
+  LLM-juiz escolhido em `--juiz` (nas execuções: `gemini:gemini-3.1-flash-lite`,
+  temperatura 0) e grava a nota e a justificativa de
   cada caso em `evals/resultados/*.json`; `python -m evals.fallback_manual exportar`
   gera uma planilha para revisar ou refazer as notas à mão. Caso que tinha resposta na
   base mas não foi respondido (recusa, erro) recebe faithfulness 1 e answer relevancy 0,

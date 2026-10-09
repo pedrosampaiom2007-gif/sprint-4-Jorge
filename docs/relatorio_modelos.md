@@ -5,10 +5,10 @@
 | Provedor | Modelo | Papel |
 |---|---|---|
 | Groq | `openai/gpt-oss-20b` | modelo de produção do chatbot |
-| Groq | `openai/gpt-oss-120b` | comparado no chat; juiz do RAGAS |
+| Groq | `openai/gpt-oss-120b` | comparado no chat |
 | Ollama Cloud | `gemma4:cloud` | comparado no chat; segundo provedor da chamada multi-provider |
-| Google AI Studio | `gemini-2.5-flash-lite` | comparado no chat; alternativa de geração e de juiz quando a cota diária da Groq acaba |
-| Ollama Cloud | `nomic-embed-text` | embeddings (indexação, busca e answer_relevancy do RAGAS) |
+| Google AI Studio | `gemini-3.1-flash-lite` (o primeiro de `GEMINI_CANDIDATOS` que a chave aceita) | comparado no chat; **juiz da rubrica** nas avaliações |
+| Ollama local (no Colab, `127.0.0.1:11434`) | `nomic-embed-text` | embeddings (indexação e busca); a Ollama Cloud devolvia 401 para embeddings |
 
 A fábrica de modelos é `src/llm/provedores.py`: trocar de modelo é trocar o par
 `(provedor, modelo)`, e a chain não muda.
@@ -30,13 +30,17 @@ qual modelo respondeu e qual julgou.
 | limiar de relevância | — | **0,45** (calibrável) | Sem limiar, toda pergunta recebe k trechos, mesmo sem nada a ver com a base, e o modelo tenta responder com eles. O valor inicial é calibrado com `python -m evals.calibrar_limiar`, que mede a relevância do melhor trecho nas perguntas com e sem resposta na base, e pode ser trocado pela variável `RAG_LIMIAR`. |
 | `reasoning_format` (gpt-oss) | `hidden` | `hidden` | Sem isso o texto vem vazio (Sprint 3). |
 
-O juiz do RAGAS roda com temperatura 0 e `max_tokens` 2000, porque o faithfulness pede
-ao juiz a lista de afirmações da resposta em JSON.
+**Avaliação.** As notas de faithfulness e answer relevancy vêm da rubrica manual
+(`evals/fallback/rubrica_manual.md`) aplicada por LLM-juiz (`evals/fallback_manual.py`),
+com temperatura 0 e `max_tokens` 1500 (com 600 a justificativa cortava e o JSON da nota vinha
+quebrado). O juiz é o mesmo em todas as linhas da comparação abaixo. Com RAGAS
+(`evals.run_iteracoes` e `evals.run_modelos`, ainda disponíveis), o juiz roda com
+temperatura 0 e `max_tokens` 2000, porque o faithfulness pede a lista de afirmações em JSON.
 
 ## Comparação de modelos
 
 Mesma configuração (iteração 3: `secao_500`, k = 4, limiar 0,45, prompt `rag_v3`),
-mesmo eval set e mesmo juiz. Gerado por `python -m evals.run_modelos`.
+mesmo eval set e mesmo juiz. Gerado por `python -m evals.rodar_tudo --so modelos`.
 
 <!-- AUTO:modelos -->
 | Modelo | temperature | top_p | max_tokens | k | Faithfulness | Answer relevancy | Recusa correta | Latência média | Tokens/turno |
@@ -44,7 +48,7 @@ mesmo eval set e mesmo juiz. Gerado por `python -m evals.run_modelos`.
 | groq:openai/gpt-oss-20b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 | groq:openai/gpt-oss-120b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 | ollama:gemma4:cloud | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
-| gemini:gemini-2.5-flash-lite | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+| gemini:gemini-3.1-flash-lite | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
 <!-- /AUTO:modelos -->
 
 ## Chamada multi-provider

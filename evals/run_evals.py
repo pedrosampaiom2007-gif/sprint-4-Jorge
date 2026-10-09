@@ -182,10 +182,13 @@ def main() -> None:
                 turno = assistente.responder(caso["pergunta"], session_id=sid, acesso_gestao=acesso)
                 break
             except Exception as e:  # noqa: BLE001  (conexao/rate limit da conta free)
+                # cota diaria acabou ou erro persistente: para sem gravar nada, para o
+                # resultado nao contar um erro de API como resposta do assistente
+                from evals.avaliar_rag import verificar_cota
+
+                verificar_cota(e)
                 if _tent == 3:
-                    from src.assistente import Turno
-                    turno = Turno(f"[ERRO apos retries: {e}]", "erro")
-                    break
+                    raise RuntimeError(f"caso {caso['id']} falhou apos 4 tentativas: {e}") from e
                 time.sleep(15 * (_tent + 1))
         latencia = time.perf_counter() - t0
 

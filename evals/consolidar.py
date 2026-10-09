@@ -212,7 +212,43 @@ def tabela_seguranca() -> str:
     return "\n".join(linhas)
 
 
+# o legado chama a API sem top_p (padrao do provedor = 1) e com max_tokens fixo em
+# legado/chatbot_legado.py; resultados antigos nao gravavam esses dois campos
+_PARAMS_LEGADO = {"top_p": 1.0, "max_tokens": 450}
+
+
+def _juiz(r: dict | None) -> str:
+    metodo = ((r or {}).get("fallback_manual") or {}).get("metodo") or ""
+    if "LLM-juiz " in metodo:
+        return metodo.rsplit("LLM-juiz ", 1)[1]
+    return f"RAGAS ({r['juiz_ragas']})" if r and r.get("juiz_ragas") else PENDENTE
+
+
+def tabela_metodologia() -> str:
+    """Modelo, parametros e juiz de cada etapa, lidos dos proprios resultados."""
+    linhas = [
+        "| Etapa | Modelo que respondeu | temperature | top_p | max_tokens | k | Prompt | Juiz da rubrica |",
+        "|---|---|---:|---:|---:|---:|---|---|",
+    ]
+    embeddings = set()
+    for nome, rotulo in [("legado_sprints12", "Sprints 1/2")] + [(n, r) for n, r, _ in ITERACOES]:
+        r = carregar(nome)
+        if not r:
+            linhas.append(f"| {rotulo} | {PENDENTE} | | | | | | |")
+            continue
+        c = {**(_PARAMS_LEGADO if nome == "legado_sprints12" else {}), **r.get("config", {})}
+        if r.get("embeddings"):
+            embeddings.add(r["embeddings"])
+        linhas.append(f"| {rotulo} | {c.get('provedor')}:{c.get('modelo')} | {num(c.get('temperature', 0), 1)} | "
+                      f"{num(c.get('top_p', 1), 1)} | {c.get('max_tokens')} | {c.get('k')} | {c.get('versao_prompt')} | "
+                      f"{_juiz(r)} |")
+    if embeddings:
+        linhas += ["", "_Embeddings registrados nas execuções: " + "; ".join(sorted(embeddings)) + "._"]
+    return "\n".join(linhas)
+
+
 TABELAS = {
+    "metodologia": tabela_metodologia,
     "iteracoes": tabela_iteracoes,
     "antes_depois": tabela_antes_depois,
     "modelos": tabela_modelos,
@@ -235,6 +271,7 @@ def consolidar(gerar_pdf: bool = True, silencioso: bool = False) -> dict[str, st
         "Gerado por `python -m evals.consolidar` a partir de `evals/resultados/`.\n\n"
         "## Iterações\n\n" + tabelas["iteracoes"] + "\n\n"
         "## Antes e depois\n\n" + tabelas["antes_depois"] + "\n\n"
+        "## Modelos, parâmetros e juiz por etapa\n\n" + tabelas["metodologia"] + "\n\n"
         "## Modelos\n\n" + tabelas["modelos"] + "\n\n"
         "## Segurança\n\n" + tabelas["seguranca"] + "\n"
     )
