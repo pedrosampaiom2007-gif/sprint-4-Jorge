@@ -64,8 +64,12 @@ todas as versões.
   precisa do juiz e dos embeddings ao mesmo tempo, com chamadas em paralelo, e não
   terminava dentro do limite da conta gratuita. Usamos então a rubrica de fallback
   (`evals/fallback/rubrica_manual.md`), com notas de 0 a 1 em passos de 0,25 para
-  faithfulness e answer relevancy. A equivalência com o RAGAS está justificada no próprio
-  arquivo. O juiz recebe pergunta, trechos e resposta e devolve as duas notas. Recusar
+  faithfulness e answer relevancy. **Por que é equivalente:** o faithfulness do RAGAS
+  quebra a resposta em afirmações e confere cada uma contra os trechos, e a rubrica faz a
+  mesma conferência em faixas de 25%. O answer relevancy do RAGAS mede se a resposta
+  "responde" à pergunta (gerando perguntas a partir dela), e a rubrica avalia isso
+  diretamente. Os casos, os trechos e as regras são os mesmos em todas as versões, então os
+  números continuam comparáveis entre si. O juiz recebe pergunta, trechos e resposta e devolve as duas notas. Recusar
   uma pergunta que tinha resposta na base vale faithfulness 1 e relevancy 0, regra
   aplicada em código, igual para todas as versões. O juiz (temperatura 0,
   `max_tokens` 1500) aparece logo abaixo da tabela de parâmetros.
