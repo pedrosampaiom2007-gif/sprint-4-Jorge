@@ -159,8 +159,12 @@ def mostrar_status() -> None:
     for etapa_ in ETAPAS:
         if etapa_ == "modelos":
             arquivos = sorted(PASTA.glob("modelo_*.json"))
-            texto = ", ".join(f"{a.stem.replace('modelo_', '')}: {_situacao_avaliacao(a.stem)}" for a in arquivos) \
-                or "FALTA rodar"
+            situacoes = {a.stem.replace("modelo_", ""): _situacao_avaliacao(a.stem) for a in arquivos}
+            detalhe = ", ".join(f"{m}: {s}" for m, s in situacoes.items())
+            if len(situacoes) >= 2 and all(s.startswith("ok") for s in situacoes.values()):
+                texto = f"ok ({len(situacoes)} modelos) — {detalhe}"
+            else:
+                texto = detalhe or "FALTA rodar"
         elif etapa_ == "seguranca":
             feitos = [n for n in ("seguranca_documentos", "seguranca_sprint4") if _existe(n)]
             texto = "ok" if len(feitos) == 2 else f"FALTA rodar ({len(feitos)}/2 testes feitos)"
