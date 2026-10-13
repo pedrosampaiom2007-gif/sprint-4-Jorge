@@ -48,6 +48,12 @@ link público. **Professor, se preferir, é o jeito mais fácil de reproduzir os
 3. **Ambiente de execução → Executar tudo.** Leva de 30 a 60 minutos por causa do limite da
    conta gratuita do Groq. No fim o notebook baixa o PDF e um `.zip` com os resultados.
 
+**Só para conversar com o bot (cerca de 5 minutos):** cadastre pelo menos uma chave
+(`GROQ_API_KEY` ou `GOOGLE_API_KEY`). Rode as seções 1, 2 e 3 do notebook (a célula do
+Google Drive pode ser pulada) e depois a seção 7, que monta o índice e abre a interface web
+com um link público. As avaliações já estão feitas: os resultados ficam em
+`evals/resultados/` e os relatórios em `docs/`.
+
 ---
 
 ## Rodando o projeto no computador

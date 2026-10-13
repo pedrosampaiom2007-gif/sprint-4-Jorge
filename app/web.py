@@ -78,12 +78,19 @@ def painel_fontes(turno) -> str:
     return "\n".join(linhas)
 
 
+def _provedor_embeddings() -> set[str]:
+    """A chave da Ollama so e exigida quando os embeddings vem da Ollama Cloud (nao do Ollama local)."""
+    from src.rag.embeddings import endpoint_embeddings
+
+    return {"ollama"} if "ollama.com" in endpoint_embeddings() else set()
+
+
 def responder(mensagem, historico, sessao, perfil, modelo, versao):
     mensagem = (mensagem or "").strip()
     historico = list(historico or [])
     if not mensagem:
         return historico, "", gr_noop(), sessao
-    faltam = chaves_faltando({modelo.split(":", 1)[0], "ollama"})
+    faltam = chaves_faltando({modelo.split(":", 1)[0]} | _provedor_embeddings())
     if faltam:
         aviso = f"⚠️ Falta no .env: {', '.join(faltam)}"
         return historico + [_msg("user", mensagem), _msg("assistant", aviso)], "", aviso, sessao
@@ -109,7 +116,7 @@ def comparar(pergunta, perfil, selecionados):
     combinacoes = [c for c in COMBINACOES_PADRAO if _rotulo_combo(c) in (selecionados or [])]
     if not combinacoes:
         return "_Marque pelo menos uma combinação._"
-    faltam = chaves_faltando({c[0] for c in combinacoes} | {"ollama"})
+    faltam = chaves_faltando({c[0] for c in combinacoes} | _provedor_embeddings())
     if faltam:
         return f"⚠️ Falta no .env: {', '.join(faltam)}"
     respostas, trechos = consultar_multiplos(pergunta, combinacoes, acesso_gestao=PERFIS[perfil])
