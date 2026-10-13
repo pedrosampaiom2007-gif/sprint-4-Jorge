@@ -45,11 +45,33 @@ mesmo eval set e mesmo juiz. Gerado por `python -m evals.rodar_tudo --so modelos
 <!-- AUTO:modelos -->
 | Modelo | temperature | top_p | max_tokens | k | Faithfulness | Answer relevancy | Recusa correta | Latência média | Tokens/turno |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| groq:openai/gpt-oss-20b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
-| groq:openai/gpt-oss-120b | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
-| ollama:gemma4:cloud | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
-| gemini:gemini-3.1-flash-lite | 0 | 1 | 450 | 4 | pendente | pendente | pendente | pendente | pendente |
+| gemini:gemini-3.1-flash-lite | 0 | 1 | 450 | 4 | 1,000 | 0,738 | 100% | 3,04 s | 2493 |
+| groq:openai/gpt-oss-120b | 0 | 1 | 450 | 4 | 1,000 | 0,700 | 100% | 9,30 s | 2463 |
+| groq:openai/gpt-oss-20b | 0 | 1 | 450 | 4 | 0,988 | 0,750 | 75% | 9,98 s | 2475 |
+| ollama:gemma4:cloud | 0 | 1 | 450 | 4 | 0,988 | 0,738 | 100% | 0,79 s | 2470 |
 <!-- /AUTO:modelos -->
+
+**Leitura.** Os quatro modelos ficam praticamente empatados em faithfulness (0,99 a 1,00).
+Com o mesmo contexto e o mesmo prompt `rag_v3`, nenhum inventa fora dos trechos. Também
+zeram a relevancy nos mesmos 5 casos com resposta na base, que são os casos em que a busca
+não trouxe o documento certo. Isso é limite da recuperação, não do modelo. As diferenças:
+
+- **Recusa correta.** O `gpt-oss-20b`, modelo de produção, foi o único que respondeu uma
+  das duas perguntas sem resposta na base (75%). Ele montou uma resposta com um trecho do
+  guia PROMOB-e que não respondia à pergunta. Os outros três recusaram os quatro casos (100%).
+- **Answer relevancy.** O `gpt-oss-20b` teve a maior (0,750) e o `gpt-oss-120b` a menor
+  (0,700). O 120b deu mais respostas incompletas, com nota 0,75 em vez de 1.
+- **Latência.** Depende mais do provedor: cerca de 9 a 10 s por turno nos dois modelos da
+  Groq, cerca de 3 s no Gemini e menos de 1 s no `gemma4:cloud`. Os tokens por turno são
+  parecidos (cerca de 2.500), porque o contexto recuperado é o mesmo.
+
+Ressalva: o Gemini também é o juiz da rubrica, então a nota dele pode ter viés de
+autoavaliação.
+
+Pelos números, o `gemma4:cloud` tem o melhor equilíbrio: recusa tudo o que deveria recusar,
+tem relevancy perto da maior e é o mais rápido. O `gpt-oss-20b` continua como padrão porque
+é o modelo das Sprints anteriores e de toda a tabela antes/depois. Trocar o modelo padrão é
+só mudar o par `(provedor, modelo)` e fica como próximo passo.
 
 ## Chamada multi-provider
 

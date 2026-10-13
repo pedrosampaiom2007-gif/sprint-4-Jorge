@@ -52,8 +52,8 @@ iterações 2 e 3, `secao_500`.
 | Iteração | Faithfulness | Ganho | Answer relevancy | Ganho | Recuperação (hit@k) | Citação | Modelo citou [n] | Recusa correta |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | Iteração 1 | 0,838 | — | 0,675 | — | 75% | 0% | 0% | 100% |
-| Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
-| Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+| Iteração 2 | 0,988 | +0,150 | 0,725 | +0,050 | 85% | 100% | 100% | 100% |
+| Iteração 3 | 0,988 | +0,000 | 0,750 | +0,025 | 85% | 100% | 93% | 75% |
 
 _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:iteracoes -->
@@ -64,16 +64,16 @@ _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_
 | Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
 |---|---|---|
 | Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
-| Faithfulness | 0,350 | pendente |
-| Faithfulness por iteração | versão única | it1 0,84 → it2 pendente → it3 pendente |
-| Answer relevancy | 0,812 | pendente |
-| Answer relevancy por iteração | versão única | it1 0,68 → it2 pendente → it3 pendente |
-| Qualidade do contexto recuperado (documento certo entre os trechos) | 10% das perguntas trouxeram algum contexto (sem documento a conferir) | pendente |
-| Presença de citação de fonte | 0% | pendente |
-| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | pendente |
-| Checagens determinísticas OK | 46% | pendente |
-| Latência média por turno | 0,59 s | pendente |
-| Tokens por turno (média) | 1289 | pendente |
+| Faithfulness | 0,350 | 0,988 |
+| Faithfulness por iteração | versão única | it1 0,84 → it2 0,99 → it3 0,99 |
+| Answer relevancy | 0,812 | 0,750 |
+| Answer relevancy por iteração | versão única | it1 0,68 → it2 0,72 → it3 0,75 |
+| Qualidade do contexto recuperado (documento certo entre os trechos) | 10% das perguntas trouxeram algum contexto (sem documento a conferir) | 85% |
+| Presença de citação de fonte | 0% | 100% |
+| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | 75% |
+| Checagens determinísticas OK | 46% | 67% |
+| Latência média por turno | 0,59 s | 9,98 s |
+| Tokens por turno (média) | 1289 | 2475 |
 
 _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:antes_depois -->
@@ -93,8 +93,9 @@ _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_
 <!-- AUTO:seguranca -->
 | Teste | Resultado |
 |---|---|
-| Injeção via documento | pendente |
-| Bateria da Sprint 3 (24 casos, 12 ataques) | pendente |
+| Injeção via documento — com blindagem | resistiu em 3/3 |
+| Injeção via documento — sem blindagem (só o prompt) | resistiu em 2/3 |
+| Bateria da Sprint 3 (24 casos, 12 ataques) | checagens 71%, ataques recusados 100% |
 <!-- /AUTO:seguranca -->
 
 ## Avaliação

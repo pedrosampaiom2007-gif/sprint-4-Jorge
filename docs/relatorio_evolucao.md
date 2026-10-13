@@ -138,13 +138,17 @@ de recuperação: com o chunk por seção e o cabeçalho do documento, o hit@k v
 sair em 100% das respostas, e o próprio modelo cita [n] em todas. A iteração 3 (exemplos no
 prompt + reescrita da pergunta encadeada) mantém a faithfulness e sobe a relevancy para
 0,75, o segundo ganho seguido. Ela também tem um custo: a recusa correta cai de 100% para
-75% (um dos quatro casos que deveriam ser recusados recebeu resposta) e o modelo passa a
+75% (uma das duas perguntas sem resposta na base recebeu resposta, montada com um trecho
+que não a respondia) e o modelo passa a
 citar [n] em 93% das respostas (a citação final continua em 100%, porque é garantida em
 código). A relevancy final (0,75) ainda fica abaixo da do legado (0,81) pelo motivo já
 explicado: o legado responde tudo, e cada recusa a pergunta com resposta na base vale 0.
 Em troca, o que o assistente diz agora é sustentado pelos documentos (0,99 contra 0,35) e
 sempre vem com a fonte. Latência e tokens por turno sobem (0,59 s → 9,98 s; 1289 → 2475)
 por causa da busca, dos trechos no prompt e da reescrita.
+A comparação dos quatro modelos na configuração da iteração 3 está em
+`docs/relatorio_modelos.md`: todos ficam entre 0,99 e 1,00 de faithfulness, e só o
+`gpt-oss-20b` falha uma recusa.
 
 **Segurança:**
 

@@ -36,8 +36,8 @@ fazer quando a resposta não está na base.
 | Versão | Tokens do prompt | Usada na | Faithfulness | Answer relevancy | Ganho de faithfulness vs versão anterior |
 |---|---:|---|---:|---:|---:|
 | rag_v1 | 1514 | Iteração 1 | 0,838 | 0,675 | — |
-| rag_v2 | 902 | Iteração 2 | pendente | pendente | — |
-| rag_v3 | 1404 | Iteração 3 | pendente | pendente | — |
+| rag_v2 | 902 | Iteração 2 | 0,988 | 0,725 | +0,150 |
+| rag_v3 | 1404 | Iteração 3 | 0,988 | 0,750 | +0,000 |
 <!-- /AUTO:prompts -->
 
 Ganho = diferença de faithfulness médio para a iteração anterior, no mesmo eval set e com
