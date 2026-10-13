@@ -67,8 +67,8 @@ todas as versões.
   faithfulness e answer relevancy. A equivalência com o RAGAS está justificada no próprio
   arquivo. O juiz recebe pergunta, trechos e resposta e devolve as duas notas. Recusar
   uma pergunta que tinha resposta na base vale faithfulness 1 e relevancy 0, regra
-  aplicada em código, igual para todas as versões. O juiz de cada etapa (temperatura 0,
-  `max_tokens` 1500) aparece na última coluna da tabela abaixo.
+  aplicada em código, igual para todas as versões. O juiz (temperatura 0,
+  `max_tokens` 1500) aparece logo abaixo da tabela de parâmetros.
 - **Embeddings no Ollama local.** O `nomic-embed-text` rodou num servidor Ollama
   instalado dentro do Colab (`http://127.0.0.1:11434`), porque a Ollama Cloud recusava
   as chamadas de embedding (HTTP 401). É o mesmo modelo, com os prefixos
@@ -76,12 +76,16 @@ todas as versões.
 - **Modelos e parâmetros** de cada etapa (lidos dos arquivos de resultado):
 
 <!-- AUTO:metodologia -->
-| Etapa | Modelo que respondeu | temperature | top_p | max_tokens | k | Prompt | Juiz da rubrica |
-|---|---|---:|---:|---:|---:|---|---|
-| Sprints 1/2 | groq:openai/gpt-oss-20b | 0,4 | 1,0 | 450 | 5 | legado (Sprints 1/2) | gemini:gemini-3.1-flash-lite |
-| Iteração 1 | groq:openai/gpt-oss-20b | 0,0 | 1,0 | 450 | 3 | rag_v1 | gemini:gemini-3.1-flash-lite |
-| Iteração 2 | pendente | | | | | | |
-| Iteração 3 | pendente | | | | | | |
+| Etapa | temperature | top_p | max_tokens | k | Prompt |
+|---|---:|---:|---:|---:|---|
+| Sprints 1/2 | 0,4 | 1,0 | 450 | 5 | legado (Sprints 1/2) |
+| Iteração 1 | 0,0 | 1,0 | 450 | 3 | rag_v1 |
+| Iteração 2 | 0,0 | 1,0 | 450 | 4 | rag_v2 |
+| Iteração 3 | 0,0 | 1,0 | 450 | 4 | rag_v3 |
+
+_Modelo que respondeu em todas as etapas: groq:openai/gpt-oss-20b. Juiz da rubrica: gemini:gemini-3.1-flash-lite._
+
+_Embeddings registrados nas execuções: nomic-embed-text via Ollama em http://127.0.0.1:11434._
 <!-- /AUTO:metodologia -->
 
 **Tabela antes/depois** (Sprints 1/2 × Sprint 04, a coluna da Sprint 04 é a iteração 3):
@@ -90,16 +94,16 @@ todas as versões.
 | Critério | Sprints 1/2 (versão original) | Sprint 04 (RAG avaliado) |
 |---|---|---|
 | Recuperação | palavra-chave em 22 frases da planilha SP2 | busca vetorial (nomic-embed-text + ChromaDB) em 10 documentos, com filtro de acesso e limiar |
-| Faithfulness | 0,350 | pendente |
-| Faithfulness por iteração | versão única | it1 0,84 → it2 pendente → it3 pendente |
-| Answer relevancy | 0,812 | pendente |
-| Answer relevancy por iteração | versão única | it1 0,68 → it2 pendente → it3 pendente |
-| Qualidade do contexto recuperado (documento certo entre os trechos) | 10% das perguntas trouxeram algum contexto (sem documento a conferir) | pendente |
-| Presença de citação de fonte | 0% | pendente |
-| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | pendente |
-| Checagens determinísticas OK | 46% | pendente |
-| Latência média por turno | 0,59 s | pendente |
-| Tokens por turno (média) | 1289 | pendente |
+| Faithfulness | 0,350 | 0,988 |
+| Faithfulness por iteração | versão única | it1 0,84 → it2 0,99 → it3 0,99 |
+| Answer relevancy | 0,812 | 0,750 |
+| Answer relevancy por iteração | versão única | it1 0,68 → it2 0,72 → it3 0,75 |
+| Qualidade do contexto recuperado (documento certo entre os trechos) | 10% das perguntas trouxeram algum contexto (sem documento a conferir) | 85% |
+| Presença de citação de fonte | 0% | 100% |
+| Recusa correta (sem resposta na base, fora de escopo, dado restrito) | 100% | 75% |
+| Checagens determinísticas OK | 46% | 67% |
+| Latência média por turno | 0,59 s | 9,98 s |
+| Tokens por turno (média) | 1289 | 2475 |
 
 _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:antes_depois -->
@@ -114,8 +118,8 @@ _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_
 | Iteração | Faithfulness | Ganho | Answer relevancy | Ganho | Recuperação (hit@k) | Citação | Modelo citou [n] | Recusa correta |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | Iteração 1 | 0,838 | — | 0,675 | — | 75% | 0% | 0% | 100% |
-| Iteração 2 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
-| Iteração 3 | pendente | — | pendente | — | pendente | pendente | pendente | pendente |
+| Iteração 2 | 0,988 | +0,150 | 0,725 | +0,050 | 85% | 100% | 100% | 100% |
+| Iteração 3 | 0,988 | +0,000 | 0,750 | +0,025 | 85% | 100% | 93% | 75% |
 
 _Faithfulness e answer relevancy medidos com: rubrica de evals/fallback/rubrica_manual.md aplicada por LLM-juiz gemini:gemini-3.1-flash-lite. Modelo que respondeu: groq:openai/gpt-oss-20b._
 <!-- /AUTO:iteracoes -->
@@ -129,17 +133,27 @@ recusa quando a busca não traz o documento certo. Os 5 casos sem recuperação 
 carro monofásico e a encadeada "e o do plugue?"). Em 4 deles o modelo recusou, e recusa
 a uma pergunta que tinha resposta vale relevancy 0 pela rubrica. No quinto respondeu sem
 apoio nos trechos e levou 0 nas duas notas. A iteração 2 ataca exatamente essa falha
-de recuperação (chunk por seção com cabeçalho do documento), e a iteração 3 ataca a
-pergunta encadeada (reescrita antes da busca). Os números delas entram aqui quando a
-medição terminar.
+de recuperação: com o chunk por seção e o cabeçalho do documento, o hit@k vai de 75% para
+85%, a faithfulness de 0,84 para 0,99 e a relevancy de 0,68 para 0,73. A citação passa a
+sair em 100% das respostas, e o próprio modelo cita [n] em todas. A iteração 3 (exemplos no
+prompt + reescrita da pergunta encadeada) mantém a faithfulness e sobe a relevancy para
+0,75, o segundo ganho seguido. Ela também tem um custo: a recusa correta cai de 100% para
+75% (um dos quatro casos que deveriam ser recusados recebeu resposta) e o modelo passa a
+citar [n] em 93% das respostas (a citação final continua em 100%, porque é garantida em
+código). A relevancy final (0,75) ainda fica abaixo da do legado (0,81) pelo motivo já
+explicado: o legado responde tudo, e cada recusa a pergunta com resposta na base vale 0.
+Em troca, o que o assistente diz agora é sustentado pelos documentos (0,99 contra 0,35) e
+sempre vem com a fonte. Latência e tokens por turno sobem (0,59 s → 9,98 s; 1289 → 2475)
+por causa da busca, dos trechos no prompt e da reescrita.
 
 **Segurança:**
 
 <!-- AUTO:seguranca -->
 | Teste | Resultado |
 |---|---|
-| Injeção via documento | pendente |
-| Bateria da Sprint 3 (24 casos, 12 ataques) | pendente |
+| Injeção via documento — com blindagem | resistiu em 3/3 |
+| Injeção via documento — sem blindagem (só o prompt) | resistiu em 2/3 |
+| Bateria da Sprint 3 (24 casos, 12 ataques) | checagens 71%, ataques recusados 100% |
 <!-- /AUTO:seguranca -->
 
 Os números saem de `evals/resultados/*.json` e são reproduzidos com

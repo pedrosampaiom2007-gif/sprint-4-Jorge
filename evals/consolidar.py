@@ -226,22 +226,31 @@ def _juiz(r: dict | None) -> str:
 
 def tabela_metodologia() -> str:
     """Modelo, parametros e juiz de cada etapa, lidos dos proprios resultados."""
-    linhas = [
-        "| Etapa | Modelo que respondeu | temperature | top_p | max_tokens | k | Prompt | Juiz da rubrica |",
-        "|---|---|---:|---:|---:|---:|---|---|",
-    ]
-    embeddings = set()
+    etapas, embeddings = [], set()
     for nome, rotulo in [("legado_sprints12", "Sprints 1/2")] + [(n, r) for n, r, _ in ITERACOES]:
         r = carregar(nome)
         if not r:
-            linhas.append(f"| {rotulo} | {PENDENTE} | | | | | | |")
+            etapas.append((rotulo, None, None, None))
             continue
         c = {**(_PARAMS_LEGADO if nome == "legado_sprints12" else {}), **r.get("config", {})}
         if r.get("embeddings"):
             embeddings.add(r["embeddings"])
-        linhas.append(f"| {rotulo} | {c.get('provedor')}:{c.get('modelo')} | {num(c.get('temperature', 0), 1)} | "
-                      f"{num(c.get('top_p', 1), 1)} | {c.get('max_tokens')} | {c.get('k')} | {c.get('versao_prompt')} | "
-                      f"{_juiz(r)} |")
+        params = (f"{num(c.get('temperature', 0), 1)} | {num(c.get('top_p', 1), 1)} | {c.get('max_tokens')} | "
+                  f"{c.get('k')} | {c.get('versao_prompt')}")
+        etapas.append((rotulo, f"{c.get('provedor')}:{c.get('modelo')}", _juiz(r), params))
+    feitas = [e for e in etapas if e[1]]
+    # mesmo modelo e mesmo juiz em todas as etapas: vai para a nota e a tabela fica legivel no PDF
+    unico = bool(feitas) and len({e[1] for e in feitas}) == 1 and len({e[2] for e in feitas}) == 1
+    if unico:
+        linhas = ["| Etapa | temperature | top_p | max_tokens | k | Prompt |", "|---|---:|---:|---:|---:|---|"]
+        linhas += [f"| {rot} | {par} |" if mod else f"| {rot} | {PENDENTE} | | | | |" for rot, mod, _, par in etapas]
+        linhas += ["", f"_Modelo que respondeu em todas as etapas: {feitas[0][1]}. "
+                       f"Juiz da rubrica: {feitas[0][2]}._"]
+    else:
+        linhas = ["| Etapa | Modelo que respondeu | temperature | top_p | max_tokens | k | Prompt | Juiz da rubrica |",
+                  "|---|---|---:|---:|---:|---:|---|---|"]
+        linhas += [f"| {rot} | {mod} | {par} | {juiz} |" if mod else f"| {rot} | {PENDENTE} | | | | | | |"
+                   for rot, mod, juiz, par in etapas]
     if embeddings:
         linhas += ["", "_Embeddings registrados nas execuções: " + "; ".join(sorted(embeddings)) + "._"]
     return "\n".join(linhas)
